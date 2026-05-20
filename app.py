@@ -976,6 +976,90 @@ Kulübelerin arkasındaki akıl hocalarına baktığımızda ise taktik dehalar�
         "notice": "Gemini API anahtarı ayarlanmadığı veya hata verdiği için simüle analiz üretildi."
     })
 
+@app.route('/api/scouting/search')
+def scouting_search():
+    if not db_connected:
+        return jsonify({"success": False, "error": "Veritabanı bağlantısı yok."}), 500
+        
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        
+        # Base query to get player details, calculated age, and latest transfer value (bonservis)
+        query = """
+        SELECT 
+            o.Oyuncu_ID,
+            o.Ad,
+            o.Soyad,
+            TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) AS Yas,
+            o.Uyruk,
+            o.Mevki,
+            t.Ad AS Takim_Ad,
+            COALESCE(
+                (SELECT tr.Bonservis_Bedeli 
+                 FROM Transferler tr 
+                 WHERE tr.Oyuncu_ID = o.Oyuncu_ID 
+                 ORDER BY tr.Tarih DESC, tr.Transfer_ID DESC 
+                 LIMIT 1), 0.00
+            ) AS Son_Bonservis
+        FROM Oyuncular o
+        LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
+        WHERE 1=1
+        """
+        params = []
+        
+        # Get query parameters
+        mevki = request.args.get('mevki')
+        if mevki and mevki != 'Tumu':
+            query += " AND o.Mevki = %s"
+            params.append(mevki)
+            
+        uyruk = request.args.get('uyruk')
+        if uyruk:
+            query += " AND o.Uyruk LIKE %s"
+            params.append(f"%{uyruk}%")
+            
+        max_yas = request.args.get('max_yas')
+        if max_yas:
+            try:
+                query += " AND TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) <= %s"
+                params.append(int(max_yas))
+            except ValueError:
+                pass
+                
+        max_bonservis = request.args.get('max_bonservis')
+        if max_bonservis:
+            try:
+                query += """ AND COALESCE(
+                    (SELECT tr.Bonservis_Bedeli 
+                     FROM Transferler tr 
+                     WHERE tr.Oyuncu_ID = o.Oyuncu_ID 
+                     ORDER BY tr.Tarih DESC, tr.Transfer_ID DESC 
+                     LIMIT 1), 0.00
+                ) <= %s"""
+                params.append(float(max_bonservis))
+            except ValueError:
+                pass
+                
+        query += " ORDER BY Son_Bonservis DESC, o.Ad ASC, o.Soyad ASC"
+        
+        cursor.execute(query, tuple(params))
+        players = cursor.fetchall()
+        cursor.close()
+        
+        return jsonify({
+            "success": True,
+            "players": players
+        })
+        
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
 if __name__ == '__main__':
     # Start flask app on port 5000
     app.run(host='0.0.0.0', port=5000, debug=True)
+
