@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futbol Ligi Yönetimi - Kurulum</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Outfit & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #09090b 70%);
+        }
+        .title-font {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center text-slate-100 p-4">
+    <div class="w-full max-w-2xl bg-zinc-950/70 border border-zinc-800/80 rounded-2xl shadow-2xl p-8 backdrop-blur-md">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex p-3 bg-indigo-500/10 text-indigo-400 rounded-xl mb-4 border border-indigo-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+            <h1 class="text-3xl font-extrabold title-font tracking-tight text-white">Veritabanı Kurulum Sihirbazı</h1>
+            <p class="text-slate-400 mt-2 text-sm">Futbol Ligi & İstatistik Yönetim Sistemi için veritabanı bağlantı ayarlarını yapılandırın.</p>
+        </div>
+
+        {% if error %}
+        <!-- Alert -->
+        <div class="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-xl text-sm flex items-start space-x-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+                <span class="font-bold">Bağlantı Hatası:</span> {{ error }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Form -->
+        <form action="/api/save-config" method="POST" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">MySQL Host</label>
+                    <input type="text" name="host" value="{{ config.host }}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition" required>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">MySQL Port</label>
+                    <input type="text" name="port" value="{{ config.port }}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition" required>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">MySQL Kullanıcı Adı</label>
+                    <input type="text" name="user" value="{{ config.user }}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition" required>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">MySQL Şifre</label>
+                    <input type="password" name="password" placeholder="Parola yoksa boş bırakın" value="{{ config.password }}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Veritabanı Adı (Otomatik Oluşturulur)</label>
+                    <input type="text" name="dbname" value="{{ config.database }}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition" required>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <div class="h-px bg-zinc-800/80 my-2"></div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 flex items-center space-x-1.5">
+                        <span>Gemini 3.5 API Anahtarı</span>
+                        <span class="text-xxs text-indigo-400 capitalize">(AI Analiz için)</span>
+                    </label>
+                    <input type="password" name="gemini_key" placeholder="AI Coach raporları için Gemini API Key girin (İsteğe Bağlı)" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition">
+                    <p class="text-xxs text-slate-500 mt-1">Anahtar girilmezse, sistem gerçek verilere göre akıllı yapay zeka analizlerini simüle edecektir.</p>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 flex items-center space-x-1.5">
+                        <span>RapidAPI API-Football Anahtarı</span>
+                        <span class="text-xxs text-amber-400 capitalize">(Canlı Fikstür için)</span>
+                    </label>
+                    <input type="password" name="rapid_key" placeholder="API-Football Key girin (İsteğe Bağlı)" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition">
+                    <p class="text-xxs text-slate-500 mt-1">Girilmezse veya limit aşımında, yerel maç simülatörüyle tam veri akışı simüle edilir.</p>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold py-3 rounded-lg text-sm shadow-lg hover:shadow-indigo-500/20 transition flex items-center justify-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>Bağlantıyı Test Et ve Kaydet</span>
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-xs text-slate-500">
+            MySQL servisinin çalışır durumda olduğundan emin olun. (Servis Adı: <code class="bg-zinc-900 border border-zinc-800 px-1 py-0.5 rounded text-indigo-400">MySQL80</code>)
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.env
+
+# Temporary Extraction Files
+pdf_content.txt
+docx_content.txt
+extract.py
+extract_xml.py
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
