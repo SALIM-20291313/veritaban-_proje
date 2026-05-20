@@ -117,7 +117,7 @@
                 🏆 Puan Durumu ve Gol Krallığı
             </button>
             <button onclick="switchTab('tab-scouting')" id="btn-tab-scouting" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none flex items-center space-x-1.5">
-                <span>🔍 Oyuncu Keşfi (Scouting)</span>
+                <span>🔍 Scout Keşif Paneli</span>
             </button>
             <button onclick="switchTab('tab-transfers')" id="btn-tab-transfers" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
                 💸 Transfer Pazarı Analizi
@@ -222,80 +222,80 @@
             </div>
         </div>
 
-        <!-- TAB CONTENT: Scouting Player Search -->
+        <!-- TAB: Scout Keşif Paneli -->
         <div id="tab-scouting" class="tab-content hidden space-y-8">
-            <div class="rounded-2xl glass p-6 neon-glow-indigo border border-indigo-500/10">
-                <h3 class="text-xl font-bold title-font mb-4 text-white flex items-center space-x-2">
-                    <span>🔍 Gelişmiş Oyuncu Keşfi (Scouting)</span>
-                </h3>
-                <p class="text-xs text-slate-400 mb-6 leading-relaxed">
-                    İlişkisel veritabanındaki oyuncuları mevkilerine, uyruklarına, yaş aralıklarına ve son transfer değerlerine göre anlık olarak sorgular.
-                </p>
 
-                <!-- Filters Form -->
-                <form id="scouting-search-form" onsubmit="searchPlayers(event)" class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end mb-6">
-                    <div>
-                        <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-2">Mevki</label>
-                        <select id="scout-mevki" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none transition">
-                            <option value="Tumu">Tümü (Tüm Mevkiler)</option>
-                            <option value="KL">KL (Kaleci)</option>
-                            <option value="DF">DF (Defans)</option>
-                            <option value="OS">OS (Orta Saha)</option>
-                            <option value="FV">FV (Forvet)</option>
-                        </select>
-                    </div>
+          <!-- Alt sekmeler -->
+          <div class="flex space-x-3 mb-4">
+            <button onclick="scoutSubTab('oyuncu')" id="scout-sub-oyuncu" class="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition">👤 Oyuncu Arama</button>
+            <button onclick="scoutSubTab('direktor')" id="scout-sub-direktor" class="px-5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">👔 Teknik Direktör Arama</button>
+          </div>
 
-                    <div>
-                        <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-2">Uyruk</label>
-                        <input type="text" id="scout-uyruk" placeholder="Örn: Brezilya" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none transition">
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                            <span>Maksimum Yaş</span>
-                            <span id="scout-yas-label" class="text-indigo-400">35</span>
-                        </div>
-                        <input type="range" id="scout-max-yas" min="15" max="45" value="35" oninput="document.getElementById('scout-yas-label').textContent = this.value" class="w-full h-1.5 bg-zinc-900 rounded-lg appearance-none cursor-pointer accent-indigo-500 mt-3">
-                    </div>
-
-                    <div>
-                        <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-2">Maksimum Bütçe / Bonservis (EUR)</label>
-                        <input type="number" id="scout-max-bonservis" placeholder="Örn: 20000000" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none transition">
-                    </div>
-
-                    <div class="md:col-span-4 flex justify-end">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-semibold text-xs shadow-lg hover:shadow-indigo-500/20 transition flex items-center space-x-1.5 border border-indigo-500/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            <span>Oyuncuları Ara / Filtrele</span>
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Results Grid -->
-                <div class="overflow-x-auto mt-8 border-t border-slate-900/60 pt-6">
-                    <h4 class="text-sm font-semibold mb-4 text-slate-300">Arama Sonuçları</h4>
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-800 text-slate-500 uppercase tracking-wider text-xxs">
-                                <th class="py-3 px-2 font-semibold">Oyuncu</th>
-                                <th class="py-3 px-2 font-semibold text-center">Yaş</th>
-                                <th class="py-3 px-2 font-semibold text-center">Mevki</th>
-                                <th class="py-3 px-2 font-semibold text-center">Uyruk</th>
-                                <th class="py-3 px-4 font-semibold">Güncel Takım</th>
-                                <th class="py-3 px-2 font-semibold text-right text-indigo-400">Piyasa Değeri (Son Bonservis)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scouting-results-table-body" class="divide-y divide-slate-800/40">
-                            <tr>
-                                <td colspan="6" class="text-center py-8 text-slate-500">Arama filtresi uygulayın ve arama yapın.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+          <!-- Oyuncu Formu -->
+          <div id="scout-panel-oyuncu" class="rounded-2xl glass p-6 border border-indigo-500/10 space-y-6">
+            <h3 class="text-lg font-bold title-font text-white">🔍 Oyuncu Keşfi &amp; Filtreleme</h3>
+            <form onsubmit="searchScoutPlayers(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+              <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Mevki</label>
+                <select id="sp-mevki" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+                  <option value="Tumu">Tümü</option>
+                  <option value="KL">KL - Kaleci</option>
+                  <option value="DF">DF - Defans</option>
+                  <option value="OS">OS - Orta Saha</option>
+                  <option value="FV">FV - Forvet</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Uyruk</label>
+                <input type="text" id="sp-uyruk" placeholder="Örn: Brezilya" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+              </div>
+              <div>
+                <div class="flex justify-between text-xxs font-semibold uppercase text-slate-400 mb-1">
+                  <span>Maks. Yaş</span><span id="sp-yas-lbl" class="text-indigo-400">35</span>
                 </div>
+                <input type="range" id="sp-yas" min="15" max="45" value="35" oninput="document.getElementById('sp-yas-lbl').textContent=this.value" class="w-full accent-indigo-500 mt-2">
+              </div>
+              <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Maks. Bütçe (EUR)</label>
+                <input type="number" id="sp-bonservis" placeholder="Örn: 10000000" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+              </div>
+              <div class="md:col-span-4 flex justify-end">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold text-xs shadow-lg transition flex items-center space-x-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                  <span>Oyuncuları Ara</span>
+                </button>
+              </div>
+            </form>
+            <div class="overflow-x-auto border-t border-slate-800 pt-4">
+              <table class="w-full text-xs text-left border-collapse">
+                <thead><tr class="border-b border-slate-800 text-slate-500 text-xxs uppercase">
+                  <th class="py-2 px-2">Oyuncu</th><th class="py-2 px-2 text-center">Yaş</th>
+                  <th class="py-2 px-2 text-center">Mevki</th><th class="py-2 px-2">Uyruk</th>
+                  <th class="py-2 px-2">Takım</th><th class="py-2 px-2 text-right text-indigo-400">Piyasa Değeri</th>
+                </tr></thead>
+                <tbody id="scout-players-tbody"><tr><td colspan="6" class="py-8 text-center text-slate-500">Filtre uygulayarak arama yapın.</td></tr></tbody>
+              </table>
             </div>
+          </div>
+
+          <!-- Teknik Direktör Formu -->
+          <div id="scout-panel-direktor" class="hidden rounded-2xl glass p-6 border border-indigo-500/10 space-y-6">
+            <h3 class="text-lg font-bold title-font text-white">👔 Teknik Direktör Keşfi</h3>
+            <form onsubmit="searchScoutManagers(event)" class="flex flex-wrap gap-4 items-end">
+              <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Min. Galibiyet Oranı (%)</label>
+                <input type="number" id="sm-winrate" min="0" max="100" value="0" class="bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none w-40">
+              </div>
+              <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold text-xs shadow-lg transition">Direktörleri Ara</button>
+            </form>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="scout-managers-grid">
+              <div class="col-span-full text-center py-8 text-slate-500">Arama yapın.</div>
+            </div>
+          </div>
+
         </div>
+
+
 
         <!-- TAB CONTENT 2: Transfers -->
         <div id="tab-transfers" class="tab-content hidden space-y-8">
@@ -985,6 +985,180 @@
                 showToast('Hata', 'Arama isteği başarısız oldu.', 'error');
             }
         }
+
+        // --- SCOUT PANEL JS ---
+        function scoutSubTab(tab) {
+            document.getElementById('scout-panel-oyuncu').classList.toggle('hidden', tab !== 'oyuncu');
+            document.getElementById('scout-panel-direktor').classList.toggle('hidden', tab !== 'direktor');
+            document.getElementById('scout-sub-oyuncu').className = tab === 'oyuncu'
+                ? 'px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition'
+                : 'px-5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+            document.getElementById('scout-sub-direktor').className = tab === 'direktor'
+                ? 'px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white transition'
+                : 'px-5 py-2 rounded-xl text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+        }
+
+        const BADGE = {
+            KL: '<span class="inline-flex px-1.5 py-0.5 rounded text-xxs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">KL</span>',
+            DF: '<span class="inline-flex px-1.5 py-0.5 rounded text-xxs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">DF</span>',
+            OS: '<span class="inline-flex px-1.5 py-0.5 rounded text-xxs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">OS</span>',
+            FV: '<span class="inline-flex px-1.5 py-0.5 rounded text-xxs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">FV</span>',
+        };
+
+        async function searchScoutPlayers(event) {
+            if (event) event.preventDefault();
+            const mevki = document.getElementById('sp-mevki').value;
+            const uyruk = document.getElementById('sp-uyruk').value.trim();
+            const maxYas = document.getElementById('sp-yas').value;
+            const maxB = document.getElementById('sp-bonservis').value.trim();
+            let url = `/api/scouting/players?mevki=${mevki}&max_yas=${maxYas}`;
+            if (uyruk) url += `&uyruk=${encodeURIComponent(uyruk)}`;
+            if (maxB) url += `&max_bonservis=${maxB}`;
+            const tbody = document.getElementById('scout-players-tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-indigo-400 animate-pulse">Aranıyor...</td></tr>';
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                tbody.innerHTML = '';
+                if (!data.success || !data.players.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-500">Sonuç bulunamadı.</td></tr>';
+                    return;
+                }
+                data.players.forEach(p => {
+                    const fee = parseFloat(p.Son_Bonservis) === 0
+                        ? '<span class="text-slate-500">—</span>'
+                        : `<strong class="text-slate-200">${parseFloat(p.Son_Bonservis).toLocaleString('tr-TR')}</strong> <span class="text-indigo-400 text-xxs">EUR</span>`;
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-900/30 transition-colors border-b border-slate-900/40 cursor-pointer';
+                    tr.onclick = () => openPlayerModal(p.Oyuncu_ID);
+                    tr.innerHTML = `
+                        <td class="py-3 px-2 font-semibold text-slate-200">${p.Ad} ${p.Soyad}</td>
+                        <td class="py-3 px-2 text-center text-slate-300">${p.Yas}</td>
+                        <td class="py-3 px-2 text-center">${BADGE[p.Mevki] || p.Mevki}</td>
+                        <td class="py-3 px-2 text-slate-400">${p.Uyruk}</td>
+                        <td class="py-3 px-2">
+                          <button onclick="event.stopPropagation();openTeamModal(${p.Takim_ID || 0})" class="text-indigo-300 hover:text-indigo-200 font-semibold hover:underline">${p.Takim_Ad || '—'}</button>
+                        </td>
+                        <td class="py-3 px-2 text-right">${fee}</td>`;
+                    tbody.appendChild(tr);
+                });
+            } catch(err) { showToast('Hata', err.message, 'error'); }
+        }
+
+        async function searchScoutManagers(event) {
+            if (event) event.preventDefault();
+            const wr = document.getElementById('sm-winrate').value || 0;
+            const grid = document.getElementById('scout-managers-grid');
+            grid.innerHTML = '<div class="col-span-full text-center py-6 text-indigo-400 animate-pulse">Aranıyor...</div>';
+            try {
+                const res = await fetch(`/api/scouting/managers?min_win_rate=${wr}`);
+                const data = await res.json();
+                grid.innerHTML = '';
+                if (!data.success || !data.managers.length) {
+                    grid.innerHTML = '<div class="col-span-full text-center py-8 text-slate-500">Sonuç bulunamadı.</div>';
+                    return;
+                }
+                data.managers.forEach(m => {
+                    const pct = m.Galibiyet_Yuzdesi !== null ? `${m.Galibiyet_Yuzdesi}%` : '0%';
+                    const card = document.createElement('div');
+                    card.className = 'rounded-xl glass p-5 border border-slate-800 hover:border-indigo-500/30 transition cursor-pointer';
+                    card.onclick = () => openTeamModal(m.Takim_ID);
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start mb-3">
+                          <span class="text-xxs font-semibold text-slate-500 uppercase">${m.Takim_Ad}</span>
+                          <span class="inline-flex px-2 py-0.5 rounded-full text-xxs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${pct}</span>
+                        </div>
+                        <h4 class="font-bold text-white text-sm">${m.Ad} ${m.Soyad}</h4>
+                        <p class="text-xs text-slate-500 mt-2">${m.Toplam_Mac} maç · ${m.Galibiyetler} galibiyet</p>`;
+                    grid.appendChild(card);
+                });
+            } catch(err) { showToast('Hata', err.message, 'error'); }
+        }
+
+        async function openPlayerModal(id) {
+            if (!id) return;
+            try {
+                const res = await fetch(`/api/scouting/player-detail/${id}`);
+                const data = await res.json();
+                if (!data.success) return;
+                const p = data.player, s = data.stats, tr = data.transfers;
+                const feeRows = tr.length ? tr.map(t => `
+                    <tr class="border-b border-slate-800/40 text-xxs">
+                      <td class="py-1.5 text-slate-400">${t.Tarih ? t.Tarih.split('T')[0] : '—'}</td>
+                      <td class="py-1.5 text-slate-400">${t.Eski_Takim || 'Serbest'}</td>
+                      <td class="py-1.5 text-slate-300 font-semibold">${t.Yeni_Takim}</td>
+                      <td class="py-1.5 text-right text-indigo-400">${parseFloat(t.Bonservis_Bedeli || 0).toLocaleString('tr-TR')} ${t.Para_Birimi}</td>
+                    </tr>`).join('') : '<tr><td colspan="4" class="py-2 text-center text-slate-500">Transfer kaydı yok.</td></tr>';
+                document.getElementById('modal-content').innerHTML = `
+                    <div class="flex items-center space-x-4 mb-6 pb-5 border-b border-slate-800">
+                      <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-extrabold shrink-0">${p.Ad[0]}${p.Soyad[0]}</div>
+                      <div>
+                        <h2 class="text-xl font-extrabold text-white">${p.Ad} ${p.Soyad}</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">${p.Takim_Ad || 'Serbest'} · ${BADGE[p.Mevki] || p.Mevki} · ${p.Uyruk}</p>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-3 mb-6">
+                      ${[['Yaş', p.Yas],['Gol', s.Gol||0],['Asist', s.Asist||0],['Sarı K.', s.Sari_Kart||0]].map(([label,val])=>`
+                      <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
+                        <div class="text-xl font-extrabold text-white">${val}</div>
+                        <div class="text-xxs text-slate-400 mt-1">${label}</div>
+                      </div>`).join('')}
+                    </div>
+                    <h4 class="text-xs font-semibold uppercase text-slate-400 mb-2">Transfer Geçmişi</h4>
+                    <div class="overflow-x-auto"><table class="w-full text-xs"><thead><tr class="text-slate-500 border-b border-slate-800"><th class="py-1.5 text-left">Tarih</th><th class="py-1.5 text-left">Eski</th><th class="py-1.5 text-left">Yeni</th><th class="py-1.5 text-right text-indigo-400">Bedel</th></tr></thead><tbody>${feeRows}</tbody></table></div>`;
+                document.getElementById('profile-modal').classList.remove('hidden');
+            } catch(err) { showToast('Hata', err.message, 'error'); }
+        }
+
+        async function openTeamModal(id) {
+            if (!id) return;
+            try {
+                const res = await fetch(`/api/scouting/team-detail/${id}`);
+                const data = await res.json();
+                if (!data.success) return;
+                const t = data.team, sq = data.squad;
+                const squadRows = sq.map(o => `
+                    <tr class="border-b border-slate-800/40 hover:bg-slate-900/30 cursor-pointer" onclick="closeModal();openPlayerModal(${o.Oyuncu_ID})">
+                      <td class="py-1.5 px-2 font-medium text-slate-200 text-xs">${o.Ad} ${o.Soyad}</td>
+                      <td class="py-1.5 px-2 text-center">${BADGE[o.Mevki]||o.Mevki}</td>
+                      <td class="py-1.5 px-2 text-xs text-slate-400">${o.Uyruk}</td>
+                      <td class="py-1.5 px-2 text-center text-xs text-slate-400">${o.Yas}</td>
+                    </tr>`).join('');
+                document.getElementById('modal-content').innerHTML = `
+                    <div class="flex items-center space-x-4 mb-6 pb-5 border-b border-slate-800">
+                      <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl font-extrabold shrink-0">${t.Ad[0]}</div>
+                      <div>
+                        <h2 class="text-xl font-extrabold text-white">${t.Ad}</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Kur. ${t.Kurulus_Yili} · ${t.Sehir} · 🏟️ ${t.Stadyum_Ad} (${(t.Kapasite||0).toLocaleString('tr-TR')})</p>
+                        <p class="text-xs text-slate-400 mt-0.5">👔 ${t.Hoca_Ad ? t.Hoca_Ad+' '+t.Hoca_Soyad : 'Hoca Yok'}</p>
+                      </div>
+                    </div>
+                    <h4 class="text-xs font-semibold uppercase text-slate-400 mb-2">Kadro (${sq.length} Oyuncu)</h4>
+                    <div class="overflow-y-auto max-h-72">
+                      <table class="w-full text-xs border-collapse">
+                        <thead><tr class="text-slate-500 border-b border-slate-800 text-xxs uppercase"><th class="py-1.5 px-2 text-left">Oyuncu</th><th class="py-1.5 px-2 text-center">Mevki</th><th class="py-1.5 px-2">Uyruk</th><th class="py-1.5 px-2 text-center">Yaş</th></tr></thead>
+                        <tbody>${squadRows}</tbody>
+                      </table>
+                    </div>`;
+                document.getElementById('profile-modal').classList.remove('hidden');
+            } catch(err) { showToast('Hata', err.message, 'error'); }
+        }
+
+        function closeModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+        }
     </script>
+
+    <!-- PROFIL MODAL -->
+    <div id="profile-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" onclick="if(event.target===this)closeModal()">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      <div class="relative bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-xl p-6 z-10 max-h-[90vh] overflow-y-auto">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div id="modal-content" class="space-y-4"></div>
+      </div>
+    </div>
 </body>
 </html>
+

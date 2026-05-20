@@ -7,6 +7,7 @@ from mysql.connector import Error
 from dotenv import load_dotenv
 import google.generativeai as genai
 import markdown
+from seed_data import STADIUMS, TEAMS, MANAGERS, PLAYERS, TRANSFERS_RAW, MATCHES_RAW, MATCH_EVENTS_RAW
 
 # Load environment variables
 load_dotenv()
@@ -124,239 +125,81 @@ def seed_database():
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
-        
-        # Disable foreign key checks for clean seed
         cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
-        
-        # Clear existing data
-        cursor.execute("TRUNCATE TABLE Teknik_Direktorler;")
-        cursor.execute("TRUNCATE TABLE Transferler;")
-        cursor.execute("TRUNCATE TABLE Mac_Olaylari;")
-        cursor.execute("TRUNCATE TABLE Maclar;")
-        cursor.execute("TRUNCATE TABLE Oyuncular;")
-        cursor.execute("TRUNCATE TABLE Takimlar;")
-        cursor.execute("TRUNCATE TABLE Stadyumlar;")
-        
+        for tbl in ["Teknik_Direktorler","Transferler","Mac_Olaylari","Maclar","Oyuncular","Takimlar","Stadyumlar"]:
+            cursor.execute(f"TRUNCATE TABLE {tbl};")
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
-        
-        # 1. Seed Stadiums
-        stadiums = [
-            ("Ali Sami Yen Spor Kompleksi", 52280, "Istanbul"),
-            ("Ulker Stadyumu Fenerbahce Sukru Saracoglu", 47834, "Istanbul"),
-            ("Tupras Stadyumu", 42590, "Istanbul"),
-            ("Papara Park", 40782, "Trabzon"),
-            ("MEDAS Konya Buyuksehir Stadyumu", 42000, "Konya"),
-            ("Basaksehir Fatih Terim Stadyumu", 17156, "Istanbul")
-        ]
+
+        # 1. Stadiums
+        cursor.executemany("INSERT INTO Stadyumlar (Ad, Kapasite, Sehir) VALUES (%s,%s,%s)", STADIUMS)
+        conn.commit()
+        cursor.execute("SELECT Stadyum_ID, Ad FROM Stadyumlar")
+        stad_map = {r[1]: r[0] for r in cursor.fetchall()}
+
+        # 2. Teams
         cursor.executemany(
-            "INSERT INTO Stadyumlar (Ad, Kapasite, Sehir) VALUES (%s, %s, %s)", 
-            stadiums
+            "INSERT INTO Takimlar (Ad, Kurulus_Yili, Sehir, Stadyum_ID) VALUES (%s,%s,%s,%s)",
+            [(tn, yr, ct, stad_map[st]) for tn, yr, ct, st in TEAMS]
         )
         conn.commit()
-        
-        # 2. Seed Teams
-        # Get stadium IDs
-        cursor.execute("SELECT Stadyum_ID, Ad, Sehir FROM Stadyumlar")
-        stads = cursor.fetchall()
-        stad_map = {s[1]: s[0] for s in stads}
-        
-        teams = [
-            ("Galatasaray", 1905, "Istanbul", stad_map["Ali Sami Yen Spor Kompleksi"]),
-            ("Fenerbahce", 1907, "Istanbul", stad_map["Ulker Stadyumu Fenerbahce Sukru Saracoglu"]),
-            ("Besiktas", 1903, "Istanbul", stad_map["Tupras Stadyumu"]),
-            ("Trabzonspor", 1967, "Trabzon", stad_map["Papara Park"]),
-            ("Konyaspor", 1922, "Konya", stad_map["MEDAS Konya Buyuksehir Stadyumu"]),
-            ("Basaksehir", 1990, "Istanbul", stad_map["Basaksehir Fatih Terim Stadyumu"])
-        ]
-        cursor.executemany(
-            "INSERT INTO Takimlar (Ad, Kurulus_Yili, Sehir, Stadyum_ID) VALUES (%s, %s, %s, %s)",
-            teams
-        )
-        conn.commit()
-        
-        # Get Team IDs
         cursor.execute("SELECT Takim_ID, Ad FROM Takimlar")
-        team_rows = cursor.fetchall()
-        team_map = {t[1]: t[0] for t in team_rows}
-        
-        # 3. Seed Managers
-        managers = [
-            ("Okan", "Buruk", team_map["Galatasaray"]),
-            ("Jose", "Mourinho", team_map["Fenerbahce"]),
-            ("Giovanni", "van Bronckhorst", team_map["Besiktas"]),
-            ("Senol", "Gunes", team_map["Trabzonspor"]),
-            ("Ali", "Camdali", team_map["Konyaspor"]),
-            ("Cagdas", "Atan", team_map["Basaksehir"])
-        ]
+        team_map = {r[1]: r[0] for r in cursor.fetchall()}
+
+        # 3. Managers
         cursor.executemany(
-            "INSERT INTO Teknik_Direktorler (Ad, Soyad, Takim_ID) VALUES (%s, %s, %s)",
-            managers
+            "INSERT INTO Teknik_Direktorler (Ad, Soyad, Takim_ID) VALUES (%s,%s,%s)",
+            [(ad, soyad, team_map[takim]) for ad, soyad, takim in MANAGERS]
         )
         conn.commit()
-        
-        # 4. Seed Players
-        players_data = {
-            "Galatasaray": [
-                ("Fernando", "Muslera", "1986-06-16", "Uruguay", "KL"),
-                ("Victor", "Osimhen", "1998-12-29", "Nijerya", "FV"),
-                ("Mauro", "Icardi", "1993-02-19", "Arjantin", "FV"),
-                ("Lucas", "Torreira", "1996-02-11", "Uruguay", "OS"),
-                ("Davinson", "Sanchez", "1996-06-12", "Kolombiya", "DF"),
-                ("Baris Alper", "Yilmaz", "2000-05-23", "Turkiye", "FV"),
-                ("Dries", "Mertens", "1987-05-06", "Belcika", "OS")
-            ],
-            "Fenerbahce": [
-                ("Dominik", "Livakovic", "1995-01-09", "Hirvatistan", "KL"),
-                ("Edin", "Dzeko", "1986-03-17", "Bosna Hersek", "FV"),
-                ("Dusan", "Tadic", "1988-11-20", "Sirbistan", "OS"),
-                ("Fred", "Rodrigues", "1993-03-05", "Brezilya", "OS"),
-                ("Caglar", "Soyuncu", "1996-05-23", "Turkiye", "DF"),
-                ("Sebastian", "Szymanski", "1999-05-10", "Polonya", "OS"),
-                ("Youssef", "En-Nesyri", "1997-06-01", "Fas", "FV")
-            ],
-            "Besiktas": [
-                ("Mert", "Gunok", "1989-03-01", "Turkiye", "KL"),
-                ("Ciro", "Immobile", "1990-02-20", "Italya", "FV"),
-                ("Rafa", "Silva", "1993-05-17", "Portekiz", "OS"),
-                ("Gedson", "Fernandes", "1999-01-09", "Portekiz", "OS"),
-                ("Gabriel", "Paulista", "1990-11-26", "Brezilya", "DF"),
-                ("Semih", "Kilicsoy", "2005-08-15", "Turkiye", "FV"),
-                ("Milot", "Rashica", "1996-06-28", "Kosova", "OS")
-            ],
-            "Trabzonspor": [
-                ("Ugurcan", "Cakir", "1996-04-05", "Turkiye", "KL"),
-                ("Simon", "Banza", "1996-08-13", "Kongo", "FV"),
-                ("Edin", "Visca", "1990-02-17", "Bosna Hersek", "OS"),
-                ("Stefan", "Savic", "1991-01-08", "Karadag", "DF"),
-                ("Okay", "Yokuslu", "1994-03-09", "Turkiye", "OS"),
-                ("Denis", "Dragus", "1999-07-06", "Romanya", "FV")
-            ],
-            "Konyaspor": [
-                ("Jakub", "Slowik", "1991-08-31", "Polonya", "KL"),
-                ("Sokol", "Cikalleshi", "1990-07-27", "Arnavutluk", "FV"),
-                ("Adil", "Demirbag", "1997-12-10", "Turkiye", "DF"),
-                ("Guilherme", "Sitya", "1990-04-01", "Brezilya", "DF"),
-                ("Danijel", "Aleksic", "1991-04-30", "Sirbistan", "OS"),
-                ("Pedrinho", "Santos", "1992-12-18", "Portekiz", "OS")
-            ],
-            "Basaksehir": [
-                ("Muhammed", "Sengezer", "1997-01-05", "Turkiye", "KL"),
-                ("Krzysztof", "Piatek", "1995-07-01", "Polonya", "FV"),
-                ("Leo", "Duarte", "1996-07-17", "Brezilya", "DF"),
-                ("Miguel", "Crespo", "1996-09-11", "Portekiz", "OS"),
-                ("Serdar", "Gurler", "1991-09-14", "Turkiye", "OS"),
-                ("Joao", "Figueiredo", "1996-05-27", "Brezilya", "FV")
-            ]
-        }
-        
-        insert_player_query = "INSERT INTO Oyuncular (Ad, Soyad, Dogum_Tarihi, Uyruk, Mevki, Takim_ID) VALUES (%s, %s, %s, %s, %s, %s)"
-        for team_name, roster in players_data.items():
-            t_id = team_map[team_name]
+
+        # 4. Players
+        pq = "INSERT INTO Oyuncular (Ad, Soyad, Dogum_Tarihi, Uyruk, Mevki, Takim_ID) VALUES (%s,%s,%s,%s,%s,%s)"
+        for team_name, roster in PLAYERS.items():
+            tid = team_map[team_name]
             for p in roster:
-                cursor.execute(insert_player_query, (p[0], p[1], p[2], p[3], p[4], t_id))
+                cursor.execute(pq, (p[0], p[1], p[2], p[3], p[4], tid))
         conn.commit()
-        
-        # Get Player IDs mapped by name
-        cursor.execute("SELECT Oyuncu_ID, Ad, Soyad, Takim_ID FROM Oyuncular")
-        player_rows = cursor.fetchall()
-        player_map = {f"{p[1]} {p[2]}": p[0] for p in player_rows}
-        
-        # 5. Seed Transfers
-        # Let's record a few major transfers
-        transfers = [
-            (player_map["Victor Osimhen"], None, team_map["Galatasaray"], "2025-09-03", 75000000.00, "EUR"),
-            (player_map["Youssef En-Nesyri"], None, team_map["Fenerbahce"], "2025-07-25", 19500000.00, "EUR"),
-            (player_map["Ciro Immobile"], None, team_map["Besiktas"], "2025-07-13", 3000000.00, "EUR"),
-            (player_map["Rafa Silva"], None, team_map["Besiktas"], "2025-07-01", 0.00, "EUR"),
-            (player_map["Stefan Savic"], None, team_map["Trabzonspor"], "2025-07-24", 0.00, "EUR")
-        ]
-        cursor.executemany(
-            "INSERT INTO Transferler (Oyuncu_ID, Eski_Takim_ID, Yeni_Takim_ID, Tarih, Bonservis_Bedeli, Para_Birimi) VALUES (%s, %s, %s, %s, %s, %s)",
-            transfers
-        )
+
+        cursor.execute("SELECT Oyuncu_ID, Ad, Soyad FROM Oyuncular")
+        player_map = {f"{r[1]} {r[2]}": r[0] for r in cursor.fetchall()}
+
+        # 5. Transfers
+        tq = "INSERT INTO Transferler (Oyuncu_ID, Eski_Takim_ID, Yeni_Takim_ID, Tarih, Bonservis_Bedeli, Para_Birimi) VALUES (%s,%s,%s,%s,%s,%s)"
+        for pname, old_t, new_t, tarih, bedel, cur in TRANSFERS_RAW:
+            pid = player_map.get(pname)
+            if pid is None:
+                continue
+            old_id = team_map.get(old_t) if old_t else None
+            new_id = team_map.get(new_t)
+            cursor.execute(tq, (pid, old_id, new_id, tarih, bedel, cur))
         conn.commit()
-        
-        # 6. Seed Matches (Fikstur ve Oynanmis Maclar)
-        # We will create a few played matches
-        # Galatasaray vs Fenerbahce (2-1)
-        # Besiktas vs Trabzonspor (1-1)
-        # Konyaspor vs Basaksehir (0-2)
-        # Galatasaray vs Besiktas (3-0)
-        # Fenerbahce vs Trabzonspor (2-0)
-        played_matches = [
-            (team_map["Galatasaray"], team_map["Fenerbahce"], "2026-05-10 19:00:00", stad_map["Ali Sami Yen Spor Kompleksi"], 2, 1),
-            (team_map["Besiktas"], team_map["Trabzonspor"], "2026-05-11 20:00:00", stad_map["Tupras Stadyumu"], 1, 1),
-            (team_map["Konyaspor"], team_map["Basaksehir"], "2026-05-12 18:00:00", stad_map["MEDAS Konya Buyuksehir Stadyumu"], 0, 2),
-            (team_map["Galatasaray"], team_map["Besiktas"], "2026-05-16 19:00:00", stad_map["Ali Sami Yen Spor Kompleksi"], 3, 0),
-            (team_map["Fenerbahce"], team_map["Trabzonspor"], "2026-05-17 20:00:00", stad_map["Ulker Stadyumu Fenerbahce Sukru Saracoglu"], 2, 0)
-        ]
-        
-        insert_match_query = "INSERT INTO Maclar (Ev_Sahibi_Takim_ID, Deplasman_Takim_ID, Tarih_Saat, Stadyum_ID, Ev_Sahibi_Skor, Deplasman_Skor) VALUES (%s, %s, %s, %s, %s, %s)"
-        for m in played_matches:
-            cursor.execute(insert_match_query, m)
+
+        # 6. Matches
+        mq = "INSERT INTO Maclar (Ev_Sahibi_Takim_ID, Deplasman_Takim_ID, Tarih_Saat, Stadyum_ID, Ev_Sahibi_Skor, Deplasman_Skor) VALUES (%s,%s,%s,%s,%s,%s)"
+        match_id_map = {}
+        for home_t, away_t, dt_str, stad_name, hs, as_ in MATCHES_RAW:
+            cursor.execute(mq, (team_map[home_t], team_map[away_t], dt_str, stad_map[stad_name], hs, as_))
+            mid = cursor.lastrowid
+            date_key = dt_str[:10]
+            match_id_map[(home_t, away_t, date_key)] = mid
         conn.commit()
-        
-        # Get Match IDs
-        cursor.execute("SELECT Mac_ID, Ev_Sahibi_Takim_ID, Deplasman_Takim_ID FROM Maclar")
-        match_rows = cursor.fetchall()
-        
-        # 7. Seed Match Events for played matches
-        # We will insert specific goals, assists, cards for the games
-        events = []
-        for m_id, home_id, away_id in match_rows:
-            # We match using home/away ids to identify which game it is
-            if home_id == team_map["Galatasaray"] and away_id == team_map["Fenerbahce"]:
-                # GS 2 - 1 FB
-                events.append((m_id, player_map["Victor Osimhen"], 'Gol', 12))
-                events.append((m_id, player_map["Lucas Torreira"], 'Asist', 12))
-                events.append((m_id, player_map["Mauro Icardi"], 'Gol', 55))
-                events.append((m_id, player_map["Baris Alper Yilmaz"], 'Asist', 55))
-                events.append((m_id, player_map["Edin Dzeko"], 'Gol', 78))
-                events.append((m_id, player_map["Dusan Tadic"], 'Asist', 78))
-                events.append((m_id, player_map["Fred Rodrigues"], 'Sari_Kart', 40))
-                events.append((m_id, player_map["Davinson Sanchez"], 'Sari_Kart', 85))
-            elif home_id == team_map["Besiktas"] and away_id == team_map["Trabzonspor"]:
-                # BJK 1 - 1 TS
-                events.append((m_id, player_map["Ciro Immobile"], 'Gol', 34))
-                events.append((m_id, player_map["Rafa Silva"], 'Asist', 34))
-                events.append((m_id, player_map["Simon Banza"], 'Gol', 62))
-                events.append((m_id, player_map["Edin Visca"], 'Asist', 62))
-                events.append((m_id, player_map["Gabriel Paulista"], 'Sari_Kart', 20))
-                events.append((m_id, player_map["Stefan Savic"], 'Sari_Kart', 44))
-            elif home_id == team_map["Konyaspor"] and away_id == team_map["Basaksehir"]:
-                # KON 0 - 2 IBFK
-                events.append((m_id, player_map["Krzysztof Piatek"], 'Gol', 45))
-                events.append((m_id, player_map["Miguel Crespo"], 'Asist', 45))
-                events.append((m_id, player_map["Joao Figueiredo"], 'Gol', 89))
-                events.append((m_id, player_map["Serdar Gurler"], 'Asist', 89))
-            elif home_id == team_map["Galatasaray"] and away_id == team_map["Besiktas"]:
-                # GS 3 - 0 BJK
-                events.append((m_id, player_map["Victor Osimhen"], 'Gol', 23))
-                events.append((m_id, player_map["Dries Mertens"], 'Asist', 23))
-                events.append((m_id, player_map["Victor Osimhen"], 'Gol', 44))
-                events.append((m_id, player_map["Mauro Icardi"], 'Gol', 81))
-                events.append((m_id, player_map["Lucas Torreira"], 'Asist', 81))
-                events.append((m_id, player_map["Gedson Fernandes"], 'Sari_Kart', 15))
-                events.append((m_id, player_map["Mert Gunok"], 'Sari_Kart', 43))
-            elif home_id == team_map["Fenerbahce"] and away_id == team_map["Trabzonspor"]:
-                # FB 2 - 0 TS
-                events.append((m_id, player_map["Youssef En-Nesyri"], 'Gol', 50))
-                events.append((m_id, player_map["Dusan Tadic"], 'Asist', 50))
-                events.append((m_id, player_map["Edin Dzeko"], 'Gol', 88))
-                events.append((m_id, player_map["Sebastian Szymanski"], 'Asist', 88))
-                events.append((m_id, player_map["Caglar Soyuncu"], 'Sari_Kart', 12))
-                events.append((m_id, player_map["Simon Banza"], 'Kirmizi_Kart', 70))
-        
-        insert_event_query = "INSERT INTO Mac_Olaylari (Mac_ID, Oyuncu_ID, Olay_Tipi, Dakika) VALUES (%s, %s, %s, %s)"
-        for ev in events:
-            cursor.execute(insert_event_query, ev)
-        
+
+        # 7. Match Events
+        eq = "INSERT INTO Mac_Olaylari (Mac_ID, Oyuncu_ID, Olay_Tipi, Dakika) VALUES (%s,%s,%s,%s)"
+        for (home_t, away_t, date_key), event_list in MATCH_EVENTS_RAW.items():
+            mid = match_id_map.get((home_t, away_t, date_key))
+            if mid is None:
+                continue
+            for pname, etype, minute in event_list:
+                pid = player_map.get(pname)
+                if pid:
+                    cursor.execute(eq, (mid, pid, etype, minute))
         conn.commit()
-        print("Database seeded with mock football data.")
+
+        print(f"Database seeded: {sum(len(v) for v in PLAYERS.values())} players, {len(TRANSFERS_RAW)} transfers, {len(MATCHES_RAW)} matches.")
         return True
-        
     except Error as e:
-        print(f"Error during database seeding: {e}")
+        print(f"Seed error: {e}")
         return False
     finally:
         if conn and conn.is_connected():
@@ -1059,7 +902,147 @@ def scouting_search():
         if conn and conn.is_connected():
             conn.close()
 
+# ---- SCOUTING ENDPOINTS ----
+
+@app.route('/api/scouting/players')
+def scouting_players():
+    if not db_connected:
+        return jsonify({"success": False, "error": "DB bağlantısı yok."}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        query = """
+        SELECT o.Oyuncu_ID, o.Ad, o.Soyad,
+               TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) AS Yas,
+               o.Uyruk, o.Mevki, t.Ad AS Takim_Ad,
+               COALESCE((SELECT tr.Bonservis_Bedeli FROM Transferler tr
+                         WHERE tr.Oyuncu_ID = o.Oyuncu_ID
+                         ORDER BY tr.Tarih DESC, tr.Transfer_ID DESC LIMIT 1), 0.00) AS Son_Bonservis
+        FROM Oyuncular o LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID WHERE 1=1"""
+        params = []
+        mevki = request.args.get('mevki')
+        if mevki and mevki != 'Tumu':
+            query += " AND o.Mevki=%s"; params.append(mevki)
+        uyruk = request.args.get('uyruk')
+        if uyruk:
+            query += " AND o.Uyruk LIKE %s"; params.append(f"%{uyruk}%")
+        max_yas = request.args.get('max_yas')
+        if max_yas:
+            query += " AND TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) <= %s"; params.append(int(max_yas))
+        max_bonservis = request.args.get('max_bonservis')
+        if max_bonservis:
+            query += """ AND COALESCE((SELECT tr.Bonservis_Bedeli FROM Transferler tr
+                         WHERE tr.Oyuncu_ID=o.Oyuncu_ID ORDER BY tr.Tarih DESC LIMIT 1),0) <= %s"""
+            params.append(float(max_bonservis))
+        query += " ORDER BY Son_Bonservis DESC, o.Soyad ASC"
+        cursor.execute(query, tuple(params))
+        return jsonify({"success": True, "players": cursor.fetchall()})
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
+@app.route('/api/scouting/managers')
+def scouting_managers():
+    if not db_connected:
+        return jsonify({"success": False, "error": "DB bağlantısı yok."}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+        SELECT td.Direktor_ID, td.Ad, td.Soyad, t.Ad AS Takim_Ad, t.Takim_ID,
+               COUNT(m.Mac_ID) AS Toplam_Mac,
+               SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID=t.Takim_ID AND m.Ev_Sahibi_Skor>m.Deplasman_Skor)
+                          OR (m.Deplasman_Takim_ID=t.Takim_ID AND m.Deplasman_Skor>m.Ev_Sahibi_Skor)
+                    THEN 1 ELSE 0 END) AS Galibiyetler,
+               ROUND((SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID=t.Takim_ID AND m.Ev_Sahibi_Skor>m.Deplasman_Skor)
+                                 OR (m.Deplasman_Takim_ID=t.Takim_ID AND m.Deplasman_Skor>m.Ev_Sahibi_Skor)
+                           THEN 1 ELSE 0 END) / NULLIF(COUNT(m.Mac_ID),0))*100, 1) AS Galibiyet_Yuzdesi
+        FROM Teknik_Direktorler td
+        JOIN Takimlar t ON td.Takim_ID=t.Takim_ID
+        LEFT JOIN Maclar m ON (m.Ev_Sahibi_Takim_ID=t.Takim_ID OR m.Deplasman_Takim_ID=t.Takim_ID)
+        AND m.Ev_Sahibi_Skor IS NOT NULL
+        GROUP BY td.Direktor_ID, td.Ad, td.Soyad, t.Ad, t.Takim_ID
+        HAVING Galibiyet_Yuzdesi >= %s OR %s = 0
+        ORDER BY Galibiyet_Yuzdesi DESC""",
+        (float(request.args.get('min_win_rate', 0)), float(request.args.get('min_win_rate', 0))))
+        return jsonify({"success": True, "managers": cursor.fetchall()})
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
+@app.route('/api/scouting/player-detail/<int:player_id>')
+def player_detail(player_id):
+    if not db_connected:
+        return jsonify({"success": False, "error": "DB bağlantısı yok."}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+        SELECT o.Oyuncu_ID, o.Ad, o.Soyad, o.Dogum_Tarihi,
+               TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) AS Yas,
+               o.Uyruk, o.Mevki, t.Ad AS Takim_Ad
+        FROM Oyuncular o LEFT JOIN Takimlar t ON o.Takim_ID=t.Takim_ID
+        WHERE o.Oyuncu_ID=%s""", (player_id,))
+        player = cursor.fetchone()
+        if not player:
+            return jsonify({"success": False, "error": "Oyuncu bulunamadı."}), 404
+        cursor.execute("""
+        SELECT Olay_Tipi, COUNT(*) AS Sayi FROM Mac_Olaylari
+        WHERE Oyuncu_ID=%s GROUP BY Olay_Tipi""", (player_id,))
+        stats = {r['Olay_Tipi']: r['Sayi'] for r in cursor.fetchall()}
+        cursor.execute("""
+        SELECT tr.Tarih, t_e.Ad AS Eski_Takim, t_y.Ad AS Yeni_Takim,
+               tr.Bonservis_Bedeli, tr.Para_Birimi
+        FROM Transferler tr
+        LEFT JOIN Takimlar t_e ON tr.Eski_Takim_ID=t_e.Takim_ID
+        LEFT JOIN Takimlar t_y ON tr.Yeni_Takim_ID=t_y.Takim_ID
+        WHERE tr.Oyuncu_ID=%s ORDER BY tr.Tarih DESC""", (player_id,))
+        transfers = cursor.fetchall()
+        return jsonify({"success": True, "player": player, "stats": stats, "transfers": transfers})
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
+@app.route('/api/scouting/team-detail/<int:team_id>')
+def team_detail(team_id):
+    if not db_connected:
+        return jsonify({"success": False, "error": "DB bağlantısı yok."}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+        SELECT t.Takim_ID, t.Ad, t.Kurulus_Yili, t.Sehir,
+               s.Ad AS Stadyum_Ad, s.Kapasite,
+               td.Ad AS Hoca_Ad, td.Soyad AS Hoca_Soyad
+        FROM Takimlar t
+        LEFT JOIN Stadyumlar s ON t.Stadyum_ID=s.Stadyum_ID
+        LEFT JOIN Teknik_Direktorler td ON td.Takim_ID=t.Takim_ID
+        WHERE t.Takim_ID=%s""", (team_id,))
+        team = cursor.fetchone()
+        if not team:
+            return jsonify({"success": False, "error": "Takım bulunamadı."}), 404
+        cursor.execute("""
+        SELECT o.Oyuncu_ID, o.Ad, o.Soyad, o.Mevki, o.Uyruk,
+               TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) AS Yas
+        FROM Oyuncular o WHERE o.Takim_ID=%s ORDER BY o.Mevki, o.Soyad""", (team_id,))
+        squad = cursor.fetchall()
+        return jsonify({"success": True, "team": team, "squad": squad})
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
 if __name__ == '__main__':
-    # Start flask app on port 5000
     app.run(host='0.0.0.0', port=5000, debug=True)
 
