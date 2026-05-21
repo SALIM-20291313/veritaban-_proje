@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antigravity - Gemini 3.5 Futbol Ligi Yönetim Paneli</title>
+    <title>ScoutX Pro - Yeni Nesil Futbol Analitiği</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -47,6 +47,24 @@
         .ai-pulsar {
             animation: pulse-glow 3s infinite ease-in-out;
         }
+
+        /* Marquee / Ticker CSS */
+        @keyframes ticker-slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-wrapper {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+        }
+        .ticker-track {
+            display: inline-block;
+            animation: ticker-slide 30s linear infinite;
+        }
+        .ticker-track:hover {
+            animation-play-state: paused;
+        }
     </style>
 </head>
 <body class="min-h-screen text-slate-100 pb-12">
@@ -57,10 +75,23 @@
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center space-x-3">
                     <div class="bg-indigo-600 p-2 rounded-lg text-white font-extrabold flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                        <span class="text-lg">AG</span>
+                        <span class="text-lg">SX</span>
                     </div>
-                    <span class="text-xl font-bold title-font tracking-wider bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent">Antigravity Core</span>
+                    <span class="text-xl font-bold title-font tracking-wider bg-gradient-to-r from-white via-slate-200 to-indigo-400 bg-clip-text text-transparent hidden sm:block">ScoutX Pro</span>
                 </div>
+                
+                <div class="flex-1 max-w-xl mx-4 lg:mx-8 relative z-[60]">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="global-search" oninput="handleGlobalSearch(event)" placeholder="Oyuncu, Teknik Direktör veya Takım ara..." class="w-full bg-slate-900/80 border border-slate-700/80 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-white placeholder-slate-500 transition-colors backdrop-blur-md">
+                    </div>
+                    <div id="search-results-dropdown" class="absolute mt-2 w-full bg-slate-900 border border-slate-700 rounded-xl shadow-2xl hidden z-50 overflow-hidden">
+                        <div class="p-2 space-y-1 max-h-96 overflow-y-auto" id="search-results-content"></div>
+                    </div>
+                </div>
+
                 <div class="flex items-center space-x-4">
                     <span id="db-status-badge" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                         <span class="h-2 w-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
@@ -82,11 +113,29 @@
         
         <!-- Welcome Hero Section -->
         <div class="mb-8 p-6 rounded-2xl glass neon-glow-indigo relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="z-10">
-                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">BLM2058 Projesi</span>
-                <h2 class="text-3xl font-extrabold title-font tracking-tight mt-3 text-white">Futbol Ligi ve İstatistik Yönetim Sistemi</h2>
-                <p class="text-slate-400 mt-2 max-w-xl text-sm leading-relaxed">
-                    İlişkisel veritabanı şeması üzerinde çalışan, Canlı API entegrasyonu, Maç Olayları simülatörü ve **Gemini 3.5 AI Analyst** desteği içeren yeni nesil spor yönetim paneli.
+            <div class="z-10 w-full md:w-7/12">
+                <!-- Ticker Banner Area -->
+                <div class="flex items-center space-x-3 mb-4">
+                    <span class="shrink-0 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-lg animate-pulse flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" /></svg>
+                        SON DAKİKA
+                    </span>
+                    <div class="ticker-wrapper bg-slate-900/60 border border-slate-700/50 rounded-lg text-xs py-1.5 px-3 text-slate-300 font-medium shadow-inner">
+                        <div class="ticker-track">
+                            <span class="mx-6">🚨 <b>Transfer İddiası:</b> Galatasaray, yeni bir forvet arayışında!</span>
+                            <span class="mx-6">💥 <b>Sakatlık:</b> Fenerbahçe'nin yıldız orta sahası 3 hafta sahalardan uzak kalacak.</span>
+                            <span class="mx-6">📰 <b>Kulüp Haberleri:</b> Beşiktaş teknik heyetinde rotasyon rüzgarları esiyor...</span>
+                            <span class="mx-6">🔥 <b>Özel Haber:</b> Trabzonspor genç yetenekle 5 yıllık sözleşme imzaladı!</span>
+                            <span class="mx-6">💎 <b>Scout Raporu:</b> 18 yaşındaki yeni yetenek için Avrupa devleri sıraya girdi.</span>
+                            <span class="mx-6">🚨 <b>Transfer İddiası:</b> Galatasaray, yeni bir forvet arayışında!</span>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="text-4xl font-black title-font tracking-tight text-white flex items-center space-x-3 drop-shadow-xl">
+                    <span>ScoutX<span class="text-indigo-400">Pro</span></span>
+                </h2>
+                <p class="text-slate-400 mt-2 text-sm leading-relaxed max-w-lg font-medium">
+                    Gelişmiş AI destekli veri analitiği, anlık istatistikler ve profesyonel medya raporlaması sunan yeni nesil spor yönetim ve keşif ekosistemi.
                 </p>
             </div>
             
@@ -115,6 +164,12 @@
         <div class="flex border-b border-slate-800 mb-8 space-x-6 overflow-x-auto pb-px">
             <button onclick="switchTab('tab-standings')" id="btn-tab-standings" class="tab-btn pb-4 text-sm font-semibold border-b-2 border-indigo-500 text-indigo-400 transition outline-none">
                 🏆 Puan Durumu ve Gol Krallığı
+            </button>
+            <button onclick="switchTab('tab-leaderboard')" id="btn-tab-leaderboard" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
+                ⭐ Liderlik
+            </button>
+            <button onclick="switchTab('tab-matches')" id="btn-tab-matches" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
+                📅 Fikstür ve Canlı Skor
             </button>
             <button onclick="switchTab('tab-scouting')" id="btn-tab-scouting" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none flex items-center space-x-1.5">
                 <span>🔍 Scout Keşif Paneli</span>
@@ -147,6 +202,7 @@
                         <table class="w-full text-left text-sm border-collapse">
                             <thead>
                                 <tr class="border-b border-slate-800 text-slate-400">
+                                    <th class="py-3 px-2 text-center w-8"></th>
                                     <th class="py-3 px-2 font-semibold">Sıra</th>
                                     <th class="py-3 px-4 font-semibold">Takım</th>
                                     <th class="py-3 px-2 font-semibold text-center">OM</th>
@@ -157,6 +213,7 @@
                                     <th class="py-3 px-2 font-semibold text-center">YG</th>
                                     <th class="py-3 px-2 font-semibold text-center">AV</th>
                                     <th class="py-3 px-4 font-semibold text-center text-indigo-400">Puan</th>
+                                    <th class="py-3 px-4 font-semibold text-center">Son 5 Maç (Form)</th>
                                 </tr>
                             </thead>
                             <tbody id="standings-table-body" class="divide-y divide-slate-800/50">
@@ -178,8 +235,8 @@
                                 <thead>
                                     <tr class="border-b border-slate-800 text-slate-400 pb-2">
                                         <th class="py-2 font-semibold">Oyuncu</th>
-                                        <th class="py-2 font-semibold">Takım</th>
-                                        <th class="py-2 font-semibold text-right text-indigo-400">Gol</th>
+                                        <th class="py-2 font-semibold text-center text-rose-400">Bu Hafta</th>
+                                        <th class="py-2 font-semibold text-right text-indigo-400">Toplam</th>
                                     </tr>
                                 </thead>
                                 <tbody id="scorers-table-body" class="divide-y divide-slate-800/40">
@@ -212,12 +269,107 @@
                 </div>
 
             </div>
+        </div>
 
-            <!-- Recent Matches -->
-            <div class="rounded-2xl glass p-6">
-                <h3 class="text-lg font-bold title-font mb-4 text-white">📅 Fikstür ve Son Karşılaşmalar</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="recent-matches-grid">
+        <!-- TAB: Matches / Fikstür -->
+        <div id="tab-matches" class="tab-content hidden space-y-8">
+            <div class="rounded-2xl glass p-6 border border-rose-500/10">
+                <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                    <h3 class="text-xl font-bold title-font text-white">📅 Fikstür ve Canlı Skorlar</h3>
+                    <button onclick="simulateMatch()" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-xs shadow-lg transition">Maç Simüle Et</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recent-matches-grid">
                     <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Maç Arşivi Motoru -->
+            <div class="rounded-2xl glass p-6 border border-indigo-500/10 mt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 border-b border-slate-800 pb-4">
+                    <h3 class="text-xl font-bold title-font text-white flex items-center space-x-2">
+                        <span>🕰️ Geçmiş Maç Arşivi</span>
+                    </h3>
+                    <form onsubmit="searchMatchArchive(event)" class="flex flex-wrap items-center gap-2">
+                        <input type="date" id="archive-start" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-3 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm">
+                        <span class="text-slate-500 font-bold">-</span>
+                        <input type="date" id="archive-end" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-3 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-semibold text-xs shadow-lg transition">Sorgula</button>
+                    </form>
+                </div>
+                <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-900/20">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/50 border-b border-slate-800 text-slate-500 text-xs uppercase tracking-wider">
+                                <th class="py-3 px-4">Tarih</th>
+                                <th class="py-3 px-4 text-right">Ev Sahibi</th>
+                                <th class="py-3 px-4 text-center">Skor</th>
+                                <th class="py-3 px-4">Deplasman</th>
+                                <th class="py-3 px-4 text-center">Stadyum</th>
+                                <th class="py-3 px-4 text-center">Detay</th>
+                            </tr>
+                        </thead>
+                        <tbody id="match-archive-tbody" class="divide-y divide-slate-800/50">
+                            <!-- Loaded dynamically -->
+                            <tr><td colspan="6" class="py-8 text-center text-slate-500 text-xs">Arşiv verilerini yüklemek için tarih seçin veya doğrudan sorgulayın.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Leaderboard -->
+        <div id="tab-leaderboard" class="tab-content hidden space-y-8">
+            <div class="rounded-2xl glass p-6 border border-emerald-500/10 space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-800 pb-4">
+                    <h3 class="text-xl font-bold title-font text-white flex items-center space-x-2">
+                        <span>⭐ Mevkisel Liderlik Tablosu</span>
+                    </h3>
+                    <div class="flex flex-wrap gap-3">
+                        <select id="lb-mevki" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm">
+                            <option value="FV">FV - Forvet</option>
+                            <option value="OS">OS - Orta Saha</option>
+                            <option value="DF">DF - Defans</option>
+                            <option value="KL">KL - Kaleci</option>
+                        </select>
+                        <select id="lb-kriter" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-emerald-500 shadow-sm">
+                            <option value="Gol">En Çok Gol</option>
+                            <option value="Asist">En Çok Asist</option>
+                            <option value="Temiz_Saha">Temiz Saha (Clean Sheet)</option>
+                        </select>
+                        <select id="lb-zaman" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-rose-500 shadow-sm">
+                            <option value="">Tüm Zamanlar</option>
+                            <option value="7">Son 1 Hafta (7 Gün)</option>
+                            <option value="15">Son 15 Gün</option>
+                            <option value="30">Son 1 Ay (30 Gün)</option>
+                        </select>
+                        <select id="lb-takim" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm">
+                            <option value="Tumu">Tüm Takımlar</option>
+                        </select>
+                        <input type="text" id="lb-uyruk" onchange="loadLeaderboard()" placeholder="Uyruk (Örn: Türkiye)" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm w-36">
+                        <div class="flex space-x-1 items-center bg-slate-900 border border-slate-800 rounded-xl px-2">
+                            <input type="number" id="lb-min-yas" onchange="loadLeaderboard()" placeholder="Min Yaş" class="bg-transparent text-xs text-slate-300 w-16 px-2 py-2.5 focus:outline-none focus:text-white text-center">
+                            <span class="text-slate-600">-</span>
+                            <input type="number" id="lb-max-yas" onchange="loadLeaderboard()" placeholder="Maks" class="bg-transparent text-xs text-slate-300 w-16 px-2 py-2.5 focus:outline-none focus:text-white text-center">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-500 text-xs uppercase tracking-wider">
+                                <th class="py-3 px-4 w-12 text-center">Sıra</th>
+                                <th class="py-3 px-4">Oyuncu</th>
+                                <th class="py-3 px-4">Takım</th>
+                                <th class="py-3 px-4 text-center">Uyruk</th>
+                                <th class="py-3 px-4 text-center">Mevki</th>
+                                <th class="py-3 px-4 text-right text-indigo-400" id="lb-score-col">Skor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody" class="divide-y divide-slate-800/50">
+                            <!-- JS ile dolacak -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -246,34 +398,60 @@
                 </select>
               </div>
               <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Yaş Aralığı (Min - Maks)</label>
+                <div class="flex space-x-2">
+                  <input type="number" id="sp-min-yas" min="15" max="45" placeholder="15" class="w-1/2 bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+                  <input type="number" id="sp-max-yas" min="15" max="45" value="35" class="w-1/2 bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+                </div>
+              </div>
+              <div>
                 <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Uyruk</label>
                 <input type="text" id="sp-uyruk" placeholder="Örn: Brezilya" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
               </div>
               <div>
-                <div class="flex justify-between text-xxs font-semibold uppercase text-slate-400 mb-1">
-                  <span>Maks. Yaş</span><span id="sp-yas-lbl" class="text-indigo-400">35</span>
-                </div>
-                <input type="range" id="sp-yas" min="15" max="45" value="35" oninput="document.getElementById('sp-yas-lbl').textContent=this.value" class="w-full accent-indigo-500 mt-2">
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Takım</label>
+                <select id="sp-takim" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+                  <option value="Tumu">Tümü</option>
+                </select>
               </div>
               <div>
-                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Maks. Bütçe (EUR)</label>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Maks. Bonservis</label>
                 <input type="number" id="sp-bonservis" placeholder="Örn: 10000000" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
               </div>
-              <div class="md:col-span-4 flex justify-end">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold text-xs shadow-lg transition flex items-center space-x-1.5">
+              <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Min Gol</label>
+                <input type="number" id="sp-gol" min="0" placeholder="0" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Min Asist</label>
+                <input type="number" id="sp-asist" min="0" placeholder="0" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Maks. Kart Oranı</label>
+                <input type="number" step="0.01" id="sp-kart-orani" min="0" placeholder="0.5" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+              </div>
+              <div class="flex justify-end items-end h-full">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-semibold text-xs shadow-lg transition flex items-center justify-center space-x-1.5">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                  <span>Oyuncuları Ara</span>
+                  <span>Ara</span>
                 </button>
               </div>
             </form>
-            <div class="overflow-x-auto border-t border-slate-800 pt-4">
-              <table class="w-full text-xs text-left border-collapse">
-                <thead><tr class="border-b border-slate-800 text-slate-500 text-xxs uppercase">
-                  <th class="py-2 px-2">Oyuncu</th><th class="py-2 px-2 text-center">Yaş</th>
-                  <th class="py-2 px-2 text-center">Mevki</th><th class="py-2 px-2">Uyruk</th>
-                  <th class="py-2 px-2">Takım</th><th class="py-2 px-2 text-right text-indigo-400">Piyasa Değeri</th>
+            <div class="overflow-x-auto border-t border-slate-800 pt-4 pb-16">
+              <table id="scout-players-table" class="w-full text-xs text-left border-collapse">
+                <thead><tr class="border-b border-slate-800 text-slate-500 text-xxs uppercase select-none">
+                  <th class="py-2 px-2 text-center w-8"></th>
+                  <th class="py-2 px-2 cursor-pointer hover:text-white transition-colors" data-sort="Ad" onclick="sortScoutPlayers('Ad')">Oyuncu</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Yas" onclick="sortScoutPlayers('Yas')">Yaş</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Mevki" onclick="sortScoutPlayers('Mevki')">Mevki</th>
+                  <th class="py-2 px-2 cursor-pointer hover:text-white transition-colors" data-sort="Uyruk" onclick="sortScoutPlayers('Uyruk')">Uyruk</th>
+                  <th class="py-2 px-2 cursor-pointer hover:text-white transition-colors" data-sort="Takim_Ad" onclick="sortScoutPlayers('Takim_Ad')">Takim</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Toplam_Gol" onclick="sortScoutPlayers('Toplam_Gol')">Gol</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Toplam_Asist" onclick="sortScoutPlayers('Toplam_Asist')">Asist</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Toplam_Kart" onclick="sortScoutPlayers('Toplam_Kart')">Kart</th>
+                  <th class="py-2 px-2 text-right cursor-pointer hover:text-white transition-colors" data-sort="Son_Bonservis" onclick="sortScoutPlayers('Son_Bonservis')">Piyasa Değeri</th>
                 </tr></thead>
-                <tbody id="scout-players-tbody"><tr><td colspan="6" class="py-8 text-center text-slate-500">Filtre uygulayarak arama yapın.</td></tr></tbody>
+                <tbody id="scout-players-tbody"><tr><td colspan="9" class="py-8 text-center text-slate-500">Filtre uygulayarak arama yapın.</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -281,15 +459,36 @@
           <!-- Teknik Direktör Formu -->
           <div id="scout-panel-direktor" class="hidden rounded-2xl glass p-6 border border-indigo-500/10 space-y-6">
             <h3 class="text-lg font-bold title-font text-white">👔 Teknik Direktör Keşfi</h3>
-            <form onsubmit="searchScoutManagers(event)" class="flex flex-wrap gap-4 items-end">
+            <form onsubmit="searchScoutManagers(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Min. Toplam Maç</label>
+                <input type="number" id="sm-mac" min="0" value="0" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+              </div>
               <div>
                 <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Min. Galibiyet Oranı (%)</label>
-                <input type="number" id="sm-winrate" min="0" max="100" value="0" class="bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none w-40">
+                <input type="number" id="sm-winrate" min="0" max="100" value="0" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
               </div>
-              <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold text-xs shadow-lg transition">Direktörleri Ara</button>
+              <div class="flex justify-end items-end h-full">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold text-xs shadow-lg transition flex items-center justify-center space-x-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                  <span>Ara</span>
+                </button>
+              </div>
             </form>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="scout-managers-grid">
-              <div class="col-span-full text-center py-8 text-slate-500">Arama yapın.</div>
+            <div class="overflow-x-auto border-t border-slate-800 pt-4">
+              <table id="scout-managers-table" class="w-full text-xs text-left border-collapse">
+                <thead><tr class="border-b border-slate-800 text-slate-500 text-xxs uppercase select-none">
+                  <th class="py-2 px-2 text-center w-8"></th>
+                  <th class="py-2 px-2 cursor-pointer hover:text-white transition-colors" data-sort="Ad" onclick="sortScoutManagers('Ad')">Direktör</th>
+                  <th class="py-2 px-2 cursor-pointer hover:text-white transition-colors" data-sort="Takim_Ad" onclick="sortScoutManagers('Takim_Ad')">Takım</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Toplam_Mac" onclick="sortScoutManagers('Toplam_Mac')">Toplam Maç</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Galibiyetler" onclick="sortScoutManagers('Galibiyetler')">Galibiyet</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Beraberlikler" onclick="sortScoutManagers('Beraberlikler')">Beraberlik</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Maglubiyetler" onclick="sortScoutManagers('Maglubiyetler')">Mağlubiyet</th>
+                  <th class="py-2 px-2 text-right cursor-pointer hover:text-white transition-colors" data-sort="Galibiyet_Yuzdesi" onclick="sortScoutManagers('Galibiyet_Yuzdesi')">Galibiyet Oranı</th>
+                </tr></thead>
+                <tbody id="scout-managers-tbody"><tr><td colspan="7" class="py-8 text-center text-slate-500">Filtre uygulayarak arama yapın.</td></tr></tbody>
+              </table>
             </div>
           </div>
 
@@ -475,6 +674,8 @@
             const activeBtn = document.getElementById('btn-' + tabId);
             activeBtn.classList.remove('border-transparent', 'text-slate-400');
             activeBtn.classList.add('border-indigo-500', 'text-indigo-400');
+            
+            if (tabId === 'tab-leaderboard') loadLeaderboard();
         }
 
         // Fetch League Data
@@ -485,7 +686,7 @@
                 
                 if (data.success) {
                     renderStandings(data.standings);
-                    renderScorers(data.scorers);
+                    renderScorers(data.weekly_scorers);
                     renderAssists(data.assists);
                     renderMatches(data.matches);
                     renderManagers(data.managers);
@@ -515,6 +716,25 @@
                 return;
             }
 
+            const teamSelect = document.getElementById('sp-takim');
+            const lbTeamSelect = document.getElementById('lb-takim');
+            
+            if (teamSelect && teamSelect.options.length <= 1) {
+                standings.forEach(team => {
+                    const opt = document.createElement('option');
+                    opt.value = team.Takim_ID;
+                    opt.textContent = team.Takim_Ad;
+                    teamSelect.appendChild(opt);
+                    
+                    if(lbTeamSelect) {
+                        const opt2 = document.createElement('option');
+                        opt2.value = team.Takim_ID;
+                        opt2.textContent = team.Takim_Ad;
+                        lbTeamSelect.appendChild(opt2);
+                    }
+                });
+            }
+
             standings.forEach((team, idx) => {
                 const isLider = idx === 0;
                 const row = document.createElement('tr');
@@ -524,17 +744,38 @@
                     ? 'text-indigo-400 font-extrabold bg-indigo-500/10 rounded px-1.5 py-0.5' 
                     : (idx < 3 ? 'text-white font-bold' : 'text-slate-500');
 
+                const isChecked = window.compareIds && window.compareType === 'team' && window.compareIds.includes(team.Takim_ID) ? 'checked' : '';
+
+                let formHtml = `<div class="flex items-center justify-center space-x-1.5">`;
+                if(team.form_durumu && team.form_durumu.length > 0) {
+                    team.form_durumu.forEach(f => {
+                        let fColor = 'bg-slate-700 text-slate-400 border-slate-600';
+                        if(f === 'G') fColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.15)]';
+                        else if(f === 'M') fColor = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+                        else if(f === 'B') fColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                        
+                        formHtml += `<span class="w-6 h-6 flex items-center justify-center rounded-md text-[10px] font-bold border ${fColor} cursor-default transition-all hover:scale-110" title="${f === 'G' ? 'Galibiyet' : (f === 'M' ? 'Mağlubiyet' : 'Beraberlik')}">${f}</span>`;
+                    });
+                } else {
+                    formHtml += `<span class="text-xs text-slate-500">-</span>`;
+                }
+                formHtml += `</div>`;
+
                 row.innerHTML = `
+                    <td class="py-3.5 px-2 text-center" onclick="event.stopPropagation()">
+                        <input type="checkbox" ${isChecked} onchange="toggleCompare(event, ${team.Takim_ID}, 'team')" class="accent-indigo-500 w-4 h-4 cursor-pointer">
+                    </td>
                     <td class="py-3.5 px-2"><span class="${rankClass}">${idx + 1}</span></td>
-                    <td class="py-3.5 px-4 font-semibold text-slate-200">${team.Takim_Ad}</td>
+                    <td class="py-3.5 px-4 font-semibold text-slate-200 cursor-pointer hover:text-indigo-400 hover:underline" onclick="openTeamModal(${team.Takim_ID})">${team.Takim_Ad}</td>
                     <td class="py-3.5 px-2 text-center text-slate-300">${team.Oynanan_Mac}</td>
                     <td class="py-3.5 px-2 text-center text-emerald-400">${team.Galibiyet}</td>
                     <td class="py-3.5 px-2 text-center text-slate-400">${team.Beraberlik}</td>
                     <td class="py-3.5 px-2 text-center text-rose-400">${team.Maglubiyet}</td>
                     <td class="py-3.5 px-2 text-center text-slate-400">${team.Atilan_Gol}</td>
                     <td class="py-3.5 px-2 text-center text-slate-400">${team.Yenilen_Gol}</td>
-                    <td class="py-3.5 px-2 text-center text-slate-300">${team.Atilan_Gol - team.Yenilen_Gol}</td>
-                    <td class="py-3.5 px-4 text-center font-bold text-slate-100">${team.Puan}</td>
+                    <td class="py-3.5 px-2 text-center text-slate-300">${team.Averaj}</td>
+                    <td class="py-3.5 px-4 text-center font-bold text-slate-100 text-lg">${team.Puan}</td>
+                    <td class="py-3.5 px-4 text-center">${formHtml}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -553,10 +794,18 @@
             scorers.forEach((s) => {
                 const row = document.createElement('tr');
                 row.className = "hover:bg-slate-900/30 transition-colors";
+                
+                let haftalikBadge = s.Haftalik_Gol > 0 
+                    ? `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded text-[10px] font-bold shadow-[0_0_10px_rgba(244,63,94,0.2)] animate-pulse">+${s.Haftalik_Gol}</span>` 
+                    : `<span class="text-slate-600">-</span>`;
+                    
                 row.innerHTML = `
-                    <td class="py-2.5 font-medium text-slate-200">${s.Ad} ${s.Soyad}</td>
-                    <td class="py-2.5 text-slate-400">${s.Takim_Ad}</td>
-                    <td class="py-2.5 text-right font-bold text-indigo-400">${s.Gol_Sayisi}</td>
+                    <td class="py-2.5">
+                        <div class="font-medium text-slate-200 cursor-pointer hover:text-indigo-400 hover:underline" onclick="openPlayerModal(${s.Oyuncu_ID})">${s.Ad} ${s.Soyad}</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5 cursor-pointer hover:text-indigo-300 transition" onclick="openTeamModal(${s.Takim_ID})">${s.Takim_Ad}</div>
+                    </td>
+                    <td class="py-2.5 text-center">${haftalikBadge}</td>
+                    <td class="py-2.5 text-right font-black text-indigo-400 text-lg">${s.Sezonluk_Gol}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -576,8 +825,8 @@
                 const row = document.createElement('tr');
                 row.className = "hover:bg-slate-900/30 transition-colors";
                 row.innerHTML = `
-                    <td class="py-2.5 font-medium text-slate-200">${s.Ad} ${s.Soyad}</td>
-                    <td class="py-2.5 text-slate-400">${s.Takim_Ad}</td>
+                    <td class="py-2.5 font-medium text-slate-200 cursor-pointer hover:text-emerald-400 hover:underline" onclick="openPlayerModal(${s.Oyuncu_ID})">${s.Ad} ${s.Soyad}</td>
+                    <td class="py-2.5 text-slate-400 cursor-pointer hover:text-indigo-300 hover:underline" onclick="openTeamModal(${s.Takim_ID})">${s.Takim_Ad}</td>
                     <td class="py-2.5 text-right font-bold text-emerald-400">${s.Asist_Sayisi}</td>
                 `;
                 tbody.appendChild(row);
@@ -596,21 +845,43 @@
 
             matches.forEach((m) => {
                 const card = document.createElement('div');
-                card.className = "rounded-xl bg-slate-950/60 border border-slate-900/60 p-4 hover:border-slate-800 transition flex flex-col justify-between";
                 
-                const hasScore = m.Ev_Sahibi_Skor !== null && m.Deplasman_Skor !== null;
-                const scoreText = hasScore ? `${m.Ev_Sahibi_Skor} - ${m.Deplasman_Skor}` : "vs";
+                let statusBadge = '';
+                let borderClass = 'border-slate-900/60 hover:border-slate-800';
+                let scoreClass = 'bg-slate-900 text-slate-300 border-slate-800';
+                
+                if (m.mac_durumu === 'Devam Ediyor') {
+                    borderClass = 'border-rose-500/30 hover:border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.1)]';
+                    scoreClass = 'bg-rose-500/10 text-rose-400 border-rose-500/30 shadow-inner';
+                    statusBadge = `<span class="flex items-center text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20"><span class="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping mr-1.5"></span> CANLI</span>`;
+                } else if (m.mac_durumu === 'Oynandı') {
+                    scoreClass = 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+                    statusBadge = `<span class="text-[10px] font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">MS</span>`;
+                } else {
+                    scoreClass = 'bg-slate-900 text-slate-500 border-slate-800';
+                    statusBadge = `<span class="text-[10px] font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">Başlamadı</span>`;
+                }
+                
+                card.className = `rounded-xl bg-slate-950/60 border ${borderClass} p-4 transition flex flex-col justify-between cursor-pointer`;
+                card.onclick = () => openMatchModal(m.mac_id);
+                
+                const d = new Date(m.tarih_saat);
+                const timeStr = d.toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'});
+                const dateStr = d.toLocaleDateString('tr-TR', {day: 'numeric', month: 'short'});
                 
                 card.innerHTML = `
                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-xxs text-slate-500">${new Date(m.Tarih_Saat).toLocaleDateString('tr-TR')}</span>
-                        <span class="text-xxs font-medium bg-slate-850 px-2 py-0.5 rounded border border-slate-800 text-slate-400">${m.Stadyum_Ad || 'Stad Yok'}</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-[11px] font-semibold text-slate-400">${dateStr} ${timeStr}</span>
+                            ${statusBadge}
+                        </div>
+                        <span class="text-[10px] font-medium text-slate-500 truncate max-w-[100px] cursor-pointer hover:text-indigo-400 hover:underline transition" title="${m.stadyum}" onclick="openStadiumModal(${m.stadyum_id})">${m.stadyum}</span>
                     </div>
                     
                     <div class="flex items-center justify-between my-2">
-                        <span class="text-xs font-semibold text-slate-200 truncate w-24">${m.Ev_Sahibi}</span>
-                        <span class="px-2.5 py-1 rounded bg-indigo-500/10 text-indigo-400 font-bold border border-indigo-500/10 text-center text-sm w-16 shrink-0">${scoreText}</span>
-                        <span class="text-xs font-semibold text-slate-200 truncate text-right w-24">${m.Deplasman}</span>
+                        <span class="text-xs font-semibold text-slate-200 truncate w-24">${m.ev_sahibi}</span>
+                        <span class="px-2.5 py-1 rounded font-bold border text-center text-sm w-16 shrink-0 ${scoreClass}">${m.skor_gosterim}</span>
+                        <span class="text-xs font-semibold text-slate-200 truncate text-right w-24">${m.deplasman}</span>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -662,20 +933,28 @@
 
             transfers.forEach((tr) => {
                 const item = document.createElement('div');
-                item.className = "p-3 bg-slate-950/40 rounded-xl border border-slate-900/60 flex items-center justify-between text-xs";
+                item.className = "p-3.5 bg-slate-950/40 rounded-xl border border-slate-900/60 flex items-center justify-between transition hover:bg-slate-900/60";
                 
-                const feeText = parseFloat(tr.Bonservis_Bedeli) === 0 
-                    ? '<span class="text-emerald-400 font-semibold">Bedelsiz</span>' 
-                    : `<strong class="text-slate-200">${parseFloat(tr.Bonservis_Bedeli).toLocaleString('tr-TR')}</strong> <span class="text-indigo-400 font-semibold">${tr.Para_Birimi}</span>`;
+                const isBedelsiz = tr.bonservis_raw === 0;
+                const feeClass = isBedelsiz ? 'text-emerald-400' : 'text-slate-200';
                 
                 item.innerHTML = `
-                    <div>
-                        <h4 class="font-bold text-slate-200 text-xs">${tr.Oyuncu_Ad} ${tr.Oyuncu_Soyad}</h4>
-                        <p class="text-slate-500 text-xxs mt-0.5">${tr.Eski_Takim || 'Serbest'} ➔ ${tr.Yeni_Takim}</p>
+                    <div class="flex items-center space-x-3.5">
+                        <div class="w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 flex items-center justify-center text-[10px] font-bold text-slate-300 shadow-inner">
+                            ${tr.mevki}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-200 text-sm cursor-pointer hover:text-indigo-400 hover:underline transition" onclick="openPlayerModal(${tr.oyuncu_id})">${tr.oyuncu_ad_soyad}</h4>
+                            <p class="text-slate-500 text-xs mt-1">
+                                <span class="${tr.eski_takim === 'Serbest' ? 'text-rose-400/80 font-medium' : ''}">${tr.eski_takim}</span> 
+                                <span class="mx-1.5 text-slate-600 font-black">➔</span> 
+                                <span class="text-indigo-300 font-medium cursor-pointer hover:underline" onclick="openTeamModal(${tr.yeni_takim_id})">${tr.yeni_takim}</span>
+                            </p>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <div>${feeText}</div>
-                        <div class="text-xxs text-slate-500 mt-0.5">${new Date(tr.Tarih).toLocaleDateString('tr-TR')}</div>
+                    <div class="text-right shrink-0 ml-4">
+                        <div class="font-black text-sm ${feeClass}">${tr.bonservis_format}</div>
+                        <div class="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-semibold">${new Date(tr.tarih).toLocaleDateString('tr-TR', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
                     </div>
                 `;
                 div.appendChild(item);
@@ -1009,70 +1288,286 @@
             if (event) event.preventDefault();
             const mevki = document.getElementById('sp-mevki').value;
             const uyruk = document.getElementById('sp-uyruk').value.trim();
-            const maxYas = document.getElementById('sp-yas').value;
+            
+            const maxYas = document.getElementById('sp-max-yas') ? document.getElementById('sp-max-yas').value : '';
+            const minYas = document.getElementById('sp-min-yas') ? document.getElementById('sp-min-yas').value : '';
+            
+            const takimId = document.getElementById('sp-takim') ? document.getElementById('sp-takim').value : '';
             const maxB = document.getElementById('sp-bonservis').value.trim();
-            let url = `/api/scouting/players?mevki=${mevki}&max_yas=${maxYas}`;
+            const minGol = document.getElementById('sp-gol').value.trim();
+            const minAsist = document.getElementById('sp-asist').value.trim();
+            const maxKartOrani = document.getElementById('sp-kart-orani').value.trim();
+            
+            let url = `/api/scouting/players?mevki=${mevki}`;
+            if (maxYas) url += `&max_yas=${maxYas}`;
+            if (minYas) url += `&min_yas=${minYas}`;
+            if (takimId && takimId !== 'Tumu') url += `&takim_id=${takimId}`;
             if (uyruk) url += `&uyruk=${encodeURIComponent(uyruk)}`;
             if (maxB) url += `&max_bonservis=${maxB}`;
+            if (minGol) url += `&min_gol=${minGol}`;
+            if (minAsist) url += `&min_asist=${minAsist}`;
+            if (maxKartOrani) url += `&max_kart_orani=${maxKartOrani}`;
+            
             const tbody = document.getElementById('scout-players-tbody');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-indigo-400 animate-pulse">Aranıyor...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center py-6 text-indigo-400 animate-pulse">Aranıyor...</td></tr>';
             try {
                 const res = await fetch(url);
                 const data = await res.json();
                 tbody.innerHTML = '';
                 if (!data.success || !data.players.length) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-500">Sonuç bulunamadı.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-slate-500">Sonuç bulunamadı.</td></tr>';
                     return;
                 }
-                data.players.forEach(p => {
-                    const fee = parseFloat(p.Son_Bonservis) === 0
-                        ? '<span class="text-slate-500">—</span>'
-                        : `<strong class="text-slate-200">${parseFloat(p.Son_Bonservis).toLocaleString('tr-TR')}</strong> <span class="text-indigo-400 text-xxs">EUR</span>`;
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-slate-900/30 transition-colors border-b border-slate-900/40 cursor-pointer';
-                    tr.onclick = () => openPlayerModal(p.Oyuncu_ID);
-                    tr.innerHTML = `
-                        <td class="py-3 px-2 font-semibold text-slate-200">${p.Ad} ${p.Soyad}</td>
-                        <td class="py-3 px-2 text-center text-slate-300">${p.Yas}</td>
-                        <td class="py-3 px-2 text-center">${BADGE[p.Mevki] || p.Mevki}</td>
-                        <td class="py-3 px-2 text-slate-400">${p.Uyruk}</td>
-                        <td class="py-3 px-2">
-                          <button onclick="event.stopPropagation();openTeamModal(${p.Takim_ID || 0})" class="text-indigo-300 hover:text-indigo-200 font-semibold hover:underline">${p.Takim_Ad || '—'}</button>
-                        </td>
-                        <td class="py-3 px-2 text-right">${fee}</td>`;
-                    tbody.appendChild(tr);
-                });
+                
+                window.currentScoutPlayers = data.players;
+                if (!window.scoutSortConfig) window.scoutSortConfig = { key: 'Son_Bonservis', dir: 'desc' };
+                renderScoutPlayersTable();
             } catch(err) { showToast('Hata', err.message, 'error'); }
+        }
+
+        function sortScoutPlayers(key) {
+            if (!window.currentScoutPlayers) return;
+            if (window.scoutSortConfig && window.scoutSortConfig.key === key) {
+                window.scoutSortConfig.dir = window.scoutSortConfig.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                window.scoutSortConfig = { key: key, dir: 'desc' };
+                if (['Ad', 'Takim_Ad', 'Mevki', 'Uyruk', 'Yas'].includes(key)) {
+                    window.scoutSortConfig.dir = 'asc';
+                }
+            }
+            renderScoutPlayersTable();
+        }
+
+        async function loadLeaderboard() {
+            const mevki = document.getElementById('lb-mevki').value;
+            const kriter = document.getElementById('lb-kriter').value;
+            const zaman = document.getElementById('lb-zaman').value;
+            const takim = document.getElementById('lb-takim').value;
+            const uyruk = document.getElementById('lb-uyruk').value.trim();
+            const minYas = document.getElementById('lb-min-yas').value;
+            const maxYas = document.getElementById('lb-max-yas').value;
+            
+            const tbody = document.getElementById('leaderboard-tbody');
+            const scoreCol = document.getElementById('lb-score-col');
+            
+            scoreCol.innerText = kriter === 'Gol' ? 'GOL' : (kriter === 'Asist' ? 'ASİST' : 'TEMİZ SAHA');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-indigo-400 animate-pulse">Liderler Yükleniyor...</td></tr>';
+            
+            let url = `/api/scouting/leaderboard?mevki=${mevki}&kriter=${kriter}`;
+            if(zaman) url += `&zaman=${zaman}`;
+            if(takim && takim !== 'Tumu') url += `&takim_id=${takim}`;
+            if(uyruk) url += `&uyruk=${encodeURIComponent(uyruk)}`;
+            if(minYas) url += `&min_yas=${minYas}`;
+            if(maxYas) url += `&max_yas=${maxYas}`;
+            
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (!data.success || !data.leaderboard.length) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-500">Bu kriterlere uygun oyuncu bulunamadı.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = data.leaderboard.map(p => {
+                    const isTop3 = p.rank <= 3;
+                    const rankClass = isTop3 ? 'text-xl font-black text-transparent bg-clip-text bg-gradient-to-br from-amber-200 to-yellow-500 drop-shadow-md' : 'text-slate-500 font-bold';
+                    const scoreVal = kriter === 'Gol' ? p.gol : (kriter === 'Asist' ? p.asist : p.temiz_saha);
+                    const scoreColor = isTop3 ? 'text-amber-400 font-black text-lg' : 'text-indigo-400 font-bold';
+                    
+                    return `
+                    <tr class="hover:bg-slate-900/50 transition cursor-pointer" onclick="openPlayerModal(${p.oyuncu_id})">
+                        <td class="py-3 px-4 text-center ${rankClass}">${p.rank}</td>
+                        <td class="py-3 px-4 text-white font-bold">${p.ad} ${p.soyad}</td>
+                        <td class="py-3 px-4 text-slate-300 text-xs">${p.takim}</td>
+                        <td class="py-3 px-4 text-center text-slate-400 text-xs">${p.uyruk}</td>
+                        <td class="py-3 px-4 text-center"><span class="inline-flex px-2 py-0.5 rounded border border-indigo-400/50 text-indigo-300 bg-indigo-500/10 text-xs font-bold uppercase tracking-widest">${p.mevki}</span></td>
+                        <td class="py-3 px-4 text-right ${scoreColor}">${scoreVal}</td>
+                    </tr>
+                    `;
+                }).join('');
+            } catch(e) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-rose-500">Veri çekilemedi.</td></tr>';
+            }
+        }
+
+        function renderScoutPlayersTable() {
+            const tbody = document.getElementById('scout-players-tbody');
+            tbody.innerHTML = '';
+            let players = window.currentScoutPlayers || [];
+            
+            if (players.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-slate-500">Sonuç bulunamadı.</td></tr>';
+                return;
+            }
+
+            const { key, dir } = window.scoutSortConfig || { key: 'Son_Bonservis', dir: 'desc' };
+            const m = dir === 'asc' ? 1 : -1;
+
+            players.sort((a, b) => {
+                let va = a[key], vb = b[key];
+                if (key === 'Ad') {
+                    va = a.Ad + ' ' + a.Soyad;
+                    vb = b.Ad + ' ' + b.Soyad;
+                } else if (key === 'Toplam_Kart') {
+                    va = (a.Toplam_Sari_Kart || 0) + (a.Toplam_Kirmizi_Kart || 0);
+                    vb = (b.Toplam_Sari_Kart || 0) + (b.Toplam_Kirmizi_Kart || 0);
+                }
+                
+                if (typeof va === 'string') return va.localeCompare(vb) * m;
+                return ((va || 0) - (vb || 0)) * m;
+            });
+
+            // Update headers
+            document.querySelectorAll('#scout-players-table th').forEach(th => {
+                let text = th.innerText.replace(/ [▲▼]/, '');
+                if (th.getAttribute('data-sort') === key) {
+                    text += dir === 'asc' ? ' ▲' : ' ▼';
+                    th.classList.add('text-indigo-300');
+                    th.classList.remove('text-slate-500');
+                } else {
+                    th.classList.remove('text-indigo-300');
+                    th.classList.add('text-slate-500');
+                }
+                th.innerText = text;
+            });
+
+            players.forEach(p => {
+                const fee = parseFloat(p.Son_Bonservis) === 0
+                    ? '<span class="text-slate-500">—</span>'
+                    : `<strong class="text-slate-200">${parseFloat(p.Son_Bonservis).toLocaleString('tr-TR')}</strong> <span class="text-indigo-400 text-xxs">EUR</span>`;
+                
+                let cardsHtml = '';
+                if (p.Toplam_Sari_Kart > 0) cardsHtml += `<span class="inline-block w-2 h-3 bg-yellow-400 rounded-[2px] mx-[1px]" title="${p.Toplam_Sari_Kart} Sarı"></span>`.repeat(Math.min(3, p.Toplam_Sari_Kart)) + (p.Toplam_Sari_Kart > 3 ? '+' : '');
+                if (p.Toplam_Kirmizi_Kart > 0) cardsHtml += `<span class="inline-block w-2 h-3 bg-red-500 rounded-[2px] mx-[1px]" title="${p.Toplam_Kirmizi_Kart} Kırmızı"></span>`.repeat(Math.min(2, p.Toplam_Kirmizi_Kart));
+                if (!cardsHtml) cardsHtml = '<span class="text-slate-600">—</span>';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-900/30 transition-colors border-b border-slate-900/40 cursor-pointer';
+                tr.onclick = () => openPlayerModal(p.Oyuncu_ID);
+                
+                const isChecked = window.compareIds && window.compareType === 'player' && window.compareIds.includes(p.Oyuncu_ID) ? 'checked' : '';
+
+                tr.innerHTML = `
+                    <td class="py-3 px-2 text-center" onclick="event.stopPropagation()">
+                        <input type="checkbox" ${isChecked} onchange="toggleCompare(event, ${p.Oyuncu_ID}, 'player')" class="accent-indigo-500 w-4 h-4 cursor-pointer">
+                    </td>
+                    <td class="py-3 px-2 font-semibold text-slate-200">${p.Ad} ${p.Soyad}</td>
+                    <td class="py-3 px-2 text-center text-slate-300">${p.Yas}</td>
+                    <td class="py-3 px-2 text-center">${BADGE[p.Mevki] || p.Mevki}</td>
+                    <td class="py-3 px-2 text-slate-400">${p.Uyruk}</td>
+                    <td class="py-3 px-2">
+                      <button onclick="event.stopPropagation();openTeamModal(${p.Takim_ID || 0})" class="text-indigo-300 hover:text-indigo-200 font-semibold hover:underline">${p.Takim_Ad || '—'}</button>
+                    </td>
+                    <td class="py-3 px-2 text-center font-bold ${p.Toplam_Gol > 0 ? 'text-indigo-400' : 'text-slate-600'}">${p.Toplam_Gol}</td>
+                    <td class="py-3 px-2 text-center font-bold ${p.Toplam_Asist > 0 ? 'text-emerald-400' : 'text-slate-600'}">${p.Toplam_Asist}</td>
+                    <td class="py-3 px-2 text-center"><div class="flex items-center justify-center">${cardsHtml}</div></td>
+                    <td class="py-3 px-2 text-right">${fee}</td>`;
+                tbody.appendChild(tr);
+            });
         }
 
         async function searchScoutManagers(event) {
             if (event) event.preventDefault();
             const wr = document.getElementById('sm-winrate').value || 0;
-            const grid = document.getElementById('scout-managers-grid');
-            grid.innerHTML = '<div class="col-span-full text-center py-6 text-indigo-400 animate-pulse">Aranıyor...</div>';
+            const mc = document.getElementById('sm-mac').value || 0;
+            const tbody = document.getElementById('scout-managers-tbody');
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-indigo-400 animate-pulse">Aranıyor...</td></tr>';
             try {
-                const res = await fetch(`/api/scouting/managers?min_win_rate=${wr}`);
+                const res = await fetch(`/api/scouting/managers?min_win_rate=${wr}&min_mac=${mc}`);
                 const data = await res.json();
-                grid.innerHTML = '';
+                
                 if (!data.success || !data.managers.length) {
-                    grid.innerHTML = '<div class="col-span-full text-center py-8 text-slate-500">Sonuç bulunamadı.</div>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-500">Sonuç bulunamadı.</td></tr>';
                     return;
                 }
-                data.managers.forEach(m => {
-                    const pct = m.Galibiyet_Yuzdesi !== null ? `${m.Galibiyet_Yuzdesi}%` : '0%';
-                    const card = document.createElement('div');
-                    card.className = 'rounded-xl glass p-5 border border-slate-800 hover:border-indigo-500/30 transition cursor-pointer';
-                    card.onclick = () => openTeamModal(m.Takim_ID);
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start mb-3">
-                          <span class="text-xxs font-semibold text-slate-500 uppercase">${m.Takim_Ad}</span>
-                          <span class="inline-flex px-2 py-0.5 rounded-full text-xxs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${pct}</span>
-                        </div>
-                        <h4 class="font-bold text-white text-sm">${m.Ad} ${m.Soyad}</h4>
-                        <p class="text-xs text-slate-500 mt-2">${m.Toplam_Mac} maç · ${m.Galibiyetler} galibiyet</p>`;
-                    grid.appendChild(card);
-                });
+                
+                window.currentScoutManagers = data.managers;
+                if (!window.scoutManagerSortConfig) window.scoutManagerSortConfig = { key: 'Galibiyet_Yuzdesi', dir: 'desc' };
+                renderScoutManagersTable();
             } catch(err) { showToast('Hata', err.message, 'error'); }
+        }
+
+        function sortScoutManagers(key) {
+            if (!window.currentScoutManagers) return;
+            if (window.scoutManagerSortConfig && window.scoutManagerSortConfig.key === key) {
+                window.scoutManagerSortConfig.dir = window.scoutManagerSortConfig.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                window.scoutManagerSortConfig = { key: key, dir: 'desc' };
+                if (['Ad', 'Takim_Ad'].includes(key)) {
+                    window.scoutManagerSortConfig.dir = 'asc';
+                }
+            }
+            renderScoutManagersTable();
+        }
+
+        function renderScoutManagersTable() {
+            const tbody = document.getElementById('scout-managers-tbody');
+            tbody.innerHTML = '';
+            let managers = window.currentScoutManagers || [];
+            
+            if (managers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-500">Sonuç bulunamadı.</td></tr>';
+                return;
+            }
+
+            const { key, dir } = window.scoutManagerSortConfig || { key: 'Galibiyet_Yuzdesi', dir: 'desc' };
+            const m = dir === 'asc' ? 1 : -1;
+
+            managers.sort((a, b) => {
+                let va = a[key], vb = b[key];
+                if (key === 'Ad') {
+                    va = a.Ad + ' ' + a.Soyad;
+                    vb = b.Ad + ' ' + b.Soyad;
+                }
+                if (typeof va === 'string') return va.localeCompare(vb) * m;
+                return ((va || 0) - (vb || 0)) * m;
+            });
+
+            // Update headers
+            document.querySelectorAll('#scout-managers-table th').forEach(th => {
+                let text = th.innerText.replace(/ [▲▼]/, '');
+                if (th.getAttribute('data-sort') === key) {
+                    text += dir === 'asc' ? ' ▲' : ' ▼';
+                    th.classList.add('text-indigo-300');
+                    th.classList.remove('text-slate-500');
+                } else {
+                    th.classList.remove('text-indigo-300');
+                    th.classList.add('text-slate-500');
+                }
+                th.innerText = text;
+            });
+
+            managers.forEach(mgr => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-900/30 transition-colors border-b border-slate-900/40';
+                
+                const pct = mgr.Galibiyet_Yuzdesi !== null ? `${mgr.Galibiyet_Yuzdesi}%` : '0%';
+                
+                const isChecked = window.compareIds && window.compareType === 'manager' && window.compareIds.includes(mgr.Direktor_ID) ? 'checked' : '';
+
+                tr.innerHTML = `
+                    <td class="py-3 px-2 text-center" onclick="event.stopPropagation()">
+                        <input type="checkbox" ${isChecked} onchange="toggleCompare(event, ${mgr.Direktor_ID}, 'manager')" class="accent-indigo-500 w-4 h-4 cursor-pointer">
+                    </td>
+                    <td class="py-3 px-2 font-semibold text-slate-200">${mgr.Ad} ${mgr.Soyad}</td>
+                    <td class="py-3 px-2">
+                        <button onclick="openTeamModal(${mgr.Takim_ID})" class="text-indigo-300 hover:text-indigo-200 font-semibold hover:underline">${mgr.Takim_Ad || '—'}</button>
+                    </td>
+                    <td class="py-3 px-2 text-center text-slate-300 font-bold">${mgr.Toplam_Mac}</td>
+                    <td class="py-3 px-2 text-center text-emerald-400 font-bold">${mgr.Galibiyetler || 0}</td>
+                    <td class="py-3 px-2 text-center text-amber-400 font-bold">${mgr.Beraberlikler || 0}</td>
+                    <td class="py-3 px-2 text-center text-red-400 font-bold">${mgr.Maglubiyetler || 0}</td>
+                    <td class="py-3 px-2 text-right">
+                        <div class="flex items-center justify-end space-x-2">
+                            <div class="w-16 bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-indigo-500 h-full" style="width: ${mgr.Galibiyet_Yuzdesi || 0}%"></div>
+                            </div>
+                            <span class="text-indigo-400 font-bold w-10 text-right">${pct}</span>
+                        </div>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
         }
 
         async function openPlayerModal(id) {
@@ -1082,32 +1577,252 @@
                 const data = await res.json();
                 if (!data.success) return;
                 const p = data.player, s = data.stats, tr = data.transfers;
+                const fin = data.financial_analysis;
+                window.currentPlayerMatchHistory = data.match_history || [];
                 const feeRows = tr.length ? tr.map(t => `
                     <tr class="border-b border-slate-800/40 text-xxs">
-                      <td class="py-1.5 text-slate-400">${t.Tarih ? t.Tarih.split('T')[0] : '—'}</td>
+                      <td class="py-1.5 text-slate-400">${t.Tarih ? new Date(t.Tarih).toLocaleDateString('tr-TR') : '—'}</td>
                       <td class="py-1.5 text-slate-400">${t.Eski_Takim || 'Serbest'}</td>
                       <td class="py-1.5 text-slate-300 font-semibold">${t.Yeni_Takim}</td>
                       <td class="py-1.5 text-right text-indigo-400">${parseFloat(t.Bonservis_Bedeli || 0).toLocaleString('tr-TR')} ${t.Para_Birimi}</td>
                     </tr>`).join('') : '<tr><td colspan="4" class="py-2 text-center text-slate-500">Transfer kaydı yok.</td></tr>';
+                
+                const latestTransfer = tr.length > 0 ? tr[0] : null;
+                const latestTransferDate = latestTransfer && latestTransfer.Tarih ? new Date(latestTransfer.Tarih).toLocaleDateString('tr-TR') : 'Bilinmiyor';
+                const latestTransferFee = latestTransfer ? `${parseFloat(latestTransfer.Bonservis_Bedeli || 0).toLocaleString('tr-TR')} ${latestTransfer.Para_Birimi}` : 'Bedelsiz / Altyapı';
+
+                let trendIcon = '';
+                let trendColor = '';
+                if (fin && fin.value_trend === 'Yukseliste') {
+                    trendIcon = '📈 Yükselişte';
+                    trendColor = 'text-emerald-400';
+                } else if (fin && fin.value_trend === 'Dususte') {
+                    trendIcon = '📉 Düşüşte';
+                    trendColor = 'text-rose-400';
+                } else {
+                    trendIcon = '➖ Stabil';
+                    trendColor = 'text-slate-400';
+                }
+                
+                const finHtml = fin ? `
+                    <h4 class="text-xs font-semibold uppercase text-slate-400 mb-3">Ekonomik Değer & Trend Analizi</h4>
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="rounded-xl glass bg-slate-900/50 border border-slate-700 p-4 transform transition hover:scale-105">
+                            <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Toplam Hacim</h4>
+                            <p class="text-lg font-extrabold text-indigo-400">${fin.total_investment.toLocaleString('tr-TR')} €</p>
+                        </div>
+                        <div class="rounded-xl glass bg-slate-900/50 border border-slate-700 p-4 transform transition hover:scale-105">
+                            <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Max Değer</h4>
+                            <p class="text-lg font-extrabold text-white">${fin.max_value.toLocaleString('tr-TR')} €</p>
+                        </div>
+                        <div class="rounded-xl glass bg-slate-900/50 border border-slate-700 p-4 transform transition hover:scale-105">
+                            <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Piyasa Trendi</h4>
+                            <p class="text-sm font-extrabold mt-1.5 ${trendColor}">${trendIcon}</p>
+                        </div>
+                    </div>
+                    
+                    ${fin.chart_data.labels.length > 1 ? `
+                    <div class="rounded-xl glass bg-slate-900/50 border border-slate-700 p-4 mb-8">
+                        <h4 class="text-xs font-semibold uppercase text-slate-400 mb-4">Piyasa Değeri Değişim Eğrisi</h4>
+                        <div class="relative h-44">
+                            <canvas id="player-value-chart"></canvas>
+                        </div>
+                    </div>` : ''}
+                ` : '';
+
                 document.getElementById('modal-content').innerHTML = `
                     <div class="flex items-center space-x-4 mb-6 pb-5 border-b border-slate-800">
-                      <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-extrabold shrink-0">${p.Ad[0]}${p.Soyad[0]}</div>
+                      <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-extrabold shadow-lg shadow-indigo-500/20 shrink-0">${p.Ad[0]}${p.Soyad[0]}</div>
                       <div>
-                        <h2 class="text-xl font-extrabold text-white">${p.Ad} ${p.Soyad}</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">${p.Takim_Ad || 'Serbest'} · ${BADGE[p.Mevki] || p.Mevki} · ${p.Uyruk}</p>
+                        <h2 class="text-xl font-extrabold text-white flex items-center space-x-2">
+                            <span>${p.Ad} ${p.Soyad}</span>
+                            <span class="inline-flex px-2 py-0.5 rounded border border-indigo-400/50 text-indigo-300 bg-indigo-500/10 shadow-[0_0_10px_rgba(99,102,241,0.5)] font-bold text-xs uppercase tracking-widest">${p.Mevki}</span>
+                        </h2>
+                        <p class="text-sm font-medium text-slate-300 mt-1">${p.Takim_Ad || 'Serbest'} <span class="text-slate-500">·</span> <span class="text-slate-400">${p.Uyruk}</span> <span class="text-slate-500">·</span> <span class="text-slate-400">${p.Yas} Yaş</span></p>
                       </div>
                     </div>
-                    <div class="grid grid-cols-4 gap-3 mb-6">
-                      ${[['Yaş', p.Yas],['Gol', s.Gol||0],['Asist', s.Asist||0],['Sarı K.', s.Sari_Kart||0]].map(([label,val])=>`
-                      <div class="rounded-xl bg-slate-900/60 border border-slate-800 p-3 text-center">
-                        <div class="text-xl font-extrabold text-white">${val}</div>
-                        <div class="text-xxs text-slate-400 mt-1">${label}</div>
+                    
+                    <div class="grid grid-cols-4 gap-4 mb-8">
+                      ${[['Gol', s.Gol||0, 'text-white'],['Asist', s.Asist||0, 'text-white'],['Sarı Kart', s.Sari_Kart||0, 'text-yellow-400'],['Kırmızı Kart', s.Kirmizi_Kart||0, 'text-red-500']].map(([label,val,color])=>`
+                      <div class="rounded-xl glass bg-slate-900/50 border border-slate-700 p-4 text-center transform transition hover:scale-105 hover:bg-slate-800/80">
+                        <div class="text-4xl font-extrabold ${color} mb-1 drop-shadow-md">${val}</div>
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${label}</div>
                       </div>`).join('')}
                     </div>
-                    <h4 class="text-xs font-semibold uppercase text-slate-400 mb-2">Transfer Geçmişi</h4>
-                    <div class="overflow-x-auto"><table class="w-full text-xs"><thead><tr class="text-slate-500 border-b border-slate-800"><th class="py-1.5 text-left">Tarih</th><th class="py-1.5 text-left">Eski</th><th class="py-1.5 text-left">Yeni</th><th class="py-1.5 text-right text-indigo-400">Bedel</th></tr></thead><tbody>${feeRows}</tbody></table></div>`;
+
+                    ${data.discipline_analysis ? `
+                    <h4 class="text-xs font-semibold uppercase text-slate-400 mb-3">Disiplin ve Kart Riski Analizi</h4>
+                    <div class="rounded-xl border border-slate-700 bg-slate-900/50 p-5 mb-8 flex justify-between items-center text-left relative overflow-hidden">
+                        <div class="absolute right-0 top-0 h-full w-32 bg-gradient-to-l ${data.discipline_analysis.mac_basina_kart_orani > 0.5 ? 'from-red-500/10' : (data.discipline_analysis.mac_basina_kart_orani >= 0.2 ? 'from-yellow-500/10' : 'from-emerald-500/10')} to-transparent"></div>
+                        <div class="relative z-10">
+                            <h4 class="text-xxs font-bold uppercase tracking-wider text-slate-500 mb-1">Maç Başına Ağırlıklı Kart Oranı</h4>
+                            <p class="text-2xl font-extrabold text-white">${data.discipline_analysis.mac_basina_kart_orani}</p>
+                        </div>
+                        <div class="text-right relative z-10">
+                            <h4 class="text-xxs font-bold uppercase tracking-wider text-slate-500 mb-1">Algoritmik Risk Etiketi</h4>
+                            <p class="text-sm font-extrabold ${data.discipline_analysis.mac_basina_kart_orani > 0.5 ? 'text-red-400' : (data.discipline_analysis.mac_basina_kart_orani >= 0.2 ? 'text-yellow-400' : 'text-emerald-400')} px-3 py-1 bg-slate-950 rounded-full border border-slate-800 shadow-inner">
+                                ${data.discipline_analysis.risk_durumu}
+                            </p>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="rounded-xl border border-emerald-500/20 bg-emerald-900/10 p-5 mb-8 flex flex-col md:flex-row justify-between items-center md:items-start text-center md:text-left gap-4">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-500 mb-1">En Son Transfer Bilgisi</h4>
+                            <p class="text-slate-300 text-sm">Transfer Tarihi: <strong class="text-white">${latestTransferDate}</strong></p>
+                        </div>
+                        <div class="md:text-right">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Piyasa Değeri</h4>
+                            <p class="text-2xl font-extrabold text-emerald-400">${latestTransferFee}</p>
+                        </div>
+                    </div>
+
+                    <h4 class="text-xs font-semibold uppercase text-slate-400 mb-2">Tüm Transfer Geçmişi</h4>
+                    <div class="overflow-x-auto mb-6"><table class="w-full text-xs"><thead><tr class="text-slate-500 border-b border-slate-800"><th class="py-1.5 text-left">Tarih</th><th class="py-1.5 text-left">Eski Takım</th><th class="py-1.5 text-left">Yeni Takım</th><th class="py-1.5 text-right text-indigo-400">Bonservis</th></tr></thead><tbody>${feeRows}</tbody></table></div>
+                    
+                    ${finHtml}
+                    
+                    <h4 class="text-xs font-semibold uppercase text-slate-400 mt-6 mb-2">Detaylı Maç Performans Geçmişi</h4>
+                    <div class="flex flex-wrap gap-3 mb-3">
+                        <select id="pm-sort" onchange="renderMatchHistory()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-3 py-2 rounded-lg focus:outline-none focus:border-indigo-500">
+                            <option value="date-desc">Tarihe Göre (En Yeni)</option>
+                            <option value="date-asc">Tarihe Göre (En Eski)</option>
+                            <option value="goal-desc">Gole Göre (En Yüksek)</option>
+                            <option value="assist-desc">Asiste Göre (En Yüksek)</option>
+                        </select>
+                        <select id="pm-filter" onchange="renderMatchHistory()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-3 py-2 rounded-lg focus:outline-none focus:border-indigo-500">
+                            <option value="all">Tüm Maçlar</option>
+                            <option value="goals">Sadece Gol Attığı Maçlar</option>
+                            <option value="assists">Sadece Asist Yaptığı Maçlar</option>
+                            <option value="cards">Kart Gördüğü Maçlar</option>
+                        </select>
+                    </div>
+                    <div class="overflow-y-auto max-h-60 border border-slate-800 rounded-xl">
+                        <table class="w-full text-xs">
+                            <thead class="sticky top-0 bg-slate-900 z-10 shadow-sm">
+                                <tr class="text-slate-500 border-b border-slate-800">
+                                    <th class="py-2 px-3 text-left">Tarih</th>
+                                    <th class="py-2 px-3 text-left">Rakip Takım</th>
+                                    <th class="py-2 px-3 text-center">Gol</th>
+                                    <th class="py-2 px-3 text-center">Asist</th>
+                                    <th class="py-2 px-3 text-center">Kartlar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pm-match-history-body" class="divide-y divide-slate-800/50">
+                            </tbody>
+                        </table>
+                    </div>`;
                 document.getElementById('profile-modal').classList.remove('hidden');
+                renderMatchHistory();
+
+                if (fin && fin.chart_data.labels.length > 1) {
+                    const ctx = document.getElementById('player-value-chart').getContext('2d');
+                    if (window.playerValueChart) window.playerValueChart.destroy();
+                    window.playerValueChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: fin.chart_data.labels,
+                            datasets: [{
+                                label: 'Bonservis Bedeli',
+                                data: fin.chart_data.values,
+                                borderColor: '#8b5cf6',
+                                backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                                borderWidth: 3,
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: '#6366f1',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 5,
+                                pointHoverRadius: 7
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#cbd5e1',
+                                    borderColor: '#334155',
+                                    borderWidth: 1,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.parsed.y.toLocaleString('tr-TR') + ' €';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(255,255,255,0.05)' },
+                                    ticks: { 
+                                        color: '#94a3b8', 
+                                        callback: v => v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : (v/1000).toFixed(0) + 'K' 
+                                    }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: '#94a3b8' }
+                                }
+                            }
+                        }
+                    });
+                }
+
             } catch(err) { showToast('Hata', err.message, 'error'); }
+        }
+
+        function renderMatchHistory() {
+            if (!window.currentPlayerMatchHistory) return;
+            let hist = [...window.currentPlayerMatchHistory];
+            const filterVal = document.getElementById('pm-filter').value;
+            const sortVal = document.getElementById('pm-sort').value;
+
+            if (filterVal === 'goals') hist = hist.filter(m => m.Mac_Gol > 0);
+            else if (filterVal === 'assists') hist = hist.filter(m => m.Mac_Asist > 0);
+            else if (filterVal === 'cards') hist = hist.filter(m => m.Mac_Sari_Kart > 0 || m.Mac_Kirmizi_Kart > 0);
+
+            hist.sort((a, b) => {
+                if (sortVal === 'date-desc') return new Date(b.Tarih_Saat) - new Date(a.Tarih_Saat);
+                if (sortVal === 'date-asc') return new Date(a.Tarih_Saat) - new Date(b.Tarih_Saat);
+                if (sortVal === 'goal-desc') return b.Mac_Gol - a.Mac_Gol;
+                if (sortVal === 'assist-desc') return b.Mac_Asist - a.Mac_Asist;
+                return 0;
+            });
+
+            const tbody = document.getElementById('pm-match-history-body');
+            tbody.innerHTML = '';
+            
+            if (hist.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Bu kriterlere uygun maç bulunamadı.</td></tr>';
+                return;
+            }
+
+            hist.forEach(m => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-900/30 transition-colors";
+                
+                let cardsHtml = '';
+                if (m.Mac_Sari_Kart > 0) cardsHtml += `<span class="inline-block w-2.5 h-3.5 bg-yellow-400 rounded-sm mx-0.5 shadow-sm" title="${m.Mac_Sari_Kart} Sarı"></span>`.repeat(m.Mac_Sari_Kart);
+                if (m.Mac_Kirmizi_Kart > 0) cardsHtml += `<span class="inline-block w-2.5 h-3.5 bg-red-500 rounded-sm mx-0.5 shadow-sm" title="${m.Mac_Kirmizi_Kart} Kırmızı"></span>`.repeat(m.Mac_Kirmizi_Kart);
+                if (!cardsHtml) cardsHtml = '<span class="text-slate-600">—</span>';
+
+                const dt = new Date(m.Tarih_Saat).toLocaleDateString('tr-TR');
+                
+                row.innerHTML = `
+                    <td class="py-2.5 px-3 text-slate-400 whitespace-nowrap">${dt}</td>
+                    <td class="py-2.5 px-3 text-slate-300 font-medium">${m.Rakip_Takim}</td>
+                    <td class="py-2.5 px-3 text-center font-bold ${m.Mac_Gol > 0 ? 'text-indigo-400' : 'text-slate-600'}">${m.Mac_Gol}</td>
+                    <td class="py-2.5 px-3 text-center font-bold ${m.Mac_Asist > 0 ? 'text-emerald-400' : 'text-slate-600'}">${m.Mac_Asist}</td>
+                    <td class="py-2.5 px-3 text-center"><div class="flex items-center justify-center">${cardsHtml}</div></td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
         async function openTeamModal(id) {
@@ -1116,28 +1831,91 @@
                 const res = await fetch(`/api/scouting/team-detail/${id}`);
                 const data = await res.json();
                 if (!data.success) return;
-                const t = data.team, sq = data.squad;
-                const squadRows = sq.map(o => `
-                    <tr class="border-b border-slate-800/40 hover:bg-slate-900/30 cursor-pointer" onclick="closeModal();openPlayerModal(${o.Oyuncu_ID})">
-                      <td class="py-1.5 px-2 font-medium text-slate-200 text-xs">${o.Ad} ${o.Soyad}</td>
-                      <td class="py-1.5 px-2 text-center">${BADGE[o.Mevki]||o.Mevki}</td>
-                      <td class="py-1.5 px-2 text-xs text-slate-400">${o.Uyruk}</td>
-                      <td class="py-1.5 px-2 text-center text-xs text-slate-400">${o.Yas}</td>
-                    </tr>`).join('');
+                
+                const t = data.team_info || data.team;
+                const sq = data.squad || [];
+                const stats = data.stats || null;
+                
+                const teamName = t.ad || t.Ad || 'Bilinmeyen Takım';
+                const teamId = t.team_id || t.Takim_ID || id;
+                const kurulus = t.kurulus_yili || t.Kurulus_Yili || '-';
+                const sehir = t.sehir || t.Sehir || '-';
+                const stadyumAd = t.stadyum_adi || t.Stadyum_Ad || 'Stadyum Yok';
+                const stadyumKapasite = t.stadyum_kapasite || t.Kapasite || 0;
+                
+                let hocaAd = t.teknik_direktor;
+                if (!hocaAd) {
+                    hocaAd = t.Hoca_Ad ? t.Hoca_Ad + ' ' + t.Hoca_Soyad : 'Hoca Yok';
+                }
+
+                const squadRows = sq.map(o => {
+                    const oId = o.oyuncu_id || o.Oyuncu_ID;
+                    const oAdSoyad = o.ad_soyad || (o.Ad + ' ' + o.Soyad);
+                    const oMevki = o.mevki || o.Mevki;
+                    const oUyruk = o.uyruk || o.Uyruk;
+                    const oYas = o.yas || o.Yas;
+                    
+                    return `
+                    <tr class="border-b border-slate-800/40 hover:bg-slate-900/30 cursor-pointer transition-colors" onclick="closeModal();openPlayerModal(${oId})">
+                      <td class="py-2 px-2 font-medium text-slate-200 text-xs">${oAdSoyad}</td>
+                      <td class="py-2 px-2 text-center">${BADGE[oMevki]||oMevki}</td>
+                      <td class="py-2 px-2 text-xs text-slate-400">${oUyruk}</td>
+                      <td class="py-2 px-2 text-center text-xs text-slate-400">${oYas}</td>
+                    </tr>`;
+                }).join('');
+                
+                let statsHtml = '';
+                if (stats) {
+                    statsHtml = `
+                    <h4 class="text-xs font-semibold uppercase text-slate-400 mt-4 mb-2">Sezonluk Performans</h4>
+                    <div class="grid grid-cols-4 gap-2 mb-5">
+                        <div class="bg-slate-900/50 border border-slate-800 rounded-lg p-2 text-center">
+                            <div class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Maç</div>
+                            <div class="text-xl font-black text-white leading-none mt-1">${stats.toplam_mac}</div>
+                        </div>
+                        <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2 text-center">
+                            <div class="text-[10px] text-emerald-500/80 uppercase font-bold tracking-wider">G - B - M</div>
+                            <div class="text-sm font-black text-emerald-400 mt-1">${stats.galibiyet} <span class="text-slate-500 font-medium">-</span> ${stats.beraberlik} <span class="text-slate-500 font-medium">-</span> <span class="text-rose-400">${stats.maglubiyet}</span></div>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 rounded-lg p-2 text-center">
+                            <div class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">AG / YG</div>
+                            <div class="text-sm font-black text-indigo-400 mt-1">${stats.atilan_gol} <span class="text-slate-500 font-medium">/</span> <span class="text-rose-400">${stats.yenilen_gol}</span></div>
+                        </div>
+                        <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-2 text-center shadow-[inset_0_0_10px_rgba(99,102,241,0.1)]">
+                            <div class="text-[10px] text-indigo-400/80 uppercase font-bold tracking-wider">Puan</div>
+                            <div class="text-xl font-black text-indigo-400 leading-none mt-1">${stats.puan}</div>
+                        </div>
+                    </div>`;
+                }
+
                 document.getElementById('modal-content').innerHTML = `
-                    <div class="flex items-center space-x-4 mb-6 pb-5 border-b border-slate-800">
-                      <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl font-extrabold shrink-0">${t.Ad[0]}</div>
+                    <div class="flex items-center space-x-4 mb-4 pb-4 border-b border-slate-800">
+                      <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-3xl font-extrabold shrink-0 shadow-lg shadow-emerald-500/20">${teamName[0]}</div>
                       <div>
-                        <h2 class="text-xl font-extrabold text-white">${t.Ad}</h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Kur. ${t.Kurulus_Yili} · ${t.Sehir} · 🏟️ ${t.Stadyum_Ad} (${(t.Kapasite||0).toLocaleString('tr-TR')})</p>
-                        <p class="text-xs text-slate-400 mt-0.5">👔 ${t.Hoca_Ad ? t.Hoca_Ad+' '+t.Hoca_Soyad : 'Hoca Yok'}</p>
+                        <h2 class="text-xl font-extrabold text-white flex items-center space-x-2">
+                            <span>${teamName}</span>
+                            <span class="inline-flex px-2 py-0.5 rounded-full border border-slate-700 text-slate-400 bg-slate-800/50 text-[10px] uppercase font-bold tracking-wider">Kur. ${kurulus}</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">${sehir} <span class="text-slate-600 px-1">·</span> 🏟️ ${stadyumAd} (${stadyumKapasite.toLocaleString('tr-TR')} Kapasite)</p>
+                        <p class="text-xs text-slate-400 mt-1 flex items-center">
+                            <span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold mr-1">Teknik Direktör:</span> 
+                            <span class="text-indigo-300 font-semibold bg-indigo-500/10 px-2 py-0.5 rounded">${hocaAd}</span>
+                        </p>
                       </div>
                     </div>
-                    <h4 class="text-xs font-semibold uppercase text-slate-400 mb-2">Kadro (${sq.length} Oyuncu)</h4>
-                    <div class="overflow-y-auto max-h-72">
+                    ${statsHtml}
+                    <h4 class="text-xs font-semibold uppercase text-slate-400 mb-2">Güncel Kadro (${sq.length} Oyuncu)</h4>
+                    <div class="overflow-y-auto max-h-60 border border-slate-800 rounded-lg bg-slate-900/20">
                       <table class="w-full text-xs border-collapse">
-                        <thead><tr class="text-slate-500 border-b border-slate-800 text-xxs uppercase"><th class="py-1.5 px-2 text-left">Oyuncu</th><th class="py-1.5 px-2 text-center">Mevki</th><th class="py-1.5 px-2">Uyruk</th><th class="py-1.5 px-2 text-center">Yaş</th></tr></thead>
-                        <tbody>${squadRows}</tbody>
+                        <thead class="sticky top-0 bg-slate-900 z-10 shadow-sm">
+                            <tr class="text-slate-500 border-b border-slate-800 text-xxs uppercase tracking-wider">
+                                <th class="py-2 px-3 text-left">Oyuncu</th>
+                                <th class="py-2 px-2 text-center">Mevki</th>
+                                <th class="py-2 px-2 text-left">Uyruk</th>
+                                <th class="py-2 px-2 text-center">Yaş</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/50">${squadRows}</tbody>
                       </table>
                     </div>`;
                 document.getElementById('profile-modal').classList.remove('hidden');
@@ -1147,16 +1925,595 @@
         function closeModal() {
             document.getElementById('profile-modal').classList.add('hidden');
         }
+        
+        function closeMatchModal() {
+            document.getElementById('match-modal').classList.add('hidden');
+        }
+        
+        async function openMatchModal(matchId) {
+            const modal = document.getElementById('match-modal');
+            const content = document.getElementById('match-modal-content');
+            
+            content.innerHTML = '<div class="flex justify-center p-8"><span class="w-8 h-8 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></span></div>';
+            modal.classList.remove('hidden');
+            
+            try {
+                const res = await fetch(`/api/match/detail/${matchId}`);
+                const data = await res.json();
+                
+                if(!data.success) {
+                    content.innerHTML = `<div class="p-6 text-center text-rose-400 font-medium">${data.error}</div>`;
+                    return;
+                }
+                
+                const m = data.match_info;
+                const events = data.timeline;
+                
+                // Format Date
+                const d = new Date(m.tarih);
+                const dateStr = d.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                const timeStr = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute:'2-digit' });
+                
+                const scoreText = m.ev_sahibi_skor !== null && m.deplasman_skor !== null 
+                    ? `${m.ev_sahibi_skor} - ${m.deplasman_skor}` 
+                    : "v";
+                
+                let html = `
+                    <div class="bg-gradient-to-br from-indigo-900/30 to-slate-900/50 p-6 rounded-xl border border-indigo-500/20 mb-6 relative overflow-hidden mt-4">
+                        <div class="absolute -right-10 -top-10 opacity-5">
+                            <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        </div>
+                        
+                        <div class="text-center mb-6 relative z-10">
+                            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 cursor-pointer hover:text-indigo-400 hover:underline transition" onclick="closeMatchModal(); openStadiumModal(${m.stadyum_id})">${m.stadyum}</h2>
+                            <p class="text-xxs text-slate-500">${m.sehir} • Kapasite: ${m.kapasite.toLocaleString('tr-TR')}</p>
+                            <p class="text-xs text-indigo-300 mt-2 font-medium">${dateStr} ${timeStr}</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between relative z-10">
+                            <div class="flex-1 text-center">
+                                <h3 class="text-xl font-bold text-white mb-1">${m.ev_sahibi}</h3>
+                            </div>
+                            <div class="px-6 py-3 bg-slate-950/80 rounded-2xl border border-slate-800 mx-4 shadow-xl">
+                                <span class="text-3xl font-black text-white tracking-widest">${scoreText}</span>
+                            </div>
+                            <div class="flex-1 text-center">
+                                <h3 class="text-xl font-bold text-white mb-1">${m.deplasman}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-300 mb-4 uppercase tracking-wider border-b border-slate-800 pb-2">Maç Özeti & Olaylar</h4>
+                `;
+                
+                if (events.length === 0) {
+                    html += `<div class="text-center py-6 text-slate-500 text-sm">Bu maça ait herhangi bir olay bulunmamaktadır.</div>`;
+                } else {
+                    html += `<div class="space-y-3">`;
+                    events.forEach(e => {
+                        let icon = '⚽';
+                        let colorClass = 'text-emerald-400';
+                        let bgClass = 'bg-emerald-500/10';
+                        
+                        if (e.olay_tipi === 'Asist') { icon = '👟'; colorClass = 'text-indigo-400'; bgClass = 'bg-indigo-500/10'; }
+                        else if (e.olay_tipi === 'Sari_Kart') { icon = '🟨'; colorClass = 'text-amber-400'; bgClass = 'bg-amber-500/10'; }
+                        else if (e.olay_tipi === 'Kirmizi_Kart') { icon = '🟥'; colorClass = 'text-rose-400'; bgClass = 'bg-rose-500/10'; }
+                        
+                        let olayText = e.olay_tipi.replace('_', ' ');
+                        if(olayText === 'Sari Kart') olayText = 'Sarı Kart';
+                        if(olayText === 'Kirmizi Kart') olayText = 'Kırmızı Kart';
+
+                        html += `
+                            <div class="flex items-center space-x-4 p-3 rounded-xl border border-slate-800/50 hover:bg-slate-800/20 transition group cursor-pointer" onclick="closeMatchModal(); openPlayerModal(${e.oyuncu_id})">
+                                <div class="w-12 text-center font-bold text-slate-400 group-hover:text-white transition">
+                                    ${e.dakika}'
+                                </div>
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center ${bgClass} text-lg shadow-inner">
+                                    ${icon}
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-slate-200 group-hover:text-indigo-400 transition">
+                                        ${e.oyuncu}
+                                    </div>
+                                    <div class="text-xs font-semibold ${colorClass}">
+                                        ${olayText}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+                
+                html += `</div>`;
+                content.innerHTML = html;
+                
+            } catch (err) {
+                console.error(err);
+                content.innerHTML = `<div class="p-6 text-center text-rose-400">Veriler yüklenirken bir hata oluştu.</div>`;
+            }
+        }
+
+        // --- COMPARE LOGIC ---
+        window.compareIds = [];
+        window.compareType = null; // 'player', 'manager', 'team'
+
+        function closeCompareModal() {
+            const modal = document.getElementById('compare-modal');
+            if (modal) modal.classList.add('hidden');
+            
+            // Reset state
+            const type = window.compareType;
+            window.compareIds = [];
+            window.compareType = null;
+            updateCompareWidget();
+            
+            // Re-render to clear checkboxes
+            if (type === 'player') renderScoutPlayersTable();
+            if (type === 'manager') renderScoutManagersTable();
+            if (type === 'team' && window.currentStandings) renderStandings(window.currentStandings);
+        }
+        
+        function toggleCompare(event, id, type) {
+            if (window.compareType !== type) {
+                // If type changes, reset the comparison
+                window.compareIds = [];
+                window.compareType = type;
+            }
+            
+            const idx = window.compareIds.indexOf(id);
+            if (idx > -1) {
+                window.compareIds.splice(idx, 1);
+                if (window.compareIds.length === 0) window.compareType = null;
+            } else {
+                if (window.compareIds.length >= 3) {
+                    showToast('Uyarı', 'Aynı anda en fazla 3 öğeyi karşılaştırabilirsiniz.', 'warning');
+                    if(event && event.target) event.target.checked = false;
+                    return;
+                }
+                window.compareIds.push(id);
+            }
+            updateCompareWidget();
+            
+            // Re-render the tables to update checkbox states
+            if (type === 'player') renderScoutPlayersTable();
+            if (type === 'manager') renderScoutManagersTable();
+            if (type === 'team' && window.currentStandings) renderStandings(window.currentStandings);
+        }
+
+        function updateCompareWidget() {
+            let w = document.getElementById('compare-widget');
+            if (!w) {
+                w = document.createElement('div');
+                w.id = 'compare-widget';
+                w.className = 'fixed bottom-6 right-6 z-50 hidden';
+                document.body.appendChild(w);
+            }
+            
+            let typeLabel = "Öğe";
+            if (window.compareType === 'player') typeLabel = "Oyuncu";
+            if (window.compareType === 'manager') typeLabel = "Direktör";
+            if (window.compareType === 'team') typeLabel = "Takım";
+
+            w.innerHTML = `
+                <div class="bg-indigo-600 rounded-2xl shadow-xl shadow-indigo-500/30 p-4 flex items-center space-x-4 border border-indigo-400/30 backdrop-blur-sm">
+                    <div class="text-white">
+                        <span class="text-xs font-semibold uppercase opacity-80 tracking-wider">Karşılaştırma Modu</span>
+                        <div class="font-bold text-sm"><span id="compare-count">${window.compareIds.length}</span> ${typeLabel} Seçildi</div>
+                    </div>
+                    <button onclick="executeCompare()" class="bg-white text-indigo-600 px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg hover:bg-slate-100 hover:scale-105 transition transform">Karşılaştır</button>
+                </div>
+            `;
+            
+            if (window.compareIds.length > 1) w.classList.remove('hidden');
+            else w.classList.add('hidden');
+        }
+        
+        async function executeCompare() {
+            if (window.compareIds.length < 2) return;
+            const ids = window.compareIds.join(',');
+            let endpoint = '';
+            
+            if (window.compareType === 'player') endpoint = '/api/scouting/compare-players?ids=' + ids;
+            else if (window.compareType === 'manager') endpoint = '/api/scouting/compare-managers?ids=' + ids;
+            else if (window.compareType === 'team') endpoint = '/api/scouting/compare-teams?ids=' + ids;
+            
+            try {
+                const res = await fetch(endpoint);
+                const data = await res.json();
+                if (!data.success) {
+                    showToast('Hata', data.error, 'error');
+                    return;
+                }
+                
+                if (window.compareType === 'player') renderCompareModal(data.compared_players);
+                else if (window.compareType === 'manager') renderCompareManagersModal(data.compared_managers);
+                else if (window.compareType === 'team') renderCompareTeamsModal(data.compared_teams);
+                
+            } catch(e) {
+                showToast('Hata', 'Karşılaştırma yapılamadı.', 'error');
+            }
+        }
+
+        function renderCompareModal(players) {
+            let modal = document.getElementById('compare-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'compare-modal';
+                modal.className = 'hidden fixed inset-0 z-[100] flex items-center justify-center p-4';
+                document.body.appendChild(modal);
+            }
+
+            let cards = players.map(p => `
+                <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 relative flex flex-col items-center">
+                    <div class="absolute top-0 right-0 p-4"><span class="inline-flex px-2 py-0.5 rounded border border-indigo-400/50 text-indigo-300 bg-indigo-500/10 shadow-[0_0_10px_rgba(99,102,241,0.5)] font-bold text-xs uppercase tracking-widest">${p.mevki}</span></div>
+                    <div class="h-20 w-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-extrabold shadow-lg shadow-indigo-500/20 mb-4">${p.ad[0]}${p.soyad[0]}</div>
+                    <h3 class="text-xl font-extrabold text-white mb-1">${p.ad} ${p.soyad}</h3>
+                    <p class="text-xs text-slate-400 mb-8 font-medium">${p.takim || 'Serbest'} <span class="text-slate-600">·</span> ${p.uyruk} <span class="text-slate-600">·</span> ${p.yas} Yaş</p>
+                    
+                    <div class="w-full space-y-5">
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 font-semibold uppercase mb-1"><span>Toplam Gol</span><span class="text-white">${p.toplam_gol}</span></div>
+                            <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-indigo-500 h-1.5 rounded-full" style="width: ${Math.min(100, p.toplam_gol*5)}%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 font-semibold uppercase mb-1"><span>Maç Başına Gol</span><span class="text-indigo-400 font-bold">${p.mac_basina_gol}</span></div>
+                            <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-indigo-400 h-1.5 rounded-full" style="width: ${Math.min(100, p.mac_basina_gol*100)}%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 font-semibold uppercase mb-1"><span>Toplam Asist</span><span class="text-white">${p.toplam_asist}</span></div>
+                            <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${Math.min(100, p.toplam_asist*5)}%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 font-semibold uppercase mb-1"><span>Maç Başına Asist</span><span class="text-emerald-400 font-bold">${p.mac_basina_asist}</span></div>
+                            <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-emerald-400 h-1.5 rounded-full" style="width: ${Math.min(100, p.mac_basina_asist*100)}%"></div></div>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-slate-800/60 flex justify-between items-center">
+                            <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Kart Disiplini</span>
+                            <div class="flex space-x-2">
+                                <span class="bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 font-extrabold px-2.5 py-0.5 rounded text-xs">${p.sari_kart} S</span>
+                                <span class="bg-red-500/20 border border-red-500/50 text-red-400 font-extrabold px-2.5 py-0.5 rounded text-xs">${p.kirmizi_kart} K</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            modal.innerHTML = `
+                <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeCompareModal()"></div>
+                <div class="relative glass rounded-3xl border border-indigo-500/20 shadow-2xl shadow-indigo-500/10 w-full max-w-5xl max-h-[90vh] overflow-y-auto p-8">
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-800">
+                        <h2 class="text-3xl font-black text-white bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Karşılaştırma Aracı</h2>
+                        <button onclick="closeCompareModal()" class="text-slate-400 hover:text-white transition bg-slate-800/50 p-2 rounded-full hover:bg-rose-500/20 hover:text-rose-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-${players.length} gap-8">
+                        ${cards}
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function renderCompareManagersModal(managers) {
+            let modal = document.getElementById('compare-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'compare-modal';
+                modal.className = 'hidden fixed inset-0 z-[100] flex items-center justify-center p-4';
+                document.body.appendChild(modal);
+            }
+
+            let cards = managers.map(m => `
+                <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 relative flex flex-col items-center">
+                    <div class="h-20 w-20 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-3xl font-extrabold shadow-lg shadow-orange-500/20 mb-4">${m.ad[0]}${m.soyad[0]}</div>
+                    <h3 class="text-xl font-extrabold text-white mb-1">${m.ad} ${m.soyad}</h3>
+                    <p class="text-xs text-slate-400 mb-8 font-medium">${m.takim || 'Takımsız'}</p>
+                    
+                    <div class="w-full space-y-5">
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 font-semibold uppercase mb-1"><span>Galibiyet Oranı</span><span class="text-orange-400 font-bold">%${m.galibiyet_yuzdesi}</span></div>
+                            <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-orange-500 h-1.5 rounded-full" style="width: ${m.galibiyet_yuzdesi}%"></div></div>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Toplam Maç</span>
+                            <span class="text-lg font-bold text-white">${m.toplam_mac}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Galibiyet</span>
+                            <span class="text-lg font-bold text-emerald-400">${m.galibiyet}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Beraberlik</span>
+                            <span class="text-lg font-bold text-amber-400">${m.beraberlik}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Mağlubiyet</span>
+                            <span class="text-lg font-bold text-rose-400">${m.maglubiyet}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            modal.innerHTML = `
+                <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeCompareModal()"></div>
+                <div class="relative glass rounded-3xl border border-indigo-500/20 shadow-2xl shadow-indigo-500/10 w-full max-w-5xl max-h-[90vh] overflow-y-auto p-8">
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-800">
+                        <h2 class="text-3xl font-black text-white bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-400">Teknik Direktör Karşılaştırması</h2>
+                        <button onclick="closeCompareModal()" class="text-slate-400 hover:text-white transition bg-slate-800/50 p-2 rounded-full hover:bg-rose-500/20 hover:text-rose-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-${managers.length} gap-8">
+                        ${cards}
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function renderCompareTeamsModal(teams) {
+            let modal = document.getElementById('compare-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'compare-modal';
+                modal.className = 'hidden fixed inset-0 z-[100] flex items-center justify-center p-4';
+                document.body.appendChild(modal);
+            }
+
+            let cards = teams.map(t => `
+                <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 relative flex flex-col items-center">
+                    <div class="h-20 w-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-3xl font-extrabold shadow-lg shadow-emerald-500/20 mb-4">${t.ad[0]}</div>
+                    <h3 class="text-xl font-extrabold text-white mb-1">${t.ad}</h3>
+                    <p class="text-xs text-slate-400 mb-8 font-medium">Kuruluş: ${t.kurulus} <span class="text-slate-600">·</span> ${t.sehir}</p>
+                    
+                    <div class="w-full space-y-4">
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Toplam Puan</span>
+                            <span class="text-2xl font-black text-indigo-400">${t.puan}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Oynanan Maç</span>
+                            <span class="text-lg font-bold text-white">${t.oynanan_mac}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Atılan Gol</span>
+                            <span class="text-lg font-bold text-emerald-400">${t.atilan_gol}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Yenilen Gol</span>
+                            <span class="text-lg font-bold text-rose-400">${t.yenilen_gol}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-slate-800/50">
+                            <span class="text-xs text-slate-500 uppercase font-semibold">Averaj</span>
+                            <span class="text-lg font-bold ${t.averaj > 0 ? 'text-emerald-400' : (t.averaj < 0 ? 'text-rose-400' : 'text-slate-400')}">${t.averaj > 0 ? '+'+t.averaj : t.averaj}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            modal.innerHTML = `
+                <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closeCompareModal()"></div>
+                <div class="relative glass rounded-3xl border border-indigo-500/20 shadow-2xl shadow-indigo-500/10 w-full max-w-5xl max-h-[90vh] overflow-y-auto p-8">
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-800">
+                        <h2 class="text-3xl font-black text-white bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-400">Takım Karşılaştırması</h2>
+                        <button onclick="closeCompareModal()" class="text-slate-400 hover:text-white transition bg-slate-800/50 p-2 rounded-full hover:bg-rose-500/20 hover:text-rose-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-${teams.length} gap-8">
+                        ${cards}
+                    </div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        // --- GLOBAL SEARCH LOGIC ---
+        let searchTimeout = null;
+        async function handleGlobalSearch(event) {
+            const q = event.target.value.trim();
+            const dd = document.getElementById('search-results-dropdown');
+            const content = document.getElementById('search-results-content');
+            
+            if (q.length < 2) {
+                dd.classList.add('hidden');
+                return;
+            }
+            
+            if (searchTimeout) clearTimeout(searchTimeout);
+            
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch('/api/scouting/players/search?q=' + encodeURIComponent(q));
+                    const data = await res.json();
+                    
+                    if (!data.success) return;
+                    
+                    if (data.search_results.length === 0) {
+                        content.innerHTML = '<div class="p-4 text-center text-slate-500 text-sm">Oyuncu bulunamadı.</div>';
+                        dd.classList.remove('hidden');
+                        return;
+                    }
+                    
+                    let html = '<div class="text-xxs font-bold uppercase tracking-wider text-indigo-400 px-3 py-2 bg-slate-800/50">Hızlı Oyuncu Arama</div>';
+                    data.search_results.forEach(p => {
+                        html += `
+                        <div onclick="openPlayerModal(${p.oyuncu_id}); document.getElementById('search-results-dropdown').classList.add('hidden')" class="px-3 py-3 hover:bg-slate-800 cursor-pointer flex items-center justify-between group border-b border-slate-800/30 transition">
+                            <div class="flex items-center space-x-3.5">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/20 to-slate-800 border border-indigo-500/30 text-indigo-400 flex flex-col items-center justify-center font-bold shrink-0">
+                                    <span class="text-xs leading-none">${p.mevki}</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-200 group-hover:text-indigo-300 transition">${p.ad_soyad}</h4>
+                                    <p class="text-[10px] text-slate-400 mt-0.5"><span class="text-slate-300">${p.takim}</span> • ${p.uyruk}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4 ml-4">
+                                <div class="text-center">
+                                    <div class="text-[9px] text-slate-500 uppercase tracking-widest mb-0.5">Gol</div>
+                                    <div class="font-black text-indigo-400 text-sm leading-none">${p.gol}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-[9px] text-slate-500 uppercase tracking-widest mb-0.5">Asist</div>
+                                    <div class="font-black text-emerald-400 text-sm leading-none">${p.asist}</div>
+                                </div>
+                                <div class="text-center bg-slate-900/50 rounded px-2 py-1 border border-slate-700/50">
+                                    <div class="text-[9px] text-slate-500 uppercase tracking-widest mb-0.5">Maç</div>
+                                    <div class="font-bold text-slate-300 text-xs leading-none">${p.toplam_mac}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    
+                    content.innerHTML = html;
+                    dd.classList.remove('hidden');
+                } catch(e) {
+                    console.error("Arama hatası", e);
+                }
+            }, 300);
+        }
+
+        async function openStadiumModal(stadiumId) {
+            if (!stadiumId) return;
+            try {
+                const res = await fetch(`/api/stadium/detail/${stadiumId}`);
+                const data = await res.json();
+                if (!data.success) return;
+                
+                const s = data.stadium_info;
+                const matches = data.played_matches;
+                
+                let matchesHtml = '';
+                if (matches.length > 0) {
+                    matchesHtml = matches.map(m => `
+                        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-800/50 flex justify-between items-center cursor-pointer hover:bg-slate-800 transition group mb-2" onclick="closeModal(); openMatchModal(${m.mac_id})">
+                            <span class="text-[11px] font-medium text-slate-400 w-24">${m.tarih}</span>
+                            <div class="flex-1 flex justify-center items-center space-x-3">
+                                <span class="text-xs font-bold text-slate-200 text-right w-28 truncate group-hover:text-white">${m.ev_sahibi}</span>
+                                <span class="px-2.5 py-1 bg-slate-950 rounded-lg font-black text-indigo-400 text-xs border border-slate-800 shadow-inner">${m.skor}</span>
+                                <span class="text-xs font-bold text-slate-200 text-left w-28 truncate group-hover:text-white">${m.deplasman}</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-600 group-hover:text-indigo-400 transition ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    `).join('');
+                } else {
+                    matchesHtml = '<div class="text-center text-slate-500 text-xs py-6 bg-slate-900/30 rounded-xl border border-slate-800/50">Bu stadyumda henüz maç oynanmamış.</div>';
+                }
+                
+                document.getElementById('modal-content').innerHTML = `
+                    <div class="flex items-center space-x-4 mb-6 pb-5 border-b border-slate-800">
+                      <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-extrabold shrink-0 shadow-[0_0_15px_rgba(99,102,241,0.3)]">🏟️</div>
+                      <div>
+                        <h2 class="text-xl font-black text-white tracking-tight">${s.ad}</h2>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">📍 ${s.sehir} • 👥 Kapasite: <span class="text-slate-300">${(s.kapasite||0).toLocaleString('tr-TR')}</span></p>
+                      </div>
+                    </div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center space-x-2"><span>Maç Geçmişi</span> <span class="bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded text-[10px]">${matches.length} Maç</span></h4>
+                    <div class="overflow-y-auto max-h-[60vh] pr-2 custom-scrollbar">
+                        ${matchesHtml}
+                    </div>`;
+                document.getElementById('profile-modal').classList.remove('hidden');
+            } catch(err) { showToast('Hata', err.message, 'error'); }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#global-search') && !e.target.closest('#search-results-dropdown')) {
+                const dd = document.getElementById('search-results-dropdown');
+                if (dd) dd.classList.add('hidden');
+            }
+        });
+
+        // Match Archive JS
+        async function searchMatchArchive(event) {
+            if(event) event.preventDefault();
+            const start = document.getElementById('archive-start').value;
+            const end = document.getElementById('archive-end').value;
+            loadMatchArchive(start, end);
+        }
+
+        async function loadMatchArchive(start = '', end = '') {
+            const tbody = document.getElementById('match-archive-tbody');
+            if(!tbody) return;
+            
+            tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-indigo-400 font-semibold animate-pulse">Arşiv Taranıyor...</td></tr>';
+            
+            try {
+                const res = await fetch(`/api/match/archive?baslangic_tarihi=${start}&bitis_tarihi=${end}`);
+                const data = await res.json();
+                
+                if(!data.success) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-rose-400 font-semibold">Hata: ${data.error}</td></tr>`;
+                    return;
+                }
+                
+                if(data.archived_matches.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-slate-500 text-xs">Seçili tarih aralığında maç bulunamadı.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = '';
+                data.archived_matches.forEach(m => {
+                    const d = new Date(m.tarih_saat);
+                    const formattedDate = d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const formattedTime = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                    
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-900/50 transition-colors group cursor-pointer border-b border-slate-800/40";
+                    row.onclick = () => openMatchModal(m.mac_id);
+                    
+                    row.innerHTML = `
+                        <td class="py-3 px-4">
+                            <div class="font-bold text-slate-300 text-xs">${formattedDate}</div>
+                            <div class="text-[10px] text-slate-500 mt-0.5">${formattedTime}</div>
+                        </td>
+                        <td class="py-3 px-4 text-right font-semibold text-slate-200 group-hover:text-indigo-300 transition-colors">${m.ev_sahibi}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="bg-slate-900 border border-slate-700 text-white font-black px-3 py-1.5 rounded shadow-inner text-sm tracking-widest">${m.skor_gosterim}</span>
+                        </td>
+                        <td class="py-3 px-4 font-semibold text-slate-200 group-hover:text-indigo-300 transition-colors">${m.deplasman}</td>
+                        <td class="py-3 px-4 text-center text-xs text-slate-400 max-w-[150px] truncate" title="${m.stadyum}">${m.stadyum}</td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="event.stopPropagation();openMatchModal(${m.mac_id})" class="text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-indigo-400 px-3 py-1.5 rounded hover:bg-indigo-600 hover:text-white transition">İncele</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-rose-400 font-semibold">Sunucu bağlantı hatası.</td></tr>`;
+            }
+        }
+        
+        // Auto-load on init
+        setTimeout(() => {
+            loadMatchArchive();
+        }, 1000);
+
     </script>
 
     <!-- PROFIL MODAL -->
-    <div id="profile-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" onclick="if(event.target===this)closeModal()">
-      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+    <div id="profile-modal" class="hidden fixed inset-0 z-[120] flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm cursor-pointer" onclick="closeModal()"></div>
       <div class="relative bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-xl p-6 z-10 max-h-[90vh] overflow-y-auto">
-        <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button type="button" onclick="closeModal()" class="absolute top-4 right-4 z-[9999] text-slate-400 hover:text-white transition bg-slate-900 rounded-full p-1.5 border border-slate-800 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         <div id="modal-content" class="space-y-4"></div>
+      </div>
+    </div>
+    
+    <!-- MATCH DETAILS MODAL -->
+    <div id="match-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" onclick="closeMatchModal()"></div>
+      <div class="relative bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl p-6 z-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <button type="button" onclick="closeMatchModal()" class="absolute top-4 right-4 z-[9999] text-slate-400 hover:text-white transition bg-slate-900 rounded-full p-1.5 border border-slate-800 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div id="match-modal-content" class="space-y-4"></div>
       </div>
     </div>
 </body>
