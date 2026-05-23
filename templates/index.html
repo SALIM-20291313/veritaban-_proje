@@ -187,6 +187,9 @@
             <button onclick="switchTab('tab-admin')" id="btn-tab-admin" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
                 ⚙️ Veritabanı Yönetimi
             </button>
+            <button onclick="switchTab('tab-crud')" id="btn-tab-crud" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
+                🛠️ Hoca İnceleme & Yönetim Paneli
+            </button>
         </div>
 
         <!-- TAB CONTENT 1: Standings and Scorers -->
@@ -636,6 +639,244 @@
 
     </main>
 
+        <!-- TAB CONTENT 6: Hoca İnceleme & Yönetim Paneli (CRUD) -->
+        <div id="tab-crud" class="tab-content hidden space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-12">
+            <div class="rounded-2xl glass p-6 border border-indigo-500/10 space-y-6">
+                <h3 class="text-xl font-bold title-font text-white flex items-center space-x-2">
+                    <span>🛠️ Hoca İnceleme & Yönetim Paneli (Kapsamlı CRUD)</span>
+                </h3>
+                
+                <div class="flex space-x-3 border-b border-slate-800 pb-4 overflow-x-auto">
+                    <button onclick="switchCrudTab('crud-players')" id="btn-crud-players" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-indigo-600 text-white rounded-lg transition">👤 Oyuncular</button>
+                    <button onclick="switchCrudTab('crud-teams')" id="btn-crud-teams" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">🛡️ Takımlar</button>
+                    <button onclick="switchCrudTab('crud-managers')" id="btn-crud-managers" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">👔 Teknik Direktörler</button>
+                    <button onclick="switchCrudTab('crud-stadiums')" id="btn-crud-stadiums" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">🏟️ Stadyumlar</button>
+                </div>
+
+                <!-- PLAYERS CRUD -->
+                <div id="crud-players" class="crud-panel space-y-6">
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-lg font-semibold text-white mb-4">Yeni Oyuncu Ekle</h4>
+                        <form id="add-player-form" onsubmit="addPlayer(event)" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label>
+                                <input type="text" id="crud-ad" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Soyad</label>
+                                <input type="text" id="crud-soyad" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Mevki</label>
+                                <select id="crud-mevki" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="KL">KL - Kaleci</option>
+                                    <option value="DF">DF - Defans</option>
+                                    <option value="OS">OS - Orta Saha</option>
+                                    <option value="FV">FV - Forvet</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Uyruk</label>
+                                <input type="text" id="crud-uyruk" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Doğum Tarihi</label>
+                                <input type="date" id="crud-dogum" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım</label>
+                                <select id="crud-takim" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Serbest / Takımsız</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-3 lg:col-span-6 flex justify-end mt-2">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-semibold text-xs shadow-lg transition">
+                                    + Oyuncuyu Ekle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-white">Sistemdeki Tüm Oyuncular</h4>
+                            <button onclick="loadAdminPlayers()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-96 custom-scrollbar">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead class="sticky top-0 bg-slate-900 z-10">
+                                    <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                                        <th class="py-3 px-4">ID</th>
+                                        <th class="py-3 px-4">Ad Soyad</th>
+                                        <th class="py-3 px-4">Mevki</th>
+                                        <th class="py-3 px-4">Uyruk</th>
+                                        <th class="py-3 px-4">D. Tarihi</th>
+                                        <th class="py-3 px-4">Takım</th>
+                                        <th class="py-3 px-4 text-right">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crud-players-tbody" class="divide-y divide-slate-800/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEAMS CRUD -->
+                <div id="crud-teams" class="crud-panel hidden space-y-6">
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-lg font-semibold text-white mb-4">Yeni Takım Ekle</h4>
+                        <form id="add-team-form" onsubmit="addTeam(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım Adı</label>
+                                <input type="text" id="crud-team-ad" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Kuruluş Yılı</label>
+                                <input type="number" id="crud-team-yil" required min="1800" max="2026" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Şehir</label>
+                                <input type="text" id="crud-team-sehir" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Stadyum (Opsiyonel)</label>
+                                <select id="crud-team-stadyum" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Stadyum Seçin</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-4 flex justify-end mt-2">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-semibold text-xs shadow-lg transition">
+                                    + Takımı Ekle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-white">Sistemdeki Tüm Takımlar</h4>
+                            <button onclick="loadAdminTeams()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-96 custom-scrollbar">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead class="sticky top-0 bg-slate-900 z-10">
+                                    <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                                        <th class="py-3 px-4">ID</th>
+                                        <th class="py-3 px-4">Takım Adı</th>
+                                        <th class="py-3 px-4">Kuruluş</th>
+                                        <th class="py-3 px-4">Şehir</th>
+                                        <th class="py-3 px-4">Stadyum</th>
+                                        <th class="py-3 px-4 text-right">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crud-teams-tbody" class="divide-y divide-slate-800/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MANAGERS CRUD -->
+                <div id="crud-managers" class="crud-panel hidden space-y-6">
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-lg font-semibold text-white mb-4">Yeni Teknik Direktör Ekle</h4>
+                        <form id="add-manager-form" onsubmit="addManager(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label>
+                                <input type="text" id="crud-manager-ad" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Soyad</label>
+                                <input type="text" id="crud-manager-soyad" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım (Opsiyonel)</label>
+                                <select id="crud-manager-takim" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Serbest / Takımsız</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-3 flex justify-end mt-2">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-semibold text-xs shadow-lg transition">
+                                    + Direktörü Ekle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-white">Sistemdeki Teknik Direktörler</h4>
+                            <button onclick="loadAdminManagers()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-96 custom-scrollbar">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead class="sticky top-0 bg-slate-900 z-10">
+                                    <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                                        <th class="py-3 px-4">ID</th>
+                                        <th class="py-3 px-4">Ad Soyad</th>
+                                        <th class="py-3 px-4">Görev Yaptığı Takım</th>
+                                        <th class="py-3 px-4 text-right">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crud-managers-tbody" class="divide-y divide-slate-800/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STADIUMS CRUD -->
+                <div id="crud-stadiums" class="crud-panel hidden space-y-6">
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-lg font-semibold text-white mb-4">Yeni Stadyum Ekle</h4>
+                        <form id="add-stadium-form" onsubmit="addStadium(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Stadyum Adı</label>
+                                <input type="text" id="crud-stadium-ad" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Kapasite</label>
+                                <input type="number" id="crud-stadium-kapasite" required min="1" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Şehir</label>
+                                <input type="text" id="crud-stadium-sehir" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div class="md:col-span-3 flex justify-end mt-2">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-semibold text-xs shadow-lg transition">
+                                    + Stadyumu Ekle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-white">Sistemdeki Tüm Stadyumlar</h4>
+                            <button onclick="loadAdminStadiums()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-96 custom-scrollbar">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead class="sticky top-0 bg-slate-900 z-10">
+                                    <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                                        <th class="py-3 px-4">ID</th>
+                                        <th class="py-3 px-4">Stadyum Adı</th>
+                                        <th class="py-3 px-4">Kapasite</th>
+                                        <th class="py-3 px-4">Şehir</th>
+                                        <th class="py-3 px-4 text-right">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crud-stadiums-tbody" class="divide-y divide-slate-800/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     <!-- Toast Notification Banner -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-500 max-w-sm w-full bg-slate-900 border border-slate-800 text-white rounded-xl shadow-2xl p-4 flex items-start space-x-3">
         <div class="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg" id="toast-icon">
@@ -672,10 +913,13 @@
             });
             
             const activeBtn = document.getElementById('btn-' + tabId);
-            activeBtn.classList.remove('border-transparent', 'text-slate-400');
-            activeBtn.classList.add('border-indigo-500', 'text-indigo-400');
+            if(activeBtn) {
+                activeBtn.classList.remove('border-transparent', 'text-slate-400');
+                activeBtn.classList.add('border-indigo-500', 'text-indigo-400');
+            }
             
             if (tabId === 'tab-leaderboard') loadLeaderboard();
+            if (tabId === 'tab-crud') loadAdminPlayers();
         }
 
         // Fetch League Data
@@ -718,6 +962,8 @@
 
             const teamSelect = document.getElementById('sp-takim');
             const lbTeamSelect = document.getElementById('lb-takim');
+            const crudTeamSelect = document.getElementById('crud-takim');
+            const crudManagerTakim = document.getElementById('crud-manager-takim');
             
             if (teamSelect && teamSelect.options.length <= 1) {
                 standings.forEach(team => {
@@ -731,6 +977,20 @@
                         opt2.value = team.Takim_ID;
                         opt2.textContent = team.Takim_Ad;
                         lbTeamSelect.appendChild(opt2);
+                    }
+                    
+                    if(crudTeamSelect) {
+                        const opt3 = document.createElement('option');
+                        opt3.value = team.Takim_ID;
+                        opt3.textContent = team.Takim_Ad;
+                        crudTeamSelect.appendChild(opt3);
+                    }
+                    
+                    if(crudManagerTakim) {
+                        const opt4 = document.createElement('option');
+                        opt4.value = team.Takim_ID;
+                        opt4.textContent = team.Takim_Ad;
+                        crudManagerTakim.appendChild(opt4);
                     }
                 });
             }
@@ -2492,6 +2752,268 @@
         setTimeout(() => {
             loadMatchArchive();
         }, 1000);
+
+        // --- ADMIN CRUD JS ---
+        async function loadAdminPlayers() {
+            const tbody = document.getElementById('crud-players-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Yükleniyor...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/players');
+                const data = await res.json();
+                if(data.success) {
+                    if(data.players.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Sistemde kayıtlı oyuncu yok.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = '';
+                    data.players.forEach(p => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-slate-800/50 hover:bg-slate-900/40 transition-colors';
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 text-xs font-mono text-slate-500">#${p.Oyuncu_ID}</td>
+                            <td class="py-3 px-4 font-semibold text-slate-200">${p.Ad} ${p.Soyad}</td>
+                            <td class="py-3 px-4 text-xs text-indigo-400 font-bold">${p.Mevki}</td>
+                            <td class="py-3 px-4 text-xs">${p.Uyruk}</td>
+                            <td class="py-3 px-4 text-xs text-slate-400">${p.Dogum_Tarihi || '-'}</td>
+                            <td class="py-3 px-4 text-xs">${p.Takim_Ad || '<span class="text-slate-500">Serbest</span>'}</td>
+                            <td class="py-3 px-4 text-right">
+                                <button onclick="deletePlayer(${p.Oyuncu_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 ml-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    <span>Sil</span>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-rose-500">Hata: ${data.error}</td></tr>`;
+                }
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-rose-500">Bağlantı hatası.</td></tr>`;
+            }
+        }
+
+        async function addPlayer(event) {
+            event.preventDefault();
+            const payload = {
+                Ad: document.getElementById('crud-ad').value,
+                Soyad: document.getElementById('crud-soyad').value,
+                Mevki: document.getElementById('crud-mevki').value,
+                Uyruk: document.getElementById('crud-uyruk').value,
+                Dogum_Tarihi: document.getElementById('crud-dogum').value,
+                Takim_ID: document.getElementById('crud-takim').value || null
+            };
+            try {
+                const res = await fetch('/api/admin/players/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if(data.success) {
+                    showToast('Başarılı', 'Oyuncu başarıyla eklendi.', 'success');
+                    document.getElementById('add-player-form').reset();
+                    loadAdminPlayers();
+                } else {
+                    showToast('Hata', 'Oyuncu eklenemedi: ' + data.error, 'error');
+                }
+            } catch (err) {
+                showToast('Hata', 'Bağlantı hatası.', 'error');
+            }
+        }
+
+        async function deletePlayer(id) {
+            if(!confirm('Bu oyuncuyu silmek istediğinize emin misiniz?')) return;
+            try {
+                const res = await fetch('/api/admin/players/delete/' + id, { method: 'DELETE' });
+                const data = await res.json();
+                if(data.success) {
+                    showToast('Başarılı', 'Oyuncu sistemden silindi.', 'success');
+                    loadAdminPlayers();
+                } else {
+                    showToast('Hata', 'Oyuncu silinemedi: ' + data.error, 'error');
+                }
+            } catch (err) {
+                showToast('Hata', 'Bağlantı hatası.', 'error');
+            }
+        }
+
+        function switchCrudTab(tabId) {
+            document.querySelectorAll('.crud-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.crud-tab-btn').forEach(b => {
+                b.classList.remove('bg-indigo-600', 'text-white');
+                b.classList.add('bg-slate-800', 'text-slate-300');
+            });
+            
+            document.getElementById(tabId).classList.remove('hidden');
+            const btn = document.getElementById('btn-' + tabId);
+            if(btn) {
+                btn.classList.remove('bg-slate-800', 'text-slate-300');
+                btn.classList.add('bg-indigo-600', 'text-white');
+            }
+            
+            if(tabId === 'crud-players') loadAdminPlayers();
+            if(tabId === 'crud-teams') loadAdminTeams();
+            if(tabId === 'crud-managers') loadAdminManagers();
+            if(tabId === 'crud-stadiums') loadAdminStadiums();
+        }
+
+        // --- ADMIN CRUD: TEAMS ---
+        async function loadAdminTeams() {
+            const tbody = document.getElementById('crud-teams-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-500">Yükleniyor...</td></tr>';
+            try {
+                const sres = await fetch('/api/admin/stadiums');
+                const sdata = await sres.json();
+                if(sdata.success) {
+                    const select = document.getElementById('crud-team-stadyum');
+                    select.innerHTML = '<option value="">Stadyum Seçin</option>';
+                    sdata.stadiums.forEach(s => { select.innerHTML += `<option value="${s.Stadyum_ID}">${s.Ad}</option>`; });
+                }
+                const res = await fetch('/api/admin/teams');
+                const data = await res.json();
+                if(data.success) {
+                    if(data.teams.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-500">Kayıtlı takım yok.</td></tr>'; return; }
+                    tbody.innerHTML = '';
+                    data.teams.forEach(t => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-slate-800/50 hover:bg-slate-900/40';
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 text-xs font-mono text-slate-500">#${t.Takim_ID}</td>
+                            <td class="py-3 px-4 font-semibold text-slate-200">${t.Ad}</td>
+                            <td class="py-3 px-4 text-xs">${t.Kurulus_Yili}</td>
+                            <td class="py-3 px-4 text-xs">${t.Sehir}</td>
+                            <td class="py-3 px-4 text-xs text-slate-400">${t.Stadyum_Ad || '-'}</td>
+                            <td class="py-3 px-4 text-right">
+                                <button onclick="deleteTeam(${t.Takim_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 ml-auto"><span>Sil</span></button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) {}
+        }
+        async function addTeam(event) {
+            event.preventDefault();
+            const payload = {
+                Ad: document.getElementById('crud-team-ad').value,
+                Kurulus_Yili: document.getElementById('crud-team-yil').value,
+                Sehir: document.getElementById('crud-team-sehir').value,
+                Stadyum_ID: document.getElementById('crud-team-stadyum').value || null
+            };
+            try {
+                const res = await fetch('/api/admin/teams/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Takım eklendi.', 'success'); document.getElementById('add-team-form').reset(); loadAdminTeams(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
+        async function deleteTeam(id) {
+            if(!confirm('Bu takımı silmek istediğinize emin misiniz? (Tüm oyuncular ve maçlar etkilenebilir)')) return;
+            try {
+                const res = await fetch('/api/admin/teams/delete/' + id, { method: 'DELETE' });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Takım silindi.', 'success'); loadAdminTeams(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
+
+        // --- ADMIN CRUD: MANAGERS ---
+        async function loadAdminManagers() {
+            const tbody = document.getElementById('crud-managers-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-500">Yükleniyor...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/managers');
+                const data = await res.json();
+                if(data.success) {
+                    if(data.managers.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-500">Kayıtlı direktör yok.</td></tr>'; return; }
+                    tbody.innerHTML = '';
+                    data.managers.forEach(m => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-slate-800/50 hover:bg-slate-900/40';
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 text-xs font-mono text-slate-500">#${m.Direktor_ID}</td>
+                            <td class="py-3 px-4 font-semibold text-slate-200">${m.Ad} ${m.Soyad}</td>
+                            <td class="py-3 px-4 text-xs">${m.Takim_Ad || '-'}</td>
+                            <td class="py-3 px-4 text-right">
+                                <button onclick="deleteManager(${m.Direktor_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 ml-auto"><span>Sil</span></button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) {}
+        }
+        async function addManager(event) {
+            event.preventDefault();
+            const payload = { Ad: document.getElementById('crud-manager-ad').value, Soyad: document.getElementById('crud-manager-soyad').value, Takim_ID: document.getElementById('crud-manager-takim').value || null };
+            try {
+                const res = await fetch('/api/admin/managers/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Direktör eklendi.', 'success'); document.getElementById('add-manager-form').reset(); loadAdminManagers(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
+        async function deleteManager(id) {
+            if(!confirm('Bu direktörü silmek istediğinize emin misiniz?')) return;
+            try {
+                const res = await fetch('/api/admin/managers/delete/' + id, { method: 'DELETE' });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); loadAdminManagers(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
+
+        // --- ADMIN CRUD: STADIUMS ---
+        async function loadAdminStadiums() {
+            const tbody = document.getElementById('crud-stadiums-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Yükleniyor...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/stadiums');
+                const data = await res.json();
+                if(data.success) {
+                    if(data.stadiums.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Kayıtlı stadyum yok.</td></tr>'; return; }
+                    tbody.innerHTML = '';
+                    data.stadiums.forEach(s => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-slate-800/50 hover:bg-slate-900/40';
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 text-xs font-mono text-slate-500">#${s.Stadyum_ID}</td>
+                            <td class="py-3 px-4 font-semibold text-slate-200">${s.Ad}</td>
+                            <td class="py-3 px-4 text-xs">${s.Kapasite}</td>
+                            <td class="py-3 px-4 text-xs">${s.Sehir}</td>
+                            <td class="py-3 px-4 text-right">
+                                <button onclick="deleteStadium(${s.Stadyum_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 ml-auto"><span>Sil</span></button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) {}
+        }
+        async function addStadium(event) {
+            event.preventDefault();
+            const payload = { Ad: document.getElementById('crud-stadium-ad').value, Kapasite: document.getElementById('crud-stadium-kapasite').value, Sehir: document.getElementById('crud-stadium-sehir').value };
+            try {
+                const res = await fetch('/api/admin/stadiums/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Stadyum eklendi.', 'success'); document.getElementById('add-stadium-form').reset(); loadAdminStadiums(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
+        async function deleteStadium(id) {
+            if(!confirm('Bu stadyumu silmek istediğinize emin misiniz? (Kullanıldığı takımlar ve maçlar etkilenebilir)')) return;
+            try {
+                const res = await fetch('/api/admin/stadiums/delete/' + id, { method: 'DELETE' });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); loadAdminStadiums(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
 
     </script>
 

@@ -1988,6 +1988,246 @@ def scouting_players_search():
         if conn and conn.is_connected():
             conn.close()
 
+# --- ADMIN CRUD ENDPOINTS ---
+
+@app.route('/api/admin/players', methods=['GET'])
+def admin_get_players():
+    if not db_connected:
+        return jsonify({"success": False, "error": "Veritabani baglantisi yok."}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT o.Oyuncu_ID, o.Ad, o.Soyad, o.Mevki, o.Uyruk, o.Dogum_Tarihi, t.Ad as Takim_Ad, o.Takim_ID
+            FROM Oyuncular o
+            LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
+            ORDER BY o.Oyuncu_ID DESC
+        """)
+        players = cursor.fetchall()
+        
+        # Format date for json
+        for p in players:
+            if p['Dogum_Tarihi']:
+                p['Dogum_Tarihi'] = p['Dogum_Tarihi'].strftime('%Y-%m-%d')
+
+        return jsonify({"success": True, "players": players})
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+@app.route('/api/admin/players/add', methods=['POST'])
+def admin_add_player():
+    if not db_connected:
+        return jsonify({"success": False, "error": "Veritabani baglantisi yok."}), 500
+    conn = None
+    try:
+        data = request.json
+        ad = data.get('Ad')
+        soyad = data.get('Soyad')
+        mevki = data.get('Mevki')
+        uyruk = data.get('Uyruk')
+        dogum_tarihi = data.get('Dogum_Tarihi')
+        takim_id = data.get('Takim_ID')
+        
+        if not all([ad, soyad, mevki, uyruk, dogum_tarihi]):
+            return jsonify({"success": False, "error": "Eksik bilgi."}), 400
+
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO Oyuncular (Ad, Soyad, Mevki, Uyruk, Dogum_Tarihi, Takim_ID) 
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (ad, soyad, mevki, uyruk, dogum_tarihi, takim_id if takim_id else None))
+        conn.commit()
+        
+        return jsonify({"success": True})
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+@app.route('/api/admin/players/delete/<int:player_id>', methods=['DELETE'])
+def admin_delete_player(player_id):
+    if not db_connected:
+        return jsonify({"success": False, "error": "Veritabani baglantisi yok."}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        # Dependent data in Mac_Olaylari and Transferler will be deleted automatically due to ON DELETE CASCADE
+        cursor.execute("DELETE FROM Oyuncular WHERE Oyuncu_ID = %s", (player_id,))
+        conn.commit()
+        
+        return jsonify({"success": True})
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
+# --- ADMIN CRUD: TEAMS ---
+@app.route('/api/admin/teams', methods=['GET'])
+def admin_get_teams():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT t.Takim_ID, t.Ad, t.Kurulus_Yili, t.Sehir, s.Ad as Stadyum_Ad, t.Stadyum_ID
+            FROM Takimlar t
+            LEFT JOIN Stadyumlar s ON t.Stadyum_ID = s.Stadyum_ID
+            ORDER BY t.Takim_ID DESC
+        """)
+        return jsonify({"success": True, "teams": cursor.fetchall()})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/teams/add', methods=['POST'])
+def admin_add_team():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ad = data.get('Ad')
+        yil = data.get('Kurulus_Yili')
+        sehir = data.get('Sehir')
+        stadyum_id = data.get('Stadyum_ID')
+        if not all([ad, yil, sehir]): return jsonify({"success": False, "error": "Eksik bilgi"}), 400
+        
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Takimlar (Ad, Kurulus_Yili, Sehir, Stadyum_ID) VALUES (%s, %s, %s, %s)",
+                       (ad, yil, sehir, stadyum_id if stadyum_id else None))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/teams/delete/<int:team_id>', methods=['DELETE'])
+def admin_delete_team(team_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Takimlar WHERE Takim_ID = %s", (team_id,))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+# --- ADMIN CRUD: MANAGERS ---
+@app.route('/api/admin/managers', methods=['GET'])
+def admin_get_managers():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT td.Direktor_ID, td.Ad, td.Soyad, t.Ad as Takim_Ad, td.Takim_ID
+            FROM Teknik_Direktorler td
+            LEFT JOIN Takimlar t ON td.Takim_ID = t.Takim_ID
+            ORDER BY td.Direktor_ID DESC
+        """)
+        return jsonify({"success": True, "managers": cursor.fetchall()})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/managers/add', methods=['POST'])
+def admin_add_manager():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ad = data.get('Ad')
+        soyad = data.get('Soyad')
+        takim_id = data.get('Takim_ID')
+        if not all([ad, soyad]): return jsonify({"success": False, "error": "Eksik bilgi"}), 400
+        
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Teknik_Direktorler (Ad, Soyad, Takim_ID) VALUES (%s, %s, %s)",
+                       (ad, soyad, takim_id if takim_id else None))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/managers/delete/<int:manager_id>', methods=['DELETE'])
+def admin_delete_manager(manager_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Teknik_Direktorler WHERE Direktor_ID = %s", (manager_id,))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+# --- ADMIN CRUD: STADIUMS ---
+@app.route('/api/admin/stadiums', methods=['GET'])
+def admin_get_stadiums():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT Stadyum_ID, Ad, Kapasite, Sehir FROM Stadyumlar ORDER BY Stadyum_ID DESC")
+        return jsonify({"success": True, "stadiums": cursor.fetchall()})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/stadiums/add', methods=['POST'])
+def admin_add_stadium():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ad = data.get('Ad')
+        kapasite = data.get('Kapasite')
+        sehir = data.get('Sehir')
+        if not all([ad, kapasite, sehir]): return jsonify({"success": False, "error": "Eksik bilgi"}), 400
+        
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Stadyumlar (Ad, Kapasite, Sehir) VALUES (%s, %s, %s)", (ad, kapasite, sehir))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/stadiums/delete/<int:stadium_id>', methods=['DELETE'])
+def admin_delete_stadium(stadium_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Stadyumlar WHERE Stadyum_ID = %s", (stadium_id,))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
 
