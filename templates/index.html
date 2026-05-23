@@ -198,8 +198,11 @@
                 
                 <!-- Standing Table -->
                 <div class="lg:col-span-2 rounded-2xl glass p-6 overflow-hidden">
-                    <h3 class="text-xl font-bold title-font mb-4 text-white flex items-center space-x-2">
-                        <span>⚽ Dinamik Lig Puan Durumu</span>
+                    <h3 class="text-xl font-bold title-font mb-4 text-white flex justify-between items-center">
+                        <span class="flex items-center space-x-2"><span>⚽ Dinamik Lig Puan Durumu</span></span>
+                        <button onclick="showSQL('standings_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                        </button>
                     </h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm border-collapse">
@@ -224,14 +227,22 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="mt-4 flex items-center justify-end text-xs text-slate-400 space-x-4">
+                        <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5"></span>G = Galibiyet</span>
+                        <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-slate-500 mr-1.5"></span>B = Beraberlik</span>
+                        <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-rose-500 mr-1.5"></span>M = Mağlubiyet</span>
+                    </div>
                 </div>
 
                 <!-- Top Scorers and Assists -->
                 <div class="space-y-8">
                     <!-- Scorers Card -->
                     <div class="rounded-2xl glass p-6">
-                        <h3 class="text-lg font-bold title-font mb-4 text-white flex items-center space-x-2">
-                            <span>👑 Gol Krallığı</span>
+                        <h3 class="text-lg font-bold title-font mb-4 text-white flex justify-between items-center">
+                            <span class="flex items-center space-x-2"><span>👑 Gol Krallığı</span></span>
+                            <button onclick="showSQL('scorers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                            </button>
                         </h3>
                         <div class="overflow-hidden">
                             <table class="w-full text-left text-xs">
@@ -348,7 +359,9 @@
                         <select id="lb-takim" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm">
                             <option value="Tumu">Tüm Takımlar</option>
                         </select>
-                        <input type="text" id="lb-uyruk" onchange="loadLeaderboard()" placeholder="Uyruk (Örn: Türkiye)" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm w-36">
+                        <select id="lb-uyruk" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm w-36">
+                            <option value="">Uyruk: Tümü</option><option value="Türkiye">Türkiye</option><option value="Almanya">Almanya</option><option value="Arjantin">Arjantin</option><option value="Belçika">Belçika</option><option value="Brezilya">Brezilya</option><option value="Fransa">Fransa</option><option value="Hollanda">Hollanda</option><option value="İngiltere">İngiltere</option><option value="İspanya">İspanya</option><option value="İtalya">İtalya</option><option value="Portekiz">Portekiz</option><option value="Uruguay">Uruguay</option><option value="Diğer">Diğer</option>
+                        </select>
                         <div class="flex space-x-1 items-center bg-slate-900 border border-slate-800 rounded-xl px-2">
                             <input type="number" id="lb-min-yas" onchange="loadLeaderboard()" placeholder="Min Yaş" class="bg-transparent text-xs text-slate-300 w-16 px-2 py-2.5 focus:outline-none focus:text-white text-center">
                             <span class="text-slate-600">-</span>
@@ -388,7 +401,12 @@
 
           <!-- Oyuncu Formu -->
           <div id="scout-panel-oyuncu" class="rounded-2xl glass p-6 border border-indigo-500/10 space-y-6">
-            <h3 class="text-lg font-bold title-font text-white">🔍 Oyuncu Keşfi &amp; Filtreleme</h3>
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold title-font text-white">🔍 Oyuncu Keşfi &amp; Filtreleme</h3>
+                <button onclick="showSQL('scout_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                </button>
+            </div>
             <form onsubmit="searchScoutPlayers(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
               <div>
                 <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Mevki</label>
@@ -409,7 +427,9 @@
               </div>
               <div>
                 <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Uyruk</label>
-                <input type="text" id="sp-uyruk" placeholder="Örn: Brezilya" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+                <select id="sp-uyruk" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+                    <option value="">Tümü</option><option value="Türkiye">Türkiye</option><option value="Almanya">Almanya</option><option value="Arjantin">Arjantin</option><option value="Belçika">Belçika</option><option value="Brezilya">Brezilya</option><option value="Fransa">Fransa</option><option value="Hollanda">Hollanda</option><option value="İngiltere">İngiltere</option><option value="İspanya">İspanya</option><option value="İtalya">İtalya</option><option value="Portekiz">Portekiz</option><option value="Uruguay">Uruguay</option><option value="Diğer">Diğer</option>
+                </select>
               </div>
               <div>
                 <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Takım</label>
@@ -430,7 +450,7 @@
                 <input type="number" id="sp-asist" min="0" placeholder="0" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
               </div>
               <div>
-                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Maks. Kart Oranı</label>
+                <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1" title="Maç başına ağırlıklı kart oranı (Sarı=1, Kırmızı=2)">Maks. Kart Oranı</label>
                 <input type="number" step="0.01" id="sp-kart-orani" min="0" placeholder="0.5" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
               </div>
               <div class="flex justify-end items-end h-full">
@@ -451,7 +471,7 @@
                   <th class="py-2 px-2 cursor-pointer hover:text-white transition-colors" data-sort="Takim_Ad" onclick="sortScoutPlayers('Takim_Ad')">Takim</th>
                   <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Toplam_Gol" onclick="sortScoutPlayers('Toplam_Gol')">Gol</th>
                   <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Toplam_Asist" onclick="sortScoutPlayers('Toplam_Asist')">Asist</th>
-                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Toplam_Kart" onclick="sortScoutPlayers('Toplam_Kart')">Kart</th>
+                  <th class="py-2 px-2 text-center cursor-pointer hover:text-white transition-colors" data-sort="Toplam_Kart" onclick="sortScoutPlayers('Toplam_Kart')" title="Maç başına ağırlıklı kart oranı (Sarı=1, Kırmızı=2)">Kart</th>
                   <th class="py-2 px-2 text-right cursor-pointer hover:text-white transition-colors" data-sort="Son_Bonservis" onclick="sortScoutPlayers('Son_Bonservis')">Piyasa Değeri</th>
                 </tr></thead>
                 <tbody id="scout-players-tbody"><tr><td colspan="9" class="py-8 text-center text-slate-500">Filtre uygulayarak arama yapın.</td></tr></tbody>
@@ -513,8 +533,11 @@
 
                 <!-- Recent Deals -->
                 <div class="rounded-2xl glass p-6">
-                    <h3 class="text-lg font-bold title-font mb-4 text-white flex items-center space-x-2">
-                        <span>🔄 Son Transfer Hareketleri</span>
+                    <h3 class="text-lg font-bold title-font mb-4 text-white flex justify-between items-center">
+                        <span class="flex items-center space-x-2"><span>🔄 Son Transfer Hareketleri</span></span>
+                        <button onclick="showSQL('transfer_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                        </button>
                     </h3>
                     <div class="space-y-4 max-h-[22rem] overflow-y-auto pr-2" id="recent-transfers-list">
                         <!-- Loaded dynamically -->
@@ -527,8 +550,11 @@
         <!-- TAB CONTENT 3: Managers -->
         <div id="tab-managers" class="tab-content hidden space-y-8">
             <div class="rounded-2xl glass p-6">
-                <h3 class="text-xl font-bold title-font mb-4 text-white flex items-center space-x-2">
-                    <span>👔 Teknik Direktör Galibiyet Oranı & Başarı Analizi</span>
+                <h3 class="text-xl font-bold title-font mb-4 text-white flex justify-between items-center">
+                    <span class="flex items-center space-x-2"><span>👔 Teknik Direktör Galibiyet Oranı & Başarı Analizi</span></span>
+                    <button onclick="showSQL('managers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                    </button>
                 </h3>
                 <p class="text-sm text-slate-400 mb-6">
                     Managers, Teams ve Matches tablolarını <code>JOIN</code> ile birleştirerek hocaların takım başındaki galibiyet yüzdelerini dinamik olarak hesaplar (Bkz. Aşama 1 - Analitik Sorgu 5).
@@ -646,17 +672,20 @@
                     <span>🛠️ Hoca İnceleme & Yönetim Paneli (Kapsamlı CRUD)</span>
                 </h3>
                 
-                <div class="flex space-x-3 border-b border-slate-800 pb-4 overflow-x-auto">
+                <div class="flex space-x-3 border-b border-slate-800 pb-4 overflow-x-auto" style="touch-action: pan-x">
                     <button onclick="switchCrudTab('crud-players')" id="btn-crud-players" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-indigo-600 text-white rounded-lg transition">👤 Oyuncular</button>
                     <button onclick="switchCrudTab('crud-teams')" id="btn-crud-teams" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">🛡️ Takımlar</button>
                     <button onclick="switchCrudTab('crud-managers')" id="btn-crud-managers" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">👔 Teknik Direktörler</button>
                     <button onclick="switchCrudTab('crud-stadiums')" id="btn-crud-stadiums" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">🏟️ Stadyumlar</button>
+                    <button onclick="switchCrudTab('crud-matches')" id="btn-crud-matches" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">⚽ Maçlar</button>
+                    <button onclick="switchCrudTab('crud-transfers')" id="btn-crud-transfers" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">💸 Transferler</button>
+                    <button onclick="switchCrudTab('crud-match-events')" id="btn-crud-match-events" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">📋 Maç Olayları</button>
                 </div>
 
                 <!-- PLAYERS CRUD -->
                 <div id="crud-players" class="crud-panel space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4">Yeni Oyuncu Ekle</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Oyuncu Ekle</span><button onclick="showSQL('crud_add_player_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-player-form" onsubmit="addPlayer(event)" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label>
@@ -677,7 +706,9 @@
                             </div>
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Uyruk</label>
-                                <input type="text" id="crud-uyruk" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                <select id="crud-uyruk" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Seçiniz</option><option value="Türkiye">Türkiye</option><option value="Almanya">Almanya</option><option value="Arjantin">Arjantin</option><option value="Belçika">Belçika</option><option value="Brezilya">Brezilya</option><option value="Fransa">Fransa</option><option value="Hollanda">Hollanda</option><option value="İngiltere">İngiltere</option><option value="İspanya">İspanya</option><option value="İtalya">İtalya</option><option value="Portekiz">Portekiz</option><option value="Uruguay">Uruguay</option><option value="Diğer">Diğer</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Doğum Tarihi</label>
@@ -699,7 +730,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white">Sistemdeki Tüm Oyuncular</h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Oyuncular</span><button onclick="showSQL('crud_players_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminPlayers()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -725,7 +756,7 @@
                 <!-- TEAMS CRUD -->
                 <div id="crud-teams" class="crud-panel hidden space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4">Yeni Takım Ekle</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Takım Ekle</span><button onclick="showSQL('crud_add_team_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-team-form" onsubmit="addTeam(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım Adı</label>
@@ -755,7 +786,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white">Sistemdeki Tüm Takımlar</h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Takımlar</span><button onclick="showSQL('crud_teams_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminTeams()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -780,7 +811,7 @@
                 <!-- MANAGERS CRUD -->
                 <div id="crud-managers" class="crud-panel hidden space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4">Yeni Teknik Direktör Ekle</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Teknik Direktör Ekle</span><button onclick="showSQL('crud_add_manager_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-manager-form" onsubmit="addManager(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label>
@@ -806,7 +837,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white">Sistemdeki Teknik Direktörler</h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Teknik Direktörler</span><button onclick="showSQL('crud_managers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminManagers()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -829,7 +860,7 @@
                 <!-- STADIUMS CRUD -->
                 <div id="crud-stadiums" class="crud-panel hidden space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4">Yeni Stadyum Ekle</h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Stadyum Ekle</span><button onclick="showSQL('crud_add_stadium_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-stadium-form" onsubmit="addStadium(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Stadyum Adı</label>
@@ -853,7 +884,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white">Sistemdeki Tüm Stadyumlar</h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Stadyumlar</span><button onclick="showSQL('crud_stadiums_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminStadiums()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -874,8 +905,238 @@
                     </div>
                 </div>
 
+                <!-- MATCHES CRUD -->
+                <div id="crud-matches" class="crud-panel hidden space-y-6">
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Maç Ekle</span><button onclick="showSQL('crud_add_match_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <form id="add-match-form" onsubmit="addMatch(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ev Sahibi Takım</label>
+                                <select id="crud-match-ev" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Ev Sahibi Seç</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Deplasman Takımı</label>
+                                <select id="crud-match-dep" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Deplasman Seç</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Tarih ve Saat</label>
+                                <input type="datetime-local" id="crud-match-tarih" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Stadyum (Opsiyonel)</label>
+                                <select id="crud-match-stadyum" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Stadyum Seç (Varsayılan: Ev Sahibi)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ev Sahibi Skor (Opsiyonel)</label>
+                                <input type="number" id="crud-match-evskor" min="0" placeholder="Örn: 2" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Deplasman Skor (Opsiyonel)</label>
+                                <input type="number" id="crud-match-depskor" min="0" placeholder="Örn: 1" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div class="md:col-span-3 flex justify-end mt-2">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-semibold text-xs shadow-lg transition">
+                                    + Maçı Ekle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Son 50 Maç</span><button onclick="showSQL('crud_matches_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <button onclick="loadAdminMatches()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-96 custom-scrollbar">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead class="sticky top-0 bg-slate-900 z-10">
+                                    <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                                        <th class="py-3 px-4">ID</th>
+                                        <th class="py-3 px-4">Tarih</th>
+                                        <th class="py-3 px-4 text-right">Ev Sahibi</th>
+                                        <th class="py-3 px-4 text-center">Skor</th>
+                                        <th class="py-3 px-4">Deplasman</th>
+                                        <th class="py-3 px-4 text-center">Stadyum</th>
+                                        <th class="py-3 px-4 text-right">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crud-matches-tbody" class="divide-y divide-slate-800/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRANSFERS CRUD -->
+                <div id="crud-transfers" class="crud-panel hidden space-y-6">
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Transfer Ekle</span><button onclick="showSQL('crud_add_transfer_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <form id="add-transfer-form" onsubmit="addTransfer(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Oyuncu</label>
+                                <select id="crud-transfer-oyuncu" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Oyuncu Seç</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Eski Takım (Opsiyonel)</label>
+                                <select id="crud-transfer-eski" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Serbest Oyuncu</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Yeni Takım</label>
+                                <select id="crud-transfer-yeni" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Yeni Takım Seç</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Tarih</label>
+                                <input type="date" id="crud-transfer-tarih" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Bonservis Bedeli</label>
+                                <input type="number" id="crud-transfer-bedel" required min="0" step="0.01" placeholder="Örn: 5000000" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Para Birimi</label>
+                                <select id="crud-transfer-para" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="TRY">TRY (₺)</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-3 flex justify-end mt-2">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-semibold text-xs shadow-lg transition">
+                                    + Transferi Ekle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Son 50 Transfer</span><button onclick="showSQL('crud_transfers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <button onclick="loadAdminTransfers()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-96 custom-scrollbar">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead class="sticky top-0 bg-slate-900 z-10">
+                                    <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                                        <th class="py-3 px-4">ID</th>
+                                        <th class="py-3 px-4">Oyuncu</th>
+                                        <th class="py-3 px-4 text-rose-400">Eski Takım</th>
+                                        <th class="py-3 px-4 text-emerald-400">Yeni Takım</th>
+                                        <th class="py-3 px-4">Tarih</th>
+                                        <th class="py-3 px-4">Bedel</th>
+                                        <th class="py-3 px-4 text-right">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crud-transfers-tbody" class="divide-y divide-slate-800/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MATCH EVENTS CRUD -->
+                <div id="crud-match-events" class="crud-panel hidden space-y-6">
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <h4 class="text-lg font-semibold text-white mb-4">Maç Olayı (Gol/Kart) Yönetimi</h4>
+                        <div class="mb-6 pb-6 border-b border-slate-800">
+                            <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Yönetilecek Maçı Seçin</label>
+                            <select id="crud-me-match" onchange="onMatchEventSelect()" class="w-full max-w-md bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-3 text-sm font-semibold text-white focus:outline-none">
+                                <option value="">-- Yükleniyor --</option>
+                            </select>
+                        </div>
+                        
+                        <h4 class="text-md font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Olay Ekle</span><button onclick="showSQL('crud_add_match_event_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <form id="add-match-event-form" onsubmit="addMatchEvent(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div class="md:col-span-2">
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Oyuncu (Sadece Maçtaki Takımlar)</label>
+                                <select id="crud-me-oyuncu" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Önce Maç Seçin</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Olay Tipi</label>
+                                <select id="crud-me-tip" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Seçiniz</option>
+                                    <option value="Gol">⚽ Gol</option>
+                                    <option value="Asist">👟 Asist</option>
+                                    <option value="Sari_Kart">🟨 Sarı Kart</option>
+                                    <option value="Kirmizi_Kart">🟥 Kırmızı Kart</option>
+                                    <option value="KKG">🙃 Kendi Kalesine Gol</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Dakika</label>
+                                <input type="number" id="crud-me-dakika" required min="1" max="130" placeholder="Örn: 45" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                            </div>
+                            <div class="md:col-span-4 flex justify-end mt-2">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-semibold text-xs shadow-lg transition">
+                                    + Olayı Kaydet
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Bu Maça Ait Olaylar</span><button onclick="showSQL('crud_match_events_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <button onclick="onMatchEventSelect()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-96 custom-scrollbar">
+                            <table class="w-full text-left text-sm border-collapse">
+                                <thead class="sticky top-0 bg-slate-900 z-10">
+                                    <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                                        <th class="py-3 px-4 w-20">ID</th>
+                                        <th class="py-3 px-4">Oyuncu</th>
+                                        <th class="py-3 px-4">Olay Tipi</th>
+                                        <th class="py-3 px-4 w-24">Dakika</th>
+                                        <th class="py-3 px-4 text-right w-24">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="crud-match-events-tbody" class="divide-y divide-slate-800/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+
+    <!-- SQL Gösterici Modal (EKSİK 7) -->
+    <div id="sql-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="closeSQL()"></div>
+        <div class="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl mx-4 shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center p-4 border-b border-slate-800 bg-slate-900/50 rounded-t-2xl">
+                <div class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Arka Plan SQL Sorgusu</h3>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="copySQL()" id="btn-copy-sql" class="text-xs font-semibold px-3 py-1.5 bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition border border-slate-700 flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        <span>Kopyala</span>
+                    </button>
+                    <button onclick="closeSQL()" class="text-slate-500 hover:text-rose-400 transition bg-slate-800 hover:bg-slate-700 p-1.5 rounded-lg border border-slate-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[#0d1117] rounded-b-2xl font-mono text-sm leading-relaxed" id="sql-content-area">
+                <!-- SQL buraya enjekte edilecek -->
+            </div>
+        </div>
+    </div>
 
     <!-- Toast Notification Banner -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-500 max-w-sm w-full bg-slate-900 border border-slate-800 text-white rounded-xl shadow-2xl p-4 flex items-start space-x-3">
@@ -920,6 +1181,12 @@
             
             if (tabId === 'tab-leaderboard') loadLeaderboard();
             if (tabId === 'tab-crud') loadAdminPlayers();
+            if (tabId === 'tab-scouting') {
+                document.getElementById('scout-mevki').value = '';
+                document.getElementById('scout-yas').value = '';
+                document.getElementById('scout-uyruk').value = '';
+                searchScoutPlayers(null);
+            }
         }
 
         // Fetch League Data
@@ -966,7 +1233,8 @@
             const crudManagerTakim = document.getElementById('crud-manager-takim');
             
             if (teamSelect && teamSelect.options.length <= 1) {
-                standings.forEach(team => {
+                const sortedStandings = [...standings].sort((a, b) => a.Takim_Ad.localeCompare(b.Takim_Ad, 'tr'));
+                sortedStandings.forEach(team => {
                     const opt = document.createElement('option');
                     opt.value = team.Takim_ID;
                     opt.textContent = team.Takim_Ad;
@@ -2715,6 +2983,9 @@
                     return;
                 }
                 
+                if(!window.adminData) window.adminData = {};
+                window.adminData.matches = data.archived_matches;
+                
                 tbody.innerHTML = '';
                 data.archived_matches.forEach(m => {
                     const d = new Date(m.tarih_saat);
@@ -2737,7 +3008,10 @@
                         <td class="py-3 px-4 font-semibold text-slate-200 group-hover:text-indigo-300 transition-colors">${m.deplasman}</td>
                         <td class="py-3 px-4 text-center text-xs text-slate-400 max-w-[150px] truncate" title="${m.stadyum}">${m.stadyum}</td>
                         <td class="py-3 px-4 text-center">
-                            <button onclick="event.stopPropagation();openMatchModal(${m.mac_id})" class="text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-indigo-400 px-3 py-1.5 rounded hover:bg-indigo-600 hover:text-white transition">İncele</button>
+                            <div class="flex justify-center space-x-2">
+                                <button onclick="event.stopPropagation();openMatchModal(${m.mac_id})" class="text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-indigo-400 px-3 py-1.5 rounded hover:bg-indigo-600 hover:text-white transition">İncele</button>
+                                <button onclick="event.stopPropagation();openUpdateModal('match', ${m.mac_id})" class="text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-amber-500 px-3 py-1.5 rounded hover:bg-amber-600 hover:text-white transition">Düzenle</button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -2766,6 +3040,9 @@
                         tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Sistemde kayıtlı oyuncu yok.</td></tr>';
                         return;
                     }
+                    if(!window.adminData) window.adminData = {};
+                    window.adminData.players = data.players;
+                    
                     tbody.innerHTML = '';
                     data.players.forEach(p => {
                         const tr = document.createElement('tr');
@@ -2778,10 +3055,14 @@
                             <td class="py-3 px-4 text-xs text-slate-400">${p.Dogum_Tarihi || '-'}</td>
                             <td class="py-3 px-4 text-xs">${p.Takim_Ad || '<span class="text-slate-500">Serbest</span>'}</td>
                             <td class="py-3 px-4 text-right">
-                                <button onclick="deletePlayer(${p.Oyuncu_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 ml-auto">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                    <span>Sil</span>
-                                </button>
+                                <div class="flex justify-end space-x-2">
+                                    <button onclick="openUpdateModal('player', ${p.Oyuncu_ID})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1">
+                                        <span>Düzenle</span>
+                                    </button>
+                                    <button onclick="deletePlayer(${p.Oyuncu_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1">
+                                        <span>Sil</span>
+                                    </button>
+                                </div>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -2857,6 +3138,9 @@
             if(tabId === 'crud-teams') loadAdminTeams();
             if(tabId === 'crud-managers') loadAdminManagers();
             if(tabId === 'crud-stadiums') loadAdminStadiums();
+            if(tabId === 'crud-matches') loadAdminMatches();
+            if(tabId === 'crud-transfers') loadAdminTransfers();
+            if(tabId === 'crud-match-events') loadAdminMatchEvents();
         }
 
         // --- ADMIN CRUD: TEAMS ---
@@ -2876,6 +3160,8 @@
                 const data = await res.json();
                 if(data.success) {
                     if(data.teams.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-500">Kayıtlı takım yok.</td></tr>'; return; }
+                    if(!window.adminData) window.adminData = {};
+                    window.adminData.teams = data.teams;
                     tbody.innerHTML = '';
                     data.teams.forEach(t => {
                         const tr = document.createElement('tr');
@@ -2887,7 +3173,10 @@
                             <td class="py-3 px-4 text-xs">${t.Sehir}</td>
                             <td class="py-3 px-4 text-xs text-slate-400">${t.Stadyum_Ad || '-'}</td>
                             <td class="py-3 px-4 text-right">
-                                <button onclick="deleteTeam(${t.Takim_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 ml-auto"><span>Sil</span></button>
+                                <div class="flex justify-end space-x-2">
+                                    <button onclick="openUpdateModal('team', ${t.Takim_ID})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Düzenle</span></button>
+                                    <button onclick="deleteTeam(${t.Takim_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                </div>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -2930,6 +3219,8 @@
                 const data = await res.json();
                 if(data.success) {
                     if(data.managers.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-500">Kayıtlı direktör yok.</td></tr>'; return; }
+                    if(!window.adminData) window.adminData = {};
+                    window.adminData.managers = data.managers;
                     tbody.innerHTML = '';
                     data.managers.forEach(m => {
                         const tr = document.createElement('tr');
@@ -2939,7 +3230,10 @@
                             <td class="py-3 px-4 font-semibold text-slate-200">${m.Ad} ${m.Soyad}</td>
                             <td class="py-3 px-4 text-xs">${m.Takim_Ad || '-'}</td>
                             <td class="py-3 px-4 text-right">
-                                <button onclick="deleteManager(${m.Direktor_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 ml-auto"><span>Sil</span></button>
+                                <div class="flex justify-end space-x-2">
+                                    <button onclick="openUpdateModal('manager', ${m.Direktor_ID})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Düzenle</span></button>
+                                    <button onclick="deleteManager(${m.Direktor_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                </div>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -2949,12 +3243,16 @@
         }
         async function addManager(event) {
             event.preventDefault();
-            const payload = { Ad: document.getElementById('crud-manager-ad').value, Soyad: document.getElementById('crud-manager-soyad').value, Takim_ID: document.getElementById('crud-manager-takim').value || null };
+            const data = {
+                Ad: document.getElementById('crud-manager-ad').value,
+                Soyad: document.getElementById('crud-manager-soyad').value,
+                Takim_ID: document.getElementById('crud-manager-takim').value || null
+            };
             try {
-                const res = await fetch('/api/admin/managers/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                const data = await res.json();
-                if(data.success) { showToast('Başarılı', 'Direktör eklendi.', 'success'); document.getElementById('add-manager-form').reset(); loadAdminManagers(); }
-                else { showToast('Hata', data.error, 'error'); }
+                const res = await fetch('/api/admin/managers/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                const result = await res.json();
+                if(result.success) { showToast('Başarılı', 'Direktör eklendi.', 'success'); document.getElementById('add-manager-form').reset(); loadAdminManagers(); }
+                else { showToast('Hata', result.error, 'error'); }
             } catch (err) {}
         }
         async function deleteManager(id) {
@@ -2977,6 +3275,8 @@
                 const data = await res.json();
                 if(data.success) {
                     if(data.stadiums.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Kayıtlı stadyum yok.</td></tr>'; return; }
+                    if(!window.adminData) window.adminData = {};
+                    window.adminData.stadiums = data.stadiums;
                     tbody.innerHTML = '';
                     data.stadiums.forEach(s => {
                         const tr = document.createElement('tr');
@@ -2987,7 +3287,10 @@
                             <td class="py-3 px-4 text-xs">${s.Kapasite}</td>
                             <td class="py-3 px-4 text-xs">${s.Sehir}</td>
                             <td class="py-3 px-4 text-right">
-                                <button onclick="deleteStadium(${s.Stadyum_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 ml-auto"><span>Sil</span></button>
+                                <div class="flex justify-end space-x-2">
+                                    <button onclick="openUpdateModal('stadium', ${s.Stadyum_ID})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Düzenle</span></button>
+                                    <button onclick="deleteStadium(${s.Stadyum_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                </div>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -3015,6 +3318,382 @@
             } catch (err) {}
         }
 
+        // --- ADMIN CRUD: MATCHES ---
+        async function loadAdminMatches() {
+            const tbody = document.getElementById('crud-matches-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Yükleniyor...</td></tr>';
+            try {
+                if(!window.adminData) window.adminData = {};
+                
+                // Fetch teams if not cached
+                if(!window.adminData.teams) {
+                    const tres = await fetch('/api/admin/teams');
+                    const tdata = await tres.json();
+                    if(tdata.success) {
+                        window.adminData.teams = tdata.teams;
+                    } else {
+                        throw new Error(tdata.error || "Takımlar çekilemedi");
+                    }
+                }
+                
+                // Fetch stadiums if not cached
+                if(!window.adminData.stadiums) {
+                    const sres = await fetch('/api/admin/stadiums');
+                    const sdata = await sres.json();
+                    if(sdata.success) {
+                        window.adminData.stadiums = sdata.stadiums;
+                    } else {
+                        throw new Error(sdata.error || "Stadyumlar çekilemedi");
+                    }
+                }
+                
+                // Populate dropdowns
+                const evOpt = document.getElementById('crud-match-ev');
+                const depOpt = document.getElementById('crud-match-dep');
+                evOpt.innerHTML = '<option value="">Ev Sahibi Seç</option>';
+                depOpt.innerHTML = '<option value="">Deplasman Seç</option>';
+                window.adminData.teams.forEach(t => {
+                    evOpt.innerHTML += `<option value="${t.Takim_ID}">${t.Ad}</option>`;
+                    depOpt.innerHTML += `<option value="${t.Takim_ID}">${t.Ad}</option>`;
+                });
+                
+                const stOpt = document.getElementById('crud-match-stadyum');
+                stOpt.innerHTML = '<option value="">Stadyum Seç (Varsayılan: Ev Sahibi)</option>';
+                window.adminData.stadiums.forEach(s => {
+                    stOpt.innerHTML += `<option value="${s.Stadyum_ID}">${s.Ad}</option>`;
+                });
+                
+                const res = await fetch('/api/admin/matches');
+                const data = await res.json();
+                if(data.success) {
+                    if(data.matches.length === 0) { 
+                        tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Kayıtlı maç yok.</td></tr>'; 
+                        return; 
+                    }
+                    window.adminData.matches = data.matches;
+                    tbody.innerHTML = '';
+                    data.matches.forEach(m => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-slate-800/50 hover:bg-slate-900/40';
+                        
+                        let formattedDate = m.tarih_saat;
+                        try {
+                            const d = new Date(m.tarih_saat);
+                            if(!isNaN(d.getTime())) {
+                                formattedDate = d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                            }
+                        } catch(e) {}
+                        
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 text-xs font-mono text-slate-500">#${m.mac_id}</td>
+                            <td class="py-3 px-4 text-xs font-semibold text-slate-300">${formattedDate}</td>
+                            <td class="py-3 px-4 text-right font-semibold text-slate-200">${m.ev_sahibi}</td>
+                            <td class="py-3 px-4 text-center"><span class="bg-slate-900 border border-slate-700 text-white font-black px-2 py-1 rounded shadow-inner text-sm tracking-widest">${m.skor_gosterim}</span></td>
+                            <td class="py-3 px-4 font-semibold text-slate-200">${m.deplasman}</td>
+                            <td class="py-3 px-4 text-center text-xs text-slate-400">${m.stadyum}</td>
+                            <td class="py-3 px-4 text-right">
+                                <div class="flex justify-end space-x-2">
+                                    <button onclick="openUpdateModal('match', ${m.mac_id})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Düzenle</span></button>
+                                    <button onclick="deleteMatch(${m.mac_id})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-rose-500">Hata: ${data.error}</td></tr>`;
+                }
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-rose-500">Hata oluştu: ${err.message}</td></tr>`;
+            }
+        }
+        
+        async function addMatch(event) {
+            event.preventDefault();
+            
+            const dtRaw = document.getElementById('crud-match-tarih').value; 
+            const tarih_saat = dtRaw.replace('T', ' ') + ':00';
+            
+            const payload = { 
+                Ev_Sahibi_Takim_ID: document.getElementById('crud-match-ev').value, 
+                Deplasman_Takim_ID: document.getElementById('crud-match-dep').value, 
+                Tarih_Saat: tarih_saat,
+                Stadyum_ID: document.getElementById('crud-match-stadyum').value || null,
+                Ev_Sahibi_Skor: document.getElementById('crud-match-evskor').value,
+                Deplasman_Skor: document.getElementById('crud-match-depskor').value
+            };
+            try {
+                const res = await fetch('/api/admin/matches/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.success) { 
+                    showToast('Başarılı', 'Maç başarıyla eklendi.', 'success'); 
+                    document.getElementById('add-match-form').reset(); 
+                    loadAdminMatches(); 
+                }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) { showToast('Hata', 'Bağlantı hatası.', 'error'); }
+        }
+        
+        async function deleteMatch(id) {
+            if(!confirm('Bu maçı silmek istediğinize emin misiniz? (Maç olayları da silinecektir)')) return;
+            try {
+                const res = await fetch('/api/admin/matches/delete/' + id, { method: 'DELETE' });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); loadAdminMatches(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
+
+        // --- ADMIN CRUD: TRANSFERS ---
+        async function loadAdminTransfers() {
+            const tbody = document.getElementById('crud-transfers-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Yükleniyor...</td></tr>';
+            try {
+                if(!window.adminData) window.adminData = {};
+                
+                // Fetch players if not cached
+                if(!window.adminData.players) {
+                    const pres = await fetch('/api/admin/players');
+                    const pdata = await pres.json();
+                    if(pdata.success) {
+                        window.adminData.players = pdata.players;
+                    } else {
+                        throw new Error(pdata.error || "Oyuncular çekilemedi");
+                    }
+                }
+                
+                // Fetch teams if not cached
+                if(!window.adminData.teams) {
+                    const tres = await fetch('/api/admin/teams');
+                    const tdata = await tres.json();
+                    if(tdata.success) {
+                        window.adminData.teams = tdata.teams;
+                    } else {
+                        throw new Error(tdata.error || "Takımlar çekilemedi");
+                    }
+                }
+                
+                // Populate dropdowns
+                const pOpt = document.getElementById('crud-transfer-oyuncu');
+                pOpt.innerHTML = '<option value="">Oyuncu Seç</option>';
+                window.adminData.players.forEach(p => {
+                    pOpt.innerHTML += `<option value="${p.Oyuncu_ID}">${p.Ad} ${p.Soyad} (${p.Takim_Ad || 'Serbest'})</option>`;
+                });
+                
+                const eOpt = document.getElementById('crud-transfer-eski');
+                const yOpt = document.getElementById('crud-transfer-yeni');
+                eOpt.innerHTML = '<option value="">Serbest Oyuncu</option>';
+                yOpt.innerHTML = '<option value="">Yeni Takım Seç</option>';
+                window.adminData.teams.forEach(t => {
+                    eOpt.innerHTML += `<option value="${t.Takim_ID}">${t.Ad}</option>`;
+                    yOpt.innerHTML += `<option value="${t.Takim_ID}">${t.Ad}</option>`;
+                });
+                
+                const res = await fetch('/api/admin/transfers');
+                const data = await res.json();
+                if(data.success) {
+                    if(data.transfers.length === 0) { 
+                        tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Kayıtlı transfer yok.</td></tr>'; 
+                        return; 
+                    }
+                    tbody.innerHTML = '';
+                    data.transfers.forEach(t => {
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-slate-800/50 hover:bg-slate-900/40';
+                        
+                        const bedel = t.Bedel.toLocaleString('tr-TR', { style: 'currency', currency: t.Para_Birimi });
+                        
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 text-xs font-mono text-slate-500">#${t.Transfer_ID}</td>
+                            <td class="py-3 px-4 font-semibold text-slate-200">${t.Oyuncu}</td>
+                            <td class="py-3 px-4 text-xs text-rose-400">${t.Eski_Takim}</td>
+                            <td class="py-3 px-4 text-xs text-emerald-400 font-semibold">${t.Yeni_Takim}</td>
+                            <td class="py-3 px-4 text-xs text-slate-300">${t.Tarih}</td>
+                            <td class="py-3 px-4 text-xs font-mono text-slate-200">${bedel}</td>
+                            <td class="py-3 px-4 text-right">
+                                <button onclick="deleteTransfer(${t.Transfer_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 float-right"><span>Sil</span></button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-rose-500">Hata: ${data.error}</td></tr>`;
+                }
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-rose-500">Hata oluştu: ${err.message}</td></tr>`;
+            }
+        }
+        
+        async function addTransfer(event) {
+            event.preventDefault();
+            const payload = { 
+                Oyuncu_ID: document.getElementById('crud-transfer-oyuncu').value, 
+                Eski_Takim_ID: document.getElementById('crud-transfer-eski').value || null, 
+                Yeni_Takim_ID: document.getElementById('crud-transfer-yeni').value,
+                Tarih: document.getElementById('crud-transfer-tarih').value,
+                Bonservis_Bedeli: document.getElementById('crud-transfer-bedel').value,
+                Para_Birimi: document.getElementById('crud-transfer-para').value
+            };
+            try {
+                const res = await fetch('/api/admin/transfers/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.success) { 
+                    showToast('Başarılı', 'Transfer başarıyla gerçekleştirildi. Oyuncunun takımı da güncellendi.', 'success'); 
+                    document.getElementById('add-transfer-form').reset();
+                    if(window.adminData) delete window.adminData.players;
+                    loadAdminTransfers(); 
+                }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) { showToast('Hata', 'Bağlantı hatası.', 'error'); }
+        }
+        
+        async function deleteTransfer(id) {
+            if(!confirm('Bu transfer kaydını silmek istediğinize emin misiniz? (Dikkat: Oyuncunun takımı geri ALINMAZ)')) return;
+            try {
+                const res = await fetch('/api/admin/transfers/delete/' + id, { method: 'DELETE' });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); loadAdminTransfers(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
+
+        // --- ADMIN CRUD: MATCH EVENTS ---
+        async function loadAdminMatchEvents() {
+            const tbody = document.getElementById('crud-match-events-tbody');
+            if(!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Lütfen yukarıdan bir maç seçin.</td></tr>';
+            
+            try {
+                if(!window.adminData) window.adminData = {};
+                
+                // Fetch matches for dropdown
+                const mres = await fetch('/api/admin/matches');
+                const mdata = await mres.json();
+                if(mdata.success) {
+                    window.adminData.matches = mdata.matches;
+                } else {
+                    throw new Error("Maçlar çekilemedi");
+                }
+                
+                // Populate matches dropdown
+                const mOpt = document.getElementById('crud-me-match');
+                mOpt.innerHTML = '<option value="">-- Maç Seçin --</option>';
+                window.adminData.matches.forEach(m => {
+                    const d = new Date(m.tarih_saat);
+                    let dateStr = "";
+                    if(!isNaN(d.getTime())) {
+                        dateStr = d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    }
+                    mOpt.innerHTML += `<option value="${m.mac_id}">${m.ev_sahibi} vs ${m.deplasman} - ${dateStr}</option>`;
+                });
+                
+                // Fetch players for caching if not present
+                if(!window.adminData.players) {
+                    const pres = await fetch('/api/admin/players');
+                    const pdata = await pres.json();
+                    if(pdata.success) {
+                        window.adminData.players = pdata.players;
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        async function onMatchEventSelect() {
+            const macId = document.getElementById('crud-me-match').value;
+            const pOpt = document.getElementById('crud-me-oyuncu');
+            const tbody = document.getElementById('crud-match-events-tbody');
+            
+            pOpt.innerHTML = '<option value="">Önce Maç Seçin</option>';
+            tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Lütfen yukarıdan bir maç seçin.</td></tr>';
+            
+            if(!macId) return;
+            
+            // Populate Player Dropdown (Filtered)
+            const selectedMatch = window.adminData.matches.find(m => m.mac_id == macId);
+            if(selectedMatch && window.adminData.players) {
+                pOpt.innerHTML = '<option value="">Oyuncu Seçin</option>';
+                const filteredPlayers = window.adminData.players.filter(p => p.Takim_ID == selectedMatch.ev_sahibi_id || p.Takim_ID == selectedMatch.deplasman_id);
+                filteredPlayers.forEach(p => {
+                    pOpt.innerHTML += `<option value="${p.Oyuncu_ID}">${p.Ad} ${p.Soyad} (${p.Takim_Ad || 'Bilinmiyor'})</option>`;
+                });
+            }
+            
+            // Fetch events for this match
+            tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Yükleniyor...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/match-events?mac_id=' + macId);
+                const data = await res.json();
+                if(data.success) {
+                    if(data.events.length === 0) { 
+                        tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Bu maçta henüz kayıtlı olay yok.</td></tr>'; 
+                        return; 
+                    }
+                    tbody.innerHTML = '';
+                    data.events.forEach(e => {
+                        let badgeClass = "bg-slate-700 text-slate-300";
+                        if(e.Olay_Tipi === 'Gol') badgeClass = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                        if(e.Olay_Tipi === 'Asist') badgeClass = "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
+                        if(e.Olay_Tipi === 'Sari_Kart') badgeClass = "bg-amber-500/20 text-amber-400 border border-amber-500/30";
+                        if(e.Olay_Tipi === 'Kirmizi_Kart') badgeClass = "bg-rose-500/20 text-rose-400 border border-rose-500/30";
+                        if(e.Olay_Tipi === 'KKG') badgeClass = "bg-purple-500/20 text-purple-400 border border-purple-500/30";
+                        
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-slate-800/50 hover:bg-slate-900/40';
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 text-xs font-mono text-slate-500">#${e.Olay_ID}</td>
+                            <td class="py-3 px-4 font-semibold text-slate-200">${e.Oyuncu}</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${badgeClass}">${e.Olay_Tipi.replace('_', ' ')}</span></td>
+                            <td class="py-3 px-4 text-xs font-bold text-slate-300">${e.Dakika}'</td>
+                            <td class="py-3 px-4 text-right">
+                                <button onclick="deleteMatchEvent(${e.Olay_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 float-right"><span>Sil</span></button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) {}
+        }
+        
+        async function addMatchEvent(event) {
+            event.preventDefault();
+            const payload = { 
+                Mac_ID: document.getElementById('crud-me-match').value, 
+                Oyuncu_ID: document.getElementById('crud-me-oyuncu').value, 
+                Olay_Tipi: document.getElementById('crud-me-tip').value,
+                Dakika: document.getElementById('crud-me-dakika').value
+            };
+            if(!payload.Mac_ID || !payload.Oyuncu_ID) {
+                showToast('Uyarı', 'Lütfen geçerli bir maç ve oyuncu seçin.', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('/api/admin/match-events/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.success) { 
+                    showToast('Başarılı', 'Maç olayı başarıyla eklendi.', 'success'); 
+                    document.getElementById('crud-me-tip').value = '';
+                    document.getElementById('crud-me-dakika').value = '';
+                    onMatchEventSelect(); 
+                }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) { showToast('Hata', 'Bağlantı hatası.', 'error'); }
+        }
+        
+        async function deleteMatchEvent(id) {
+            if(!confirm('Bu maç olayını silmek istediğinize emin misiniz?')) return;
+            try {
+                const res = await fetch('/api/admin/match-events/delete/' + id, { method: 'DELETE' });
+                const data = await res.json();
+                if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); onMatchEventSelect(); }
+                else { showToast('Hata', data.error, 'error'); }
+            } catch (err) {}
+        }
     </script>
 
     <!-- PROFIL MODAL -->
@@ -3038,6 +3717,481 @@
         <div id="match-modal-content" class="space-y-4"></div>
       </div>
     </div>
+    <!-- UPDATE MODAL -->
+    <div id="update-modal" class="hidden fixed inset-0 z-[150] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" onclick="closeUpdateModal()"></div>
+        <div class="relative bg-slate-950 border border-amber-500/20 shadow-2xl shadow-amber-500/10 rounded-2xl w-full max-w-lg p-6 z-10">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
+                <h3 id="update-modal-title" class="text-xl font-black text-white flex items-center space-x-2">
+                    <span class="text-amber-400">✏️</span>
+                    <span>Veri Güncelle</span>
+                </h3>
+                <button type="button" onclick="closeUpdateModal()" class="text-slate-400 hover:text-rose-400 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="update-form" onsubmit="submitUpdate(event)" class="space-y-4">
+                <div id="update-modal-fields" class="grid gap-4"></div>
+                <input type="hidden" id="update-type" value="">
+                <input type="hidden" id="update-id" value="">
+                <div class="flex justify-end pt-4 border-t border-slate-800 space-x-3">
+                    <button type="button" onclick="closeUpdateModal()" class="px-5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
+                        <span>Kaydet</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openUpdateModal(type, id) {
+            const modal = document.getElementById('update-modal');
+            const title = document.getElementById('update-modal-title');
+            const fields = document.getElementById('update-modal-fields');
+            document.getElementById('update-type').value = type;
+            document.getElementById('update-id').value = id;
+            
+            let html = '';
+            
+            if(type === 'player') {
+                title.innerHTML = '<span class="text-amber-400">✏️</span><span>Oyuncu Düzenle</span>';
+                const p = window.adminData.players.find(x => x.Oyuncu_ID === id);
+                if(!p) return;
+                
+                // clone takim options
+                const takimOptions = document.getElementById('crud-takim').innerHTML;
+                
+                html = `
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label><input type="text" id="upd-ad" required value="${p.Ad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Soyad</label><input type="text" id="upd-soyad" required value="${p.Soyad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Mevki</label><select id="upd-mevki" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"><option value="KL" ${p.Mevki==='KL'?'selected':''}>KL</option><option value="DF" ${p.Mevki==='DF'?'selected':''}>DF</option><option value="OS" ${p.Mevki==='OS'?'selected':''}>OS</option><option value="FV" ${p.Mevki==='FV'?'selected':''}>FV</option></select></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Uyruk</label><select id="upd-uyruk" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white">
+                      <option value="${p.Uyruk}" class="hidden">${p.Uyruk}</option>
+                      <option value="Türkiye">Türkiye</option><option value="Almanya">Almanya</option><option value="Arjantin">Arjantin</option><option value="Belçika">Belçika</option><option value="Brezilya">Brezilya</option><option value="Fransa">Fransa</option><option value="Hollanda">Hollanda</option><option value="İngiltere">İngiltere</option><option value="İspanya">İspanya</option><option value="İtalya">İtalya</option><option value="Portekiz">Portekiz</option><option value="Uruguay">Uruguay</option><option value="Diğer">Diğer</option>
+                    </select></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Doğum Tarihi</label><input type="date" id="upd-dogum" required value="${p.Dogum_Tarihi?p.Dogum_Tarihi.split(' ')[0]:''}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım</label><select id="upd-takim" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white">${takimOptions}</select></div>
+                `;
+                fields.innerHTML = html;
+                if(p.Takim_ID) document.getElementById('upd-takim').value = p.Takim_ID;
+                if(p.Uyruk) document.getElementById('upd-uyruk').value = p.Uyruk;
+            } 
+            else if(type === 'team') {
+                title.innerHTML = '<span class="text-amber-400">✏️</span><span>Takım Düzenle</span>';
+                const t = window.adminData.teams.find(x => x.Takim_ID === id);
+                if(!t) return;
+                const stadiumOptions = document.getElementById('crud-team-stadyum').innerHTML;
+                html = `
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label><input type="text" id="upd-ad" required value="${t.Ad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Kuruluş Yılı</label><input type="number" id="upd-yil" required value="${t.Kurulus_Yili}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Şehir</label><input type="text" id="upd-sehir" required value="${t.Sehir}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Stadyum</label><select id="upd-stadyum" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white">${stadiumOptions}</select></div>
+                `;
+                fields.innerHTML = html;
+                if(t.Stadyum_ID) document.getElementById('upd-stadyum').value = t.Stadyum_ID;
+            }
+            else if(type === 'manager') {
+                title.innerHTML = '<span class="text-amber-400">✏️</span><span>Teknik Direktör Düzenle</span>';
+                const m = window.adminData.managers.find(x => x.Direktor_ID === id);
+                if(!m) return;
+                const takimOptions = document.getElementById('crud-manager-takim').innerHTML;
+                html = `
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label><input type="text" id="upd-ad" required value="${m.Ad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Soyad</label><input type="text" id="upd-soyad" required value="${m.Soyad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım</label><select id="upd-takim" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white">${takimOptions}</select></div>
+                `;
+                fields.innerHTML = html;
+                if(m.Takim_ID) document.getElementById('upd-takim').value = m.Takim_ID;
+            }
+            else if(type === 'stadium') {
+                title.innerHTML = '<span class="text-amber-400">✏️</span><span>Stadyum Düzenle</span>';
+                const s = window.adminData.stadiums.find(x => x.Stadyum_ID === id);
+                if(!s) return;
+                html = `
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label><input type="text" id="upd-ad" required value="${s.Ad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Kapasite</label><input type="number" id="upd-kapasite" required value="${s.Kapasite}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                    <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Şehir</label><input type="text" id="upd-sehir" required value="${s.Sehir}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
+                `;
+                fields.innerHTML = html;
+            }
+            else if(type === 'match') {
+                title.innerHTML = '<span class="text-amber-400">✏️</span><span>Maç Skoru Düzenle</span>';
+                const m = window.adminData.matches.find(x => x.mac_id === id);
+                if(!m) return;
+                const scores = m.skor_gosterim.split('-');
+                let ev_skor = scores[0]?.trim() || '0';
+                let dep_skor = scores[1]?.trim() || '0';
+                if(ev_skor === '?') ev_skor = '0';
+                if(dep_skor === '?') dep_skor = '0';
+
+                html = `
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-4 text-center">
+                        <div class="text-xs text-slate-400 mb-2">${m.ev_sahibi} vs ${m.deplasman}</div>
+                        <div class="flex items-center justify-center space-x-4">
+                            <div><label class="block text-xxs font-bold uppercase text-slate-500 mb-1">Ev Sahibi Skor</label><input type="number" id="upd-ev-skor" required min="0" value="${ev_skor}" class="w-20 text-center text-lg font-black bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-white"></div>
+                            <span class="text-2xl font-black text-slate-700">-</span>
+                            <div><label class="block text-xxs font-bold uppercase text-slate-500 mb-1">Deplasman Skor</label><input type="number" id="upd-dep-skor" required min="0" value="${dep_skor}" class="w-20 text-center text-lg font-black bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-white"></div>
+                        </div>
+                    </div>
+                `;
+                fields.innerHTML = html;
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closeUpdateModal() {
+            document.getElementById('update-modal').classList.add('hidden');
+        }
+
+        async function submitUpdate(event) {
+            event.preventDefault();
+            const type = document.getElementById('update-type').value;
+            const id = document.getElementById('update-id').value;
+            let payload = {};
+            let endpoint = '';
+            
+            if(type === 'player') {
+                payload = {
+                    Ad: document.getElementById('upd-ad').value,
+                    Soyad: document.getElementById('upd-soyad').value,
+                    Mevki: document.getElementById('upd-mevki').value,
+                    Uyruk: document.getElementById('upd-uyruk').value,
+                    Dogum_Tarihi: document.getElementById('upd-dogum').value,
+                    Takim_ID: document.getElementById('upd-takim').value || null
+                };
+                endpoint = '/api/admin/players/update/' + id;
+            } else if(type === 'team') {
+                payload = {
+                    Ad: document.getElementById('upd-ad').value,
+                    Kurulus_Yili: document.getElementById('upd-yil').value,
+                    Sehir: document.getElementById('upd-sehir').value,
+                    Stadyum_ID: document.getElementById('upd-stadyum').value || null
+                };
+                endpoint = '/api/admin/teams/update/' + id;
+            } else if(type === 'manager') {
+                payload = {
+                    Ad: document.getElementById('upd-ad').value,
+                    Soyad: document.getElementById('upd-soyad').value,
+                    Takim_ID: document.getElementById('upd-takim').value || null
+                };
+                endpoint = '/api/admin/managers/update/' + id;
+            } else if(type === 'stadium') {
+                payload = {
+                    Ad: document.getElementById('upd-ad').value,
+                    Kapasite: document.getElementById('upd-kapasite').value,
+                    Sehir: document.getElementById('upd-sehir').value
+                };
+                endpoint = '/api/admin/stadiums/update/' + id;
+            } else if(type === 'match') {
+                payload = {
+                    Ev_Sahibi_Skor: document.getElementById('upd-ev-skor').value,
+                    Deplasman_Skor: document.getElementById('upd-dep-skor').value
+                };
+                endpoint = '/api/admin/matches/update/' + id;
+            }
+            
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if(data.success) {
+                    showToast('Başarılı', 'Kayıt güncellendi.', 'success');
+                    closeUpdateModal();
+                    if(type === 'player') loadAdminPlayers();
+                    if(type === 'team') loadAdminTeams();
+                    if(type === 'manager') loadAdminManagers();
+                    if(type === 'stadium') loadAdminStadiums();
+                    if(type === 'match') {
+                        loadAdminMatches();
+                        loadMatchArchive(document.getElementById('archive-start').value, document.getElementById('archive-end').value);
+                    }
+                } else {
+                    showToast('Hata', 'Güncelleme hatası: ' + data.error, 'error');
+                }
+            } catch (err) {
+                showToast('Hata', 'Bağlantı hatası.', 'error');
+            }
+        }
+        // --- SQL GÖSTERİCİ (EKSİK 7) ---
+        const sqlQueries = {
+            'standings_query': `-- Puan Durumu (Takımlar & Maçlar Tablosu JOIN & CASE)
+SELECT 
+    t.Takim_ID as id, 
+    t.Ad as takim,
+    COUNT(m.Mac_ID) as oynanan_mac,
+    SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
+                  (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 1 ELSE 0 END) as galibiyet,
+    SUM(CASE WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 ELSE 0 END) as beraberlik,
+    SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor < m.Deplasman_Skor) OR 
+                  (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor < m.Ev_Sahibi_Skor) THEN 1 ELSE 0 END) as maglubiyet,
+    SUM(CASE WHEN m.Ev_Sahibi_Takim_ID = t.Takim_ID THEN m.Ev_Sahibi_Skor ELSE m.Deplasman_Skor END) as atilan_gol,
+    SUM(CASE WHEN m.Ev_Sahibi_Takim_ID = t.Takim_ID THEN m.Deplasman_Skor ELSE m.Ev_Sahibi_Skor END) as yenilen_gol,
+    (SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
+                   (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 1 ELSE 0 END) * 3) +
+    SUM(CASE WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 ELSE 0 END) as puan
+FROM Takimlar t
+LEFT JOIN Maclar m ON (m.Ev_Sahibi_Takim_ID = t.Takim_ID OR m.Deplasman_Takim_ID = t.Takim_ID) 
+    AND m.Ev_Sahibi_Skor IS NOT NULL
+GROUP BY t.Takim_ID, t.Ad
+ORDER BY puan DESC, (atilan_gol - yenilen_gol) DESC, atilan_gol DESC;`,
+            
+            'scorers_query': `-- Gol Krallığı (Oyuncular & Olaylar JOIN)
+SELECT 
+    o.Oyuncu_ID as id, 
+    o.Ad as ad, 
+    o.Soyad as soyad, 
+    IFNULL(t.Ad, 'Serbest') as takim, 
+    o.Mevki as mevki,
+    COUNT(mo.Olay_ID) as gol_sayisi
+FROM Oyuncular o
+LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
+LEFT JOIN Mac_Olaylari mo ON o.Oyuncu_ID = mo.Oyuncu_ID AND mo.Olay_Tipi = 'Gol'
+GROUP BY o.Oyuncu_ID, o.Ad, o.Soyad, t.Ad, o.Mevki
+HAVING gol_sayisi > 0
+ORDER BY gol_sayisi DESC
+LIMIT 10;`,
+
+            'scout_query': `-- Gelişmiş Scout & Filtreleme (Dinamik Şablon)
+-- Parametreler (Mevki, Yaş, Uyruk) varsa WHERE kısmına dinamik olarak AND ile eklenir.
+SELECT 
+    o.Oyuncu_ID, o.Ad, o.Soyad, o.Mevki,
+    TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) AS yas, 
+    o.Uyruk, IFNULL(t.Ad, 'Serbest') AS takim_ad,
+    SUM(CASE WHEN mo.Olay_Tipi = 'Gol' THEN 1 ELSE 0 END) AS gol_sayisi,
+    SUM(CASE WHEN mo.Olay_Tipi = 'Asist' THEN 1 ELSE 0 END) AS asist_sayisi,
+    SUM(CASE WHEN mo.Olay_Tipi = 'Sari_Kart' THEN 1 ELSE 0 END) AS sari_kart,
+    SUM(CASE WHEN mo.Olay_Tipi = 'Kirmizi_Kart' THEN 1 ELSE 0 END) AS kirmizi_kart
+FROM Oyuncular o
+LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
+LEFT JOIN Mac_Olaylari mo ON o.Oyuncu_ID = mo.Oyuncu_ID
+WHERE 1=1
+-- Örnek filtre: AND o.Mevki = 'Forvet'
+-- Örnek filtre: AND TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) <= 25
+-- Örnek filtre: AND o.Uyruk = 'Türkiye'
+GROUP BY o.Oyuncu_ID
+ORDER BY gol_sayisi DESC;`,
+
+            'transfer_query': `-- Son Transferler Analizi
+SELECT 
+    tr.Transfer_ID as id, 
+    o.Ad as oyuncu_ad, 
+    o.Soyad as oyuncu_soyad, 
+    IFNULL(e.Ad, 'Serbest Oyuncu') as eski_takim, 
+    IFNULL(y.Ad, 'Serbest Oyuncu') as yeni_takim, 
+    tr.Tarih as tarih, 
+    tr.Bonservis_Bedeli as bedel, 
+    tr.Para_Birimi as para_birimi
+FROM Transferler tr
+JOIN Oyuncular o ON tr.Oyuncu_ID = o.Oyuncu_ID
+LEFT JOIN Takimlar e ON tr.Eski_Takim_ID = e.Takim_ID
+LEFT JOIN Takimlar y ON tr.Yeni_Takim_ID = y.Takim_ID
+ORDER BY tr.Tarih DESC
+LIMIT 15;`,
+
+            'managers_query': `-- Teknik Direktör Performans Analizi
+SELECT 
+    td.Direktor_ID AS id, 
+    td.Ad AS ad, 
+    td.Soyad AS soyad, 
+    t.Ad AS takim,
+    COUNT(m.Mac_ID) AS toplam_mac,
+    SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID=t.Takim_ID AND m.Ev_Sahibi_Skor>m.Deplasman_Skor)
+               OR (m.Deplasman_Takim_ID=t.Takim_ID AND m.Deplasman_Skor>m.Ev_Sahibi_Skor) THEN 1 ELSE 0 END) AS galibiyet,
+    ROUND((SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID=t.Takim_ID AND m.Ev_Sahibi_Skor>m.Deplasman_Skor)
+               OR (m.Deplasman_Takim_ID=t.Takim_ID AND m.Deplasman_Skor>m.Ev_Sahibi_Skor) THEN 1 ELSE 0 END) / NULLIF(COUNT(m.Mac_ID),0))*100, 1) AS galibiyet_yuzdesi
+FROM Teknik_Direktorler td
+LEFT JOIN Takimlar t ON td.Takim_ID=t.Takim_ID
+LEFT JOIN Maclar m ON (m.Ev_Sahibi_Takim_ID=t.Takim_ID OR m.Deplasman_Takim_ID=t.Takim_ID)
+AND m.Ev_Sahibi_Skor IS NOT NULL
+GROUP BY td.Direktor_ID
+ORDER BY galibiyet_yuzdesi DESC;`,
+
+            'crud_players_query': `-- Tüm Oyuncular (Admin Paneli)
+SELECT 
+    o.Oyuncu_ID, o.Ad, o.Soyad, o.Mevki, o.Uyruk, 
+    DATE_FORMAT(o.Dogum_Tarihi, '%Y-%m-%d') as Dogum_Tarihi,
+    t.Ad as Takim_Ad, o.Takim_ID
+FROM Oyuncular o
+LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
+ORDER BY o.Oyuncu_ID DESC;`,
+
+            'crud_teams_query': `-- Tüm Takımlar (Admin Paneli)
+SELECT 
+    t.Takim_ID, t.Ad, t.Kurulus_Yili, t.Sehir,
+    s.Ad as Stadyum_Ad, t.Stadyum_ID
+FROM Takimlar t
+LEFT JOIN Stadyumlar s ON t.Stadyum_ID = s.Stadyum_ID
+ORDER BY t.Takim_ID DESC;`,
+
+            'crud_managers_query': `-- Tüm Teknik Direktörler (Admin Paneli)
+SELECT 
+    td.Direktor_ID, td.Ad, td.Soyad, td.Uyruk,
+    t.Ad as Takim_Ad, td.Takim_ID
+FROM Teknik_Direktorler td
+LEFT JOIN Takimlar t ON td.Takim_ID = t.Takim_ID
+ORDER BY td.Direktor_ID DESC;`,
+
+            'crud_stadiums_query': `-- Tüm Stadyumlar (Admin Paneli)
+SELECT 
+    Stadyum_ID, Ad, Sehir, Kapasite
+FROM Stadyumlar
+ORDER BY Stadyum_ID DESC;`,
+
+            'crud_matches_query': `-- Son 50 Maç (Admin Paneli)
+SELECT 
+    m.Mac_ID, 
+    ev.Ad as ev_sahibi, m.Ev_Sahibi_Takim_ID as ev_sahibi_id,
+    dep.Ad as deplasman, m.Deplasman_Takim_ID as deplasman_id,
+    m.Tarih_Saat, m.Ev_Sahibi_Skor, m.Deplasman_Skor,
+    s.Ad as stadyum
+FROM Maclar m
+JOIN Takimlar ev ON m.Ev_Sahibi_Takim_ID = ev.Takim_ID
+JOIN Takimlar dep ON m.Deplasman_Takim_ID = dep.Takim_ID
+JOIN Stadyumlar s ON m.Stadyum_ID = s.Stadyum_ID
+ORDER BY m.Tarih_Saat DESC
+LIMIT 50;`,
+
+            'crud_transfers_query': `-- Son 50 Transfer (Admin Paneli)
+SELECT 
+    tr.Transfer_ID, 
+    CONCAT(o.Ad, ' ', o.Soyad) as oyuncu,
+    IFNULL(e.Ad, 'Serbest') as eski_takim,
+    y.Ad as yeni_takim,
+    tr.Tarih, tr.Bonservis_Bedeli, tr.Para_Birimi
+FROM Transferler tr
+JOIN Oyuncular o ON tr.Oyuncu_ID = o.Oyuncu_ID
+LEFT JOIN Takimlar e ON tr.Eski_Takim_ID = e.Takim_ID
+JOIN Takimlar y ON tr.Yeni_Takim_ID = y.Takim_ID
+ORDER BY tr.Transfer_ID DESC
+LIMIT 50;`,
+
+            'crud_match_events_query': `-- Seçili Maça Ait Olaylar (Admin Paneli)
+SELECT 
+    mo.Olay_ID, 
+    CONCAT(o.Ad, ' ', o.Soyad) as Oyuncu,
+    mo.Olay_Tipi, mo.Dakika
+FROM Mac_Olaylari mo
+JOIN Oyuncular o ON mo.Oyuncu_ID = o.Oyuncu_ID
+WHERE mo.Mac_ID = %s
+ORDER BY mo.Dakika ASC, mo.Olay_ID ASC;`,
+
+            'crud_add_player_query': `-- Yeni Oyuncu Ekle (Admin Paneli)
+INSERT INTO Oyuncular (Ad, Soyad, Mevki, Uyruk, Dogum_Tarihi, Takim_ID) 
+VALUES (%s, %s, %s, %s, %s, %s);`,
+
+            'crud_add_team_query': `-- Yeni Takım Ekle (Admin Paneli)
+INSERT INTO Takimlar (Ad, Kurulus_Yili, Sehir, Stadyum_ID) 
+VALUES (%s, %s, %s, %s);`,
+
+            'crud_add_manager_query': `-- Yeni Teknik Direktör Ekle (Admin Paneli)
+INSERT INTO Teknik_Direktorler (Ad, Soyad, Takim_ID) 
+VALUES (%s, %s, %s);`,
+
+            'crud_add_stadium_query': `-- Yeni Stadyum Ekle (Admin Paneli)
+INSERT INTO Stadyumlar (Ad, Sehir, Kapasite) 
+VALUES (%s, %s, %s);`,
+
+            'crud_add_match_query': `-- Yeni Maç Ekle (Admin Paneli)
+INSERT INTO Maclar (Ev_Sahibi_Takim_ID, Deplasman_Takim_ID, Tarih_Saat, Stadyum_ID, Ev_Sahibi_Skor, Deplasman_Skor) 
+VALUES (%s, %s, %s, %s, %s, %s);`,
+
+            'crud_add_transfer_query': `-- Yeni Transfer Ekle (Admin Paneli)
+-- 1. Transfer kaydını oluştur
+INSERT INTO Transferler (Oyuncu_ID, Eski_Takim_ID, Yeni_Takim_ID, Tarih, Bonservis_Bedeli, Para_Birimi) 
+VALUES (%s, %s, %s, %s, %s, %s);
+
+-- 2. Oyuncunun güncel takımını yeni takım olarak güncelle
+UPDATE Oyuncular 
+SET Takim_ID = %s 
+WHERE Oyuncu_ID = %s;`,
+
+            'crud_add_match_event_query': `-- Yeni Maç Olayı Ekle (Admin Paneli)
+INSERT INTO Mac_Olaylari (Mac_ID, Oyuncu_ID, Olay_Tipi, Dakika) 
+VALUES (%s, %s, %s, %s);`
+        };
+
+        let currentSqlText = '';
+
+        const queryValueMappers = {
+            'crud_add_player_query': ['crud-ad', 'crud-soyad', 'crud-mevki', 'crud-uyruk', 'crud-dogum', 'crud-takim'],
+            'crud_add_team_query': ['crud-team-ad', 'crud-team-yil', 'crud-team-sehir', 'crud-team-stadyum'],
+            'crud_add_manager_query': ['crud-manager-ad', 'crud-manager-soyad', 'crud-manager-takim'],
+            'crud_add_stadium_query': ['crud-stadium-ad', 'crud-stadium-sehir', 'crud-stadium-kapasite'],
+            'crud_add_match_query': ['crud-match-ev', 'crud-match-dep', 'crud-match-tarih', 'crud-match-stadyum', 'crud-match-evskor', 'crud-match-depskor'],
+            'crud_add_transfer_query': ['crud-transfer-oyuncu', 'crud-transfer-eski', 'crud-transfer-yeni', 'crud-transfer-tarih', 'crud-transfer-bedel', 'crud-transfer-para', 'crud-transfer-yeni', 'crud-transfer-oyuncu'],
+            'crud_add_match_event_query': ['crud-me-match', 'crud-me-oyuncu', 'crud-me-tip', 'crud-me-dakika']
+        };
+
+        function highlightSQL(sql) {
+            let highlighted = sql
+                .replace(/</g, "&lt;").replace(/>/g, "&gt;") // Escape HTML
+                .replace(/\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|LIMIT|INSERT INTO|VALUES|UPDATE|SET)\b/g, '<span class="text-emerald-400 font-bold">$1</span>')
+                .replace(/\b(JOIN|LEFT JOIN|RIGHT JOIN|INNER JOIN|ON)\b/g, '<span class="text-purple-400 font-bold">$1</span>')
+                .replace(/\b(COUNT|SUM|AVG|MAX|MIN|ROUND|IFNULL|TIMESTAMPDIFF|CURDATE)\b/g, '<span class="text-orange-400 font-bold">$1</span>')
+                .replace(/\b(CASE|WHEN|THEN|ELSE|END|AS|AND|OR|IN|IS|NOT|NULL|DESC|ASC)\b/g, '<span class="text-cyan-400 font-bold">$1</span>')
+                .replace(/(--.*)/g, '<span class="text-slate-500 italic">$1</span>') // Comments
+                .replace(/('([^']|\\')*')/g, '<span class="text-yellow-300">$1</span>'); // Strings
+            return '<pre class="whitespace-pre-wrap break-words border-l-2 border-indigo-500/50 pl-4 py-2 my-2 text-slate-300">' + highlighted + '</pre>';
+        }
+
+        function showSQL(queryKey) {
+            let rawSql = sqlQueries[queryKey];
+            if(!rawSql) return;
+            
+            // Dinamik değer değiştirme (INSERT/UPDATE formları için)
+            if (queryValueMappers[queryKey]) {
+                const inputIds = queryValueMappers[queryKey];
+                inputIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    let val = el ? el.value.trim() : '';
+                    let replacement = 'NULL';
+                    
+                    if (val !== '') {
+                        if (!isNaN(val) && val.indexOf('-') === -1) { // Sayıysa (ve tarih değilse)
+                            replacement = val;
+                        } else { // Metinse
+                            replacement = `'${val}'`;
+                        }
+                    }
+                    rawSql = rawSql.replace('%s', replacement);
+                });
+            }
+
+            currentSqlText = rawSql;
+            document.getElementById('sql-content-area').innerHTML = highlightSQL(rawSql);
+            
+            // Reset copy button
+            const copyBtn = document.getElementById('btn-copy-sql');
+            copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg><span>Kopyala</span>`;
+            copyBtn.classList.remove('text-emerald-400', 'border-emerald-500/50');
+            copyBtn.classList.add('text-slate-300', 'border-slate-700');
+            
+            const modal = document.getElementById('sql-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
+        }
+
+        function closeSQL() {
+            const modal = document.getElementById('sql-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+        
+        function copySQL() {
+            if(!currentSqlText) return;
+            navigator.clipboard.writeText(currentSqlText).then(() => {
+                const copyBtn = document.getElementById('btn-copy-sql');
+                copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg><span>Kopyalandı!</span>`;
+                copyBtn.classList.remove('text-slate-300', 'border-slate-700');
+                copyBtn.classList.add('text-emerald-400', 'border-emerald-500/50');
+            });
+        }
+    </script>
 </body>
 </html>
 

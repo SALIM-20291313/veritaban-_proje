@@ -281,36 +281,36 @@ def get_stats():
             t.Takim_ID,
             t.Ad AS Takim_Ad,
             COUNT(m.Mac_ID) AS Oynanan_Mac,
-            SUM(CASE 
+            COALESCE(SUM(CASE 
                 WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
                      (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 1 
                 ELSE 0 
-            END) AS Galibiyet,
-            SUM(CASE 
+            END), 0) AS Galibiyet,
+            COALESCE(SUM(CASE 
                 WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 
                 ELSE 0 
-            END) AS Beraberlik,
-            SUM(CASE 
+            END), 0) AS Beraberlik,
+            COALESCE(SUM(CASE 
                 WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor < m.Deplasman_Skor) OR 
                      (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor < m.Ev_Sahibi_Skor) THEN 1 
                 ELSE 0 
-            END) AS Maglubiyet,
-            SUM(CASE 
+            END), 0) AS Maglubiyet,
+            COALESCE(SUM(CASE 
                 WHEN m.Ev_Sahibi_Takim_ID = t.Takim_ID THEN m.Ev_Sahibi_Skor 
                 WHEN m.Deplasman_Takim_ID = t.Takim_ID THEN m.Deplasman_Skor 
                 ELSE 0 
-            END) AS Atilan_Gol,
-            SUM(CASE 
+            END), 0) AS Atilan_Gol,
+            COALESCE(SUM(CASE 
                 WHEN m.Ev_Sahibi_Takim_ID = t.Takim_ID THEN m.Deplasman_Skor 
                 WHEN m.Deplasman_Takim_ID = t.Takim_ID THEN m.Ev_Sahibi_Skor 
                 ELSE 0 
-            END) AS Yenilen_Gol,
-            SUM(CASE 
+            END), 0) AS Yenilen_Gol,
+            COALESCE(SUM(CASE 
                 WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
                      (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 3 
                 WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 
                 ELSE 0 
-            END) AS Puan
+            END), 0) AS Puan
         FROM Takimlar t
         LEFT JOIN Maclar m ON (m.Ev_Sahibi_Takim_ID = t.Takim_ID OR m.Deplasman_Takim_ID = t.Takim_ID)
         AND (m.Ev_Sahibi_Skor IS NOT NULL AND m.Deplasman_Skor IS NOT NULL)
@@ -640,7 +640,7 @@ def simulate_match():
         match_id = cursor.lastrowid
         
         # Get players for both teams
-        cursor.execute("SELECT Oyuncu_ID, Ad, Soyad, Takim_ID, Mevki FROM Oyuncular WHERE Takim_ID IN (%s, %s)", (home_id, away_id))
+        cursor.execute("SELECT Oyuncu_ID, Ad, Soyad, Takim_ID, Mevki FROM Oyuncular WHERE Takim_ID IN (%s, %s) AND Takim_ID IS NOT NULL", (home_id, away_id))
         players = cursor.fetchall()
         
         home_players = [p for p in players if p[3] == home_id]
@@ -1317,18 +1317,18 @@ def player_detail(player_id):
         
         performance_history = []
         for row in raw_history:
-            # Tarih_Saat nesnesini formata cevir (DD.MM.YYYY)
-            tarih_str = row['Tarih_Saat'].strftime('%d.%m.%Y') if hasattr(row['Tarih_Saat'], 'strftime') else str(row['Tarih_Saat'])
+            # Tarih_Saat nesnesini formata cevir (YYYY-MM-DD for JS parsing)
+            tarih_str = row['Tarih_Saat'].strftime('%Y-%m-%d') if hasattr(row['Tarih_Saat'], 'strftime') else str(row['Tarih_Saat'])
             performance_history.append({
                 "sezon": row['sezon'],
                 "mac_id": row['mac_id'],
-                "tarih": tarih_str,
-                "rakip": row['rakip'],
+                "Tarih_Saat": tarih_str,
+                "Rakip_Takim": row['rakip'],
                 "skor": row['skor'],
-                "gol": row['gol'],
-                "asist": row['asist'],
-                "sari_kart": row['sari_kart'],
-                "kirmizi_kart": row['kirmizi_kart']
+                "Mac_Gol": row['gol'],
+                "Mac_Asist": row['asist'],
+                "Mac_Sari_Kart": row['sari_kart'],
+                "Mac_Kirmizi_Kart": row['kirmizi_kart']
             })
         
         total_team_matches = len(performance_history)
@@ -2002,7 +2002,7 @@ def admin_get_players():
             SELECT o.Oyuncu_ID, o.Ad, o.Soyad, o.Mevki, o.Uyruk, o.Dogum_Tarihi, t.Ad as Takim_Ad, o.Takim_ID
             FROM Oyuncular o
             LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
-            ORDER BY o.Oyuncu_ID DESC
+            ORDER BY o.Ad ASC, o.Soyad ASC
         """)
         players = cursor.fetchall()
         
@@ -2082,7 +2082,7 @@ def admin_get_teams():
             SELECT t.Takim_ID, t.Ad, t.Kurulus_Yili, t.Sehir, s.Ad as Stadyum_Ad, t.Stadyum_ID
             FROM Takimlar t
             LEFT JOIN Stadyumlar s ON t.Stadyum_ID = s.Stadyum_ID
-            ORDER BY t.Takim_ID DESC
+            ORDER BY t.Ad ASC
         """)
         return jsonify({"success": True, "teams": cursor.fetchall()})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
@@ -2137,7 +2137,7 @@ def admin_get_managers():
             SELECT td.Direktor_ID, td.Ad, td.Soyad, t.Ad as Takim_Ad, td.Takim_ID
             FROM Teknik_Direktorler td
             LEFT JOIN Takimlar t ON td.Takim_ID = t.Takim_ID
-            ORDER BY td.Direktor_ID DESC
+            ORDER BY td.Ad ASC, td.Soyad ASC
         """)
         return jsonify({"success": True, "managers": cursor.fetchall()})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
@@ -2187,7 +2187,7 @@ def admin_get_stadiums():
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT Stadyum_ID, Ad, Kapasite, Sehir FROM Stadyumlar ORDER BY Stadyum_ID DESC")
+        cursor.execute("SELECT Stadyum_ID, Ad, Kapasite, Sehir FROM Stadyumlar ORDER BY Ad ASC")
         return jsonify({"success": True, "stadiums": cursor.fetchall()})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
@@ -2221,6 +2221,392 @@ def admin_delete_stadium(stadium_id):
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Stadyumlar WHERE Stadyum_ID = %s", (stadium_id,))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
+# --- ADMIN CRUD: MATCHES ---
+@app.route('/api/admin/matches', methods=['GET'])
+def admin_get_matches():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT 
+                M.Mac_ID, 
+                M.Ev_Sahibi_Takim_ID,
+                M.Deplasman_Takim_ID,
+                E.Ad AS Ev_Sahibi, 
+                D.Ad AS Deplasman, 
+                M.Tarih_Saat, 
+                S.Ad AS Stadyum, 
+                M.Ev_Sahibi_Skor, 
+                M.Deplasman_Skor
+            FROM Maclar M
+            JOIN Takimlar E ON M.Ev_Sahibi_Takim_ID = E.Takim_ID
+            JOIN Takimlar D ON M.Deplasman_Takim_ID = D.Takim_ID
+            LEFT JOIN Stadyumlar S ON M.Stadyum_ID = S.Stadyum_ID
+            ORDER BY M.Tarih_Saat DESC
+            LIMIT 50
+        """)
+        
+        matches = []
+        for row in cursor.fetchall():
+            skor = f"{row['Ev_Sahibi_Skor']} - {row['Deplasman_Skor']}" if row['Ev_Sahibi_Skor'] is not None and row['Deplasman_Skor'] is not None else "? - ?"
+            matches.append({
+                "mac_id": row["Mac_ID"],
+                "ev_sahibi_id": row["Ev_Sahibi_Takim_ID"],
+                "deplasman_id": row["Deplasman_Takim_ID"],
+                "ev_sahibi": row["Ev_Sahibi"],
+                "deplasman": row["Deplasman"],
+                "tarih_saat": row["Tarih_Saat"],
+                "stadyum": row["Stadyum"] or "Bilinmiyor",
+                "skor_gosterim": skor,
+                "ev_skor": row["Ev_Sahibi_Skor"],
+                "dep_skor": row["Deplasman_Skor"]
+            })
+            
+        return jsonify({"success": True, "matches": matches})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/matches/add', methods=['POST'])
+def admin_add_match():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ev = data.get('Ev_Sahibi_Takim_ID')
+        dep = data.get('Deplasman_Takim_ID')
+        tarih = data.get('Tarih_Saat')
+        stadyum = data.get('Stadyum_ID')
+        ev_skor = data.get('Ev_Sahibi_Skor')
+        dep_skor = data.get('Deplasman_Skor')
+        
+        if ev == dep:
+            return jsonify({"success": False, "error": "Ev sahibi ve deplasman takımları aynı olamaz."}), 400
+        
+        if not all([ev, dep, tarih]):
+            return jsonify({"success": False, "error": "Eksik bilgi (Ev Sahibi, Deplasman ve Tarih zorunludur)"}), 400
+            
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO Maclar (Ev_Sahibi_Takim_ID, Deplasman_Takim_ID, Tarih_Saat, Stadyum_ID, Ev_Sahibi_Skor, Deplasman_Skor)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (ev, dep, tarih, stadyum if stadyum else None, ev_skor if ev_skor != '' else None, dep_skor if dep_skor != '' else None))
+        conn.commit()
+        
+        return jsonify({"success": True, "match_id": cursor.lastrowid})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/matches/delete/<int:match_id>', methods=['DELETE'])
+def admin_delete_match(match_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Maclar WHERE Mac_ID = %s", (match_id,))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
+# --- ADMIN CRUD: TRANSFERS ---
+@app.route('/api/admin/transfers', methods=['GET'])
+def admin_get_transfers():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT 
+                TR.Transfer_ID, 
+                O.Ad, 
+                O.Soyad, 
+                E.Ad AS Eski_Takim, 
+                Y.Ad AS Yeni_Takim, 
+                TR.Tarih, 
+                TR.Bonservis_Bedeli, 
+                TR.Para_Birimi
+            FROM Transferler TR
+            JOIN Oyuncular O ON TR.Oyuncu_ID = O.Oyuncu_ID
+            LEFT JOIN Takimlar E ON TR.Eski_Takim_ID = E.Takim_ID
+            LEFT JOIN Takimlar Y ON TR.Yeni_Takim_ID = Y.Takim_ID
+            ORDER BY TR.Tarih DESC, TR.Transfer_ID DESC
+            LIMIT 50
+        """)
+        
+        transfers = []
+        for row in cursor.fetchall():
+            transfers.append({
+                "Transfer_ID": row["Transfer_ID"],
+                "Oyuncu": f"{row['Ad']} {row['Soyad']}",
+                "Eski_Takim": row["Eski_Takim"] or "Serbest",
+                "Yeni_Takim": row["Yeni_Takim"] or "Serbest",
+                "Tarih": row["Tarih"].strftime('%Y-%m-%d') if row["Tarih"] else "",
+                "Bedel": float(row["Bonservis_Bedeli"]),
+                "Para_Birimi": row["Para_Birimi"]
+            })
+            
+        return jsonify({"success": True, "transfers": transfers})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/transfers/add', methods=['POST'])
+def admin_add_transfer():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        oyuncu_id = data.get('Oyuncu_ID')
+        eski_takim = data.get('Eski_Takim_ID')
+        yeni_takim = data.get('Yeni_Takim_ID')
+        tarih = data.get('Tarih')
+        bedel = data.get('Bonservis_Bedeli')
+        para_birimi = data.get('Para_Birimi', 'EUR')
+        
+        if not all([oyuncu_id, tarih, bedel, para_birimi]):
+            return jsonify({"success": False, "error": "Eksik bilgi"}), 400
+            
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        
+        # 1. Insert Transfer
+        cursor.execute("""
+            INSERT INTO Transferler (Oyuncu_ID, Eski_Takim_ID, Yeni_Takim_ID, Tarih, Bonservis_Bedeli, Para_Birimi)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (oyuncu_id, eski_takim if eski_takim else None, yeni_takim if yeni_takim else None, tarih, bedel, para_birimi))
+        
+        # 2. Update Player's Team
+        cursor.execute("""
+            UPDATE Oyuncular SET Takim_ID = %s WHERE Oyuncu_ID = %s
+        """, (yeni_takim if yeni_takim else None, oyuncu_id))
+        
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: 
+        if conn: conn.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/transfers/delete/<int:transfer_id>', methods=['DELETE'])
+def admin_delete_transfer(transfer_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Transferler WHERE Transfer_ID = %s", (transfer_id,))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
+# --- ADMIN CRUD: MATCH EVENTS ---
+@app.route('/api/admin/match-events', methods=['GET'])
+def admin_get_match_events():
+    mac_id = request.args.get('mac_id')
+    if not mac_id:
+        return jsonify({"success": False, "error": "mac_id parametresi gerekli"}), 400
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT 
+                MO.Olay_ID, 
+                MO.Mac_ID, 
+                MO.Oyuncu_ID, 
+                O.Ad, 
+                O.Soyad, 
+                MO.Olay_Tipi, 
+                MO.Dakika
+            FROM Mac_Olaylari MO
+            JOIN Oyuncular O ON MO.Oyuncu_ID = O.Oyuncu_ID
+            WHERE MO.Mac_ID = %s
+            ORDER BY MO.Dakika ASC
+        """, (mac_id,))
+        
+        events = []
+        for row in cursor.fetchall():
+            events.append({
+                "Olay_ID": row["Olay_ID"],
+                "Mac_ID": row["Mac_ID"],
+                "Oyuncu_ID": row["Oyuncu_ID"],
+                "Oyuncu": f"{row['Ad']} {row['Soyad']}",
+                "Olay_Tipi": row["Olay_Tipi"],
+                "Dakika": row["Dakika"]
+            })
+            
+        return jsonify({"success": True, "events": events})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/match-events/add', methods=['POST'])
+def admin_add_match_event():
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        mac_id = data.get('Mac_ID')
+        oyuncu_id = data.get('Oyuncu_ID')
+        olay_tipi = data.get('Olay_Tipi')
+        dakika = data.get('Dakika')
+        
+        if not all([mac_id, oyuncu_id, olay_tipi, dakika]):
+            return jsonify({"success": False, "error": "Eksik bilgi"}), 400
+            
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO Mac_Olaylari (Mac_ID, Oyuncu_ID, Olay_Tipi, Dakika)
+            VALUES (%s, %s, %s, %s)
+        """, (mac_id, oyuncu_id, olay_tipi, dakika))
+        
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/match-events/delete/<int:event_id>', methods=['DELETE'])
+def admin_delete_match_event(event_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Mac_Olaylari WHERE Olay_ID = %s", (event_id,))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+
+# --- ADMIN CRUD: UPDATE ENDPOINTS ---
+@app.route('/api/admin/players/update/<int:player_id>', methods=['PUT'])
+def admin_update_player(player_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ad = data.get('Ad')
+        soyad = data.get('Soyad')
+        mevki = data.get('Mevki')
+        uyruk = data.get('Uyruk')
+        dogum = data.get('Dogum_Tarihi')
+        takim = data.get('Takim_ID')
+        
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE Oyuncular 
+            SET Ad=%s, Soyad=%s, Mevki=%s, Uyruk=%s, Dogum_Tarihi=%s, Takim_ID=%s 
+            WHERE Oyuncu_ID=%s
+        """, (ad, soyad, mevki, uyruk, dogum, takim if takim else None, player_id))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/teams/update/<int:team_id>', methods=['PUT'])
+def admin_update_team(team_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ad = data.get('Ad')
+        yil = data.get('Kurulus_Yili')
+        sehir = data.get('Sehir')
+        stadyum = data.get('Stadyum_ID')
+        
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE Takimlar 
+            SET Ad=%s, Kurulus_Yili=%s, Sehir=%s, Stadyum_ID=%s 
+            WHERE Takim_ID=%s
+        """, (ad, yil, sehir, stadyum if stadyum else None, team_id))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/managers/update/<int:manager_id>', methods=['PUT'])
+def admin_update_manager(manager_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ad = data.get('Ad')
+        soyad = data.get('Soyad')
+        takim = data.get('Takim_ID')
+        
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE Teknik_Direktorler SET Ad=%s, Soyad=%s, Takim_ID=%s WHERE Direktor_ID=%s",
+                       (ad, soyad, takim if takim else None, manager_id))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/stadiums/update/<int:stadium_id>', methods=['PUT'])
+def admin_update_stadium(stadium_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ad = data.get('Ad')
+        kapasite = data.get('Kapasite')
+        sehir = data.get('Sehir')
+        
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE Stadyumlar SET Ad=%s, Kapasite=%s, Sehir=%s WHERE Stadyum_ID=%s",
+                       (ad, kapasite, sehir, stadium_id))
+        conn.commit()
+        return jsonify({"success": True})
+    except Error as e: return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/admin/matches/update/<int:match_id>', methods=['PUT'])
+def admin_update_match(match_id):
+    if not db_connected: return jsonify({"success": False}), 500
+    conn = None
+    try:
+        data = request.json
+        ev = data.get('Ev_Sahibi_Skor')
+        dep = data.get('Deplasman_Skor')
+        
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE Maclar SET Ev_Sahibi_Skor=%s, Deplasman_Skor=%s WHERE Mac_ID=%s",
+                       (ev, dep, match_id))
         conn.commit()
         return jsonify({"success": True})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
