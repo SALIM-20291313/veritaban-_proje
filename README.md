@@ -1,8 +1,8 @@
-# ✈️ Antigravity - Gemini 3.5 Destekli Canlı Futbol Analiz ve Yönetim Sistemi
+# ✈️ Yapay Zeka Destekli Canlı Futbol Analiz ve Yönetim Sistemi
 
 Ankara Üniversitesi Bilgisayar Mühendisliği Bölümü **BLM2058 Veritabanı Yönetim Sistemleri** dersi projesi kapsamında geliştirilmiş, canlı verilerle beslenen ve yapay zeka analitiği içeren ilişkisel bir veritabanı web uygulamasıdır.
 
-Bu sistem, tasarlanan 7 tabloluk ilişkisel veri modelini (Teams, Players, Stadiums, Matches, Match Events, Transfers, Managers) fiziksel olarak MySQL üzerinde ayağa kaldırır, dinamik SQL sorgularıyla puan durumunu ve istatistikleri hesaplar, ve **Gemini 3.5** ile verileri analiz ederek kullanıcılara yapay zeka destekli Türkçe yorumlar sunar.
+Bu sistem, tasarlanan 7 tabloluk ilişkisel veri modelini (Teams, Players, Stadiums, Matches, Match Events, Transfers, Managers) fiziksel olarak MySQL üzerinde ayağa kaldırır, dinamik SQL sorgularıyla puan durumunu ve istatistikleri hesaplar, ve **Yapay Zeka API** ile verileri analiz ederek kullanıcılara yapay zeka destekli Türkçe yorumlar sunar.
 
 ---
 
@@ -13,16 +13,16 @@ Bu sistem, tasarlanan 7 tabloluk ilişkisel veri modelini (Teams, Players, Stadi
                                    │
                                    ▼ (JSON Data)
 [ Frontend (Arayüz) ] ◄──► [ Backend (Python/Flask) ] ◄──► [ Veritabanı (MySQL) ]
-  Tailwind CSS & Charts       "Antigravity Core"
+  Tailwind CSS & Charts       "Backend Core"
                                    ▲
                                    │ (Prompt & Data Context)
                                    ▼
-                        [ Gemini 3.5 API (AI Analyst) ]
+                        [ Yapay Zeka API (AI Analyst) ]
 ```
 
 1. **Veritabanı Katmanı:** ER modelindeki 7 ilişkisel tablo MySQL üzerinde fiziksel olarak oluşturulmuştur. Referential Integrity (Cascade/Set Null) kuralları uygulanmıştır.
-2. **Backend (Antigravity Core):** Python + Flask. MySQL veritabanına bağlanır, verileri sorgular, simülasyonları yürütür ve Gemini API'si için bağlam (context) hazırlar.
-3. **AI Analiz Katmanı:** Gemini API entegrasyonu ile SQL'den dönen puan durumunu, en pahalı transferleri ve teknik direktör galibiyet oranlarını analiz eder ve Türkçe doğal dilde yorum raporu üretir.
+2. **Backend:** Python + Flask. MySQL veritabanına bağlanır, verileri sorgular, simülasyonları yürütür ve Yapay Zeka API'si için bağlam (context) hazırlar.
+3. **AI Analiz Katmanı:** Yapay Zeka entegrasyonu ile SQL'den dönen puan durumunu, en pahalı transferleri ve teknik direktör galibiyet oranlarını analiz eder ve Türkçe doğal dilde yorum raporu üretir.
 4. **Frontend Katmanı:** Tailwind CSS ile hazırlanmış, Chart.js grafik entegrasyonuna sahip karanlık modda çalışan dinamik bir yönetim paneli.
 
 ---
@@ -41,12 +41,12 @@ Bu sistem, tasarlanan 7 tabloluk ilişkisel veri modelini (Teams, Players, Stadi
 * `API-Football` (REST API) entegrasyonu Flask mimarisine dahil edildi. Gerçek dünyadaki lig verileri ve anlık maç olayları (gol, kart vb.) canlı JSON istekleriyle çekilip lokal MySQL veritabanına asenkron olarak yazılmaya başlandı.
 * API anahtarı olmadığında veya kısıtlı olduğunda sunumun aksamaması için "Canlı Rastgele Maç Olayları & Transfer Simülatörü" geliştirildi.
 
-### 📅 Adım 4: Gemini 3.5 AI Entegrasyonu (22 Mayıs 2026)
-* Projenin "Antigravity Core" yapısına **Gemini 3.5 API** entegrasyonu yapıldı. 
-* SQL'den dönen ham istatistik ve finansal transfer verileri, Gemini 3.5 modeline "Context (Bağlam)" olarak beslendi. Yapay zekanın ham SQL çıktılarını yorumlayarak doğal dilde Türkçe analitik raporlar üretmesi sağlandı.
+### 📅 Adım 4: Yapay Zeka Entegrasyonu (22 Mayıs 2026)
+* Projenin backend yapısına **Yapay Zeka API** entegrasyonu yapıldı. 
+* SQL'den dönen ham istatistik ve finansal transfer verileri, Yapay Zeka modeline "Context (Bağlam)" olarak beslendi. Yapay zekanın ham SQL çıktılarını yorumlayarak doğal dilde Türkçe analitik raporlar üretmesi sağlandı.
 
 ### 📅 Adım 5: Frontend Tasarımı ve Bulut Dağıtımı (23 Mayıs 2026)
-* Tailwind CSS ve Chart.js kullanılarak dinamik bir Dashboard arayüzü kodlandı. Ham tabloların yanına Gemini 3.5 Analiz Kutusu eklendi.
+* Tailwind CSS ve Chart.js kullanılarak dinamik bir Dashboard arayüzü kodlandı. Ham tabloların yanına Yapay Zeka Analiz Kutusu eklendi.
 * Projenin tüm kaynak kodları GitHub reposuna pushlandı ve web uygulaması bulut platformuna dağıtılarak canlıya alındı.
 
 ### 📅 Adım 6: Final Optimizasyonları ve Kapsamlı CRUD Paneli (23 Mayıs 2026)
@@ -54,11 +54,14 @@ Bu sistem, tasarlanan 7 tabloluk ilişkisel veri modelini (Teams, Players, Stadi
 * Veritabanı CRUD (Ekle/Sil/Düzenle) işlemleri; Takımlar, Oyuncular, Stadyumlar, Teknik Direktörler, Transferler ve Maç Olayları olmak üzere 6 farklı panel için tam entegre edildi.
 * UX iyileştirmesi olarak sistemdeki tüm dinamik liste ve dropdown seçimleri (Takımlar, Stadyumlar, Oyuncular vs.) tamamen alfabetik (A'dan Z'ye) sıralandı. Parasal veriler Türk lira/sayı formatına (toLocaleString) entegre edildi. Form durumlarına renk kodlu açıklamalar ve istatistik başlıklarına araç ipuçları (tooltip) eklendi. Mobil görünüm için ekranlarda dokunmatik kaydırma (touch-action) aktifleştirildi.
 
+### 📅 Adım 7: Proje Finalizasyonu (24 Mayıs 2026)
+* Proje üzerindeki tüm geliştirmeler tamamlandı. Rapor güncellendi ve GitHub deposu en güncel kodları içerecek şekilde pushlanarak proje bitirildi.
+
 ---
 
 ## 🛠️ Kullanılan Teknolojiler
 
-- **Yapay Zeka Motoru:** Gemini 3.5 API (google-generativeai)
+- **Yapay Zeka Motoru:** Google Generative AI API
 - **Veritabanı:** MySQL 8.0 (MySQL80 Windows Servisi)
 - **Backend:** Python 3.11 / Flask
 - **Arayüz:** HTML5, Tailwind CSS (CDN), Chart.js (CDN)
@@ -82,7 +85,7 @@ DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=your_mysql_password
 DB_NAME=futbol_ligi
-GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_API_KEY=your_api_key_here
 ```
 
 ### 3. Uygulamanın Başlatılması

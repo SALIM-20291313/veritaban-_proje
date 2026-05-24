@@ -525,7 +525,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-extrabold title-font text-white"><div class="flex items-center">Gemini 3.5 AI Analyst Paneli<button onclick="showLiveSQL('ai_standings')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Göster"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><span class="ml-1 font-semibold">SQL</span></button></div></h3>
+                            <h3 class="text-2xl font-extrabold title-font text-white"><div class="flex items-center">Yapay Zeka Analiz Paneli<button onclick="showLiveSQL('ai_standings')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Göster"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><span class="ml-1 font-semibold">SQL</span></button></div></h3>
                             <p class="text-xs text-indigo-300 mt-1">İlişkisel SQL verilerini okuyarak doğal dilde Türkçe analitik rapor hazırlar.</p>
                         </div>
                     </div>
@@ -575,7 +575,7 @@
                     </div>
                 </div>
 
-                        <p class="text-xs text-indigo-400 animate-pulse font-medium">Gemini 3.5 SQL veritabanı şemalarını ve istatistiklerini inceliyor, rapor derleniyor...</p>
+                        <p class="text-xs text-indigo-400 animate-pulse font-medium">Yapay Zeka SQL veritabanı şemalarını ve istatistiklerini inceliyor, rapor derleniyor...</p>
                     </div>
                     
                     <!-- Content Rendering -->
@@ -1661,7 +1661,7 @@
             const loadText = loader.querySelector('p');
             if (loadText) loadText.innerHTML = "Yapay Zeka Lig Verilerini Analiz Ediyor...";
             
-            statusInd.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-amber-400 mr-2 animate-ping"></span> Gemini Üretiyor...';
+            statusInd.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-amber-400 mr-2 animate-ping"></span> Yapay Zeka Üretiyor...';
             statusInd.classList.replace('bg-indigo-500/10', 'bg-amber-500/10');
             statusInd.classList.replace('text-indigo-400', 'text-amber-400');
             statusInd.classList.replace('border-indigo-500/20', 'border-amber-500/20');
@@ -1679,7 +1679,7 @@
                     contentBox.classList.remove('hidden');
                     
                     if(data.is_live_ai) {
-                        statusInd.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-2"></span> Canlı AI Yanıtı (Gemini 1.5)';
+                        statusInd.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-2"></span> Canlı Yapay Zeka Yanıtı';
                         statusInd.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 transition-all';
                     } else {
                         statusInd.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-slate-400 mr-2"></span> Çevrimdışı Analiz (Simüle)';
