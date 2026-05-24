@@ -7,10 +7,6 @@ from mysql.connector import Error
 from dotenv import load_dotenv
 import google.generativeai as genai
 import markdown
-import io
-import csv
-import zipfile
-from flask import send_file
 from seed_data import STADIUMS, TEAMS, MANAGERS, PLAYERS, TRANSFERS_RAW, MATCHES_RAW, MATCH_EVENTS_RAW
 
 # Load environment variables
@@ -801,49 +797,6 @@ def simulate_match():
         })
         
     except Error as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-    finally:
-        if conn and conn.is_connected():
-            conn.close()
-
-@app.route('/api/export_db')
-def export_db():
-    if not db_connected:
-        return jsonify({"success": False, "error": "Veritabanı bağlantısı yok."}), 500
-    
-    conn = None
-    try:
-        conn = get_mysql_connection(use_db=True)
-        cursor = conn.cursor(dictionary=True)
-        
-        tables = ['Takimlar', 'Oyuncular', 'Stadyumlar', 'Teknik_Direktorler', 'Transferler', 'Maclar', 'Mac_Olaylari']
-        
-        memory_file = io.BytesIO()
-        with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
-            for table in tables:
-                cursor.execute(f"SELECT * FROM {table}")
-                rows = cursor.fetchall()
-                if not rows:
-                    continue
-                
-                csv_buffer = io.StringIO()
-                # Determine fieldnames handling possible datetime or decimal objects
-                fieldnames = list(rows[0].keys())
-                writer = csv.DictWriter(csv_buffer, fieldnames=fieldnames, lineterminator='\\n')
-                writer.writeheader()
-                for row in rows:
-                    writer.writerow(row)
-                
-                zf.writestr(f"{table}.csv", csv_buffer.getvalue())
-        
-        memory_file.seek(0)
-        return send_file(
-            memory_file,
-            mimetype='application/zip',
-            as_attachment=True,
-            download_name='futbol_ligi_veritabani.zip'
-        )
-    except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected():
