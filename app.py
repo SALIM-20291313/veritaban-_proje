@@ -10,9 +10,11 @@ import markdown
 from seed_data import STADIUMS, TEAMS, MANAGERS, PLAYERS, TRANSFERS_RAW, MATCHES_RAW, MATCH_EVENTS_RAW
 
 # Load environment variables
-load_dotenv()
+load_dotenv(override=True)
 
 app = Flask(__name__)
+
+ai_analysis_history = []  # AI geçmişini tutacak FIFO listesi (Max 3)
 
 # DB Connection status flag
 db_connected = False
@@ -28,6 +30,14 @@ def get_db_config():
         'charset': 'utf8mb4',
         'use_pure': True
     }
+
+def get_statement(cursor):
+    if not cursor or not cursor.statement:
+        return ""
+    stmt = cursor.statement
+    if isinstance(stmt, (bytes, bytearray)):
+        return stmt.decode('utf-8')
+    return str(stmt)
 
 def get_mysql_connection(use_db=True):
     config = get_db_config()
@@ -274,50 +284,54 @@ def get_stats():
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         # 1. Puan Tablosu (Standings) Query
         standings_query = """
-        SELECT 
-            t.Takim_ID,
-            t.Ad AS Takim_Ad,
-            COUNT(m.Mac_ID) AS Oynanan_Mac,
-            COALESCE(SUM(CASE 
-                WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
-                     (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 1 
-                ELSE 0 
-            END), 0) AS Galibiyet,
-            COALESCE(SUM(CASE 
-                WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 
-                ELSE 0 
-            END), 0) AS Beraberlik,
-            COALESCE(SUM(CASE 
-                WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor < m.Deplasman_Skor) OR 
-                     (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor < m.Ev_Sahibi_Skor) THEN 1 
-                ELSE 0 
-            END), 0) AS Maglubiyet,
-            COALESCE(SUM(CASE 
-                WHEN m.Ev_Sahibi_Takim_ID = t.Takim_ID THEN m.Ev_Sahibi_Skor 
-                WHEN m.Deplasman_Takim_ID = t.Takim_ID THEN m.Deplasman_Skor 
-                ELSE 0 
-            END), 0) AS Atilan_Gol,
-            COALESCE(SUM(CASE 
-                WHEN m.Ev_Sahibi_Takim_ID = t.Takim_ID THEN m.Deplasman_Skor 
-                WHEN m.Deplasman_Takim_ID = t.Takim_ID THEN m.Ev_Sahibi_Skor 
-                ELSE 0 
-            END), 0) AS Yenilen_Gol,
-            COALESCE(SUM(CASE 
-                WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
-                     (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 3 
-                WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 
-                ELSE 0 
-            END), 0) AS Puan
-        FROM Takimlar t
-        LEFT JOIN Maclar m ON (m.Ev_Sahibi_Takim_ID = t.Takim_ID OR m.Deplasman_Takim_ID = t.Takim_ID)
-        AND (m.Ev_Sahibi_Skor IS NOT NULL AND m.Deplasman_Skor IS NOT NULL)
-        GROUP BY t.Takim_ID, t.Ad
+        SELECT * FROM (
+            SELECT 
+                t.Takim_ID,
+                t.Ad AS Takim_Ad,
+                COUNT(m.Mac_ID) AS Oynanan_Mac,
+                COALESCE(SUM(CASE 
+                    WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
+                         (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 1 
+                    ELSE 0 
+                END), 0) AS Galibiyet,
+                COALESCE(SUM(CASE 
+                    WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 
+                    ELSE 0 
+                END), 0) AS Beraberlik,
+                COALESCE(SUM(CASE 
+                    WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor < m.Deplasman_Skor) OR 
+                         (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor < m.Ev_Sahibi_Skor) THEN 1 
+                    ELSE 0 
+                END), 0) AS Maglubiyet,
+                COALESCE(SUM(CASE 
+                    WHEN m.Ev_Sahibi_Takim_ID = t.Takim_ID THEN m.Ev_Sahibi_Skor 
+                    WHEN m.Deplasman_Takim_ID = t.Takim_ID THEN m.Deplasman_Skor 
+                    ELSE 0 
+                END), 0) AS Atilan_Gol,
+                COALESCE(SUM(CASE 
+                    WHEN m.Ev_Sahibi_Takim_ID = t.Takim_ID THEN m.Deplasman_Skor 
+                    WHEN m.Deplasman_Takim_ID = t.Takim_ID THEN m.Ev_Sahibi_Skor 
+                    ELSE 0 
+                END), 0) AS Yenilen_Gol,
+                COALESCE(SUM(CASE 
+                    WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
+                         (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 3 
+                    WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 
+                    ELSE 0 
+                END), 0) AS Puan
+            FROM Takimlar t
+            LEFT JOIN Maclar m ON (m.Ev_Sahibi_Takim_ID = t.Takim_ID OR m.Deplasman_Takim_ID = t.Takim_ID)
+            AND (m.Ev_Sahibi_Skor IS NOT NULL AND m.Deplasman_Skor IS NOT NULL)
+            GROUP BY t.Takim_ID, t.Ad
+        ) AS sub_standings
         ORDER BY Puan DESC, (Atilan_Gol - Yenilen_Gol) DESC, Atilan_Gol DESC;
         """
         cursor.execute(standings_query)
+        queries['standings'] = get_statement(cursor)
         standings = cursor.fetchall()
         
         for team in standings:
@@ -331,6 +345,8 @@ def get_stats():
                 ORDER BY Tarih_Saat DESC, Mac_ID DESC
                 LIMIT 5
             """, (team['Takim_ID'], team['Takim_ID']))
+            if 'recent_matches' not in queries:
+                queries['recent_matches'] = get_statement(cursor)
             recent_matches = cursor.fetchall()
             
             form = []
@@ -367,6 +383,7 @@ def get_stats():
         LIMIT 10;
         """
         cursor.execute(scorers_query)
+        queries['scorers'] = get_statement(cursor)
         scorers = cursor.fetchall()
         
         # Casting Decimal to int for JSON serialization
@@ -392,6 +409,7 @@ def get_stats():
         LIMIT 10;
         """
         cursor.execute(assists_query)
+        queries['assists'] = get_statement(cursor)
         assists = cursor.fetchall()
         
         # 4. Transfer Harcamalari (Chart.js icin takim bazli bonservis)
@@ -405,6 +423,7 @@ def get_stats():
         ORDER BY Toplam_Harcama DESC;
         """
         cursor.execute(transfer_query)
+        queries['transfers_chart'] = get_statement(cursor)
         transfers_chart = cursor.fetchall()
         
         # 5. En Son Transferler
@@ -429,6 +448,7 @@ def get_stats():
         LIMIT 10;
         """
         cursor.execute(recent_transfers_query)
+        queries['recent_transfers'] = get_statement(cursor)
         recent_transfers_raw = cursor.fetchall()
         
         recent_transfers = []
@@ -484,6 +504,7 @@ def get_stats():
         ORDER BY Galibiyet_Yuzdesi DESC, Toplam_Mac DESC;
         """
         cursor.execute(managers_query)
+        queries['managers'] = get_statement(cursor)
         managers = cursor.fetchall()
 
         # 7. Tum Maclar (Son 15 Mac)
@@ -505,6 +526,7 @@ def get_stats():
         LIMIT 15;
         """
         cursor.execute(all_matches_query)
+        queries['all_matches'] = get_statement(cursor)
         matches_raw = cursor.fetchall()
         
         matches = []
@@ -555,6 +577,7 @@ def get_stats():
             GROUP BY o.Oyuncu_ID, m.Mac_ID, o.Ad, o.Soyad, t.Ad
             HAVING Gol_Sayisi >= 3
         """)
+        queries['highlights_hat_tricks'] = get_statement(cursor)
         hat_tricks = cursor.fetchall()
         
         cursor.execute("""
@@ -565,6 +588,7 @@ def get_stats():
             JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
             WHERE mo.Olay_Tipi = 'Kirmizi_Kart' AND m.Tarih_Saat >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
         """)
+        queries['highlights_red_cards'] = get_statement(cursor)
         red_cards = cursor.fetchall()
         
         cursor.execute("""
@@ -579,8 +603,55 @@ def get_stats():
             ORDER BY Toplam_Kart DESC
             LIMIT 1
         """)
+        queries['highlights_agresif'] = get_statement(cursor)
         agresif_mac = cursor.fetchone()
 
+
+        # 8. Transfer Financial Summary
+        cursor.execute("SELECT COALESCE(SUM(Bonservis_Bedeli), 0) AS Total_Volume FROM Transferler")
+        queries['financial_total'] = get_statement(cursor)
+        total_volume_row = cursor.fetchone()
+        
+        cursor.execute("""
+            SELECT t.Ad, SUM(tr.Bonservis_Bedeli) AS Spent
+            FROM Transferler tr 
+            JOIN Takimlar t ON tr.Yeni_Takim_ID = t.Takim_ID 
+            GROUP BY t.Takim_ID 
+            ORDER BY Spent DESC 
+            LIMIT 1
+        """)
+        queries['financial_top_spender'] = get_statement(cursor)
+        top_spender_row = cursor.fetchone()
+        
+        cursor.execute("SELECT COUNT(*) AS Free_Transfers FROM Transferler WHERE Bonservis_Bedeli = 0")
+        queries['financial_free_transfers'] = get_statement(cursor)
+        free_transfers_row = cursor.fetchone()
+        
+        financial_summary = {
+            "total_volume": float(total_volume_row['Total_Volume']) if total_volume_row else 0,
+            "top_spender_name": top_spender_row['Ad'] if top_spender_row else "-",
+            "top_spender_amount": float(top_spender_row['Spent']) if top_spender_row else 0,
+            "free_transfers": free_transfers_row['Free_Transfers'] if free_transfers_row else 0
+        }
+        
+        # 9. En Pahalı 5 Transfer
+        cursor.execute("""
+            SELECT 
+                o.Oyuncu_ID, o.Ad, o.Soyad, 
+                COALESCE(t_eski.Ad, 'Serbest') AS Eski_Takim, 
+                t_yeni.Ad AS Yeni_Takim, 
+                tr.Bonservis_Bedeli,
+                tr.Para_Birimi
+            FROM Transferler tr 
+            JOIN Oyuncular o ON tr.Oyuncu_ID = o.Oyuncu_ID 
+            LEFT JOIN Takimlar t_eski ON tr.Eski_Takim_ID = t_eski.Takim_ID 
+            JOIN Takimlar t_yeni ON tr.Yeni_Takim_ID = t_yeni.Takim_ID 
+            ORDER BY tr.Bonservis_Bedeli DESC 
+            LIMIT 5
+        """)
+        queries['top_transfers'] = get_statement(cursor)
+        top_transfers = cursor.fetchall()
+        
         weekly_highlights = {
             "hat_tricks": hat_tricks,
             "red_cards": red_cards,
@@ -597,7 +668,10 @@ def get_stats():
             "recent_transfers": recent_transfers,
             "managers": managers,
             "matches": matches,
-            "weekly_highlights": weekly_highlights
+            "weekly_highlights": weekly_highlights,
+            "financial_summary": financial_summary,
+            "top_transfers": top_transfers,
+            "queries": queries
         })
         
     except Error as e:
@@ -803,367 +877,193 @@ def reset_database():
     if success:
         seed_success = seed_database()
         if seed_success:
-            return jsonify({"success": True, "message": "Veritabani sifirlandi ve ornek veriler yuklendi."})
+            return jsonify({"success": True, "message": "Veritabani sifirlandi ve ornek veriler yuklendi.", "queries": queries, "queries": queries})
     return jsonify({"success": False, "error": "Sifirlama sirasinda hata olustu."}), 500
 
 @app.route('/api/ai-analysis')
 def get_ai_analysis():
-    # 1. Fetch current statistics context from DB
+    global ai_analysis_history
     if not db_connected:
         return jsonify({"success": False, "error": "Veritabanı bağlantısı yok."}), 500
         
     conn = None
-    stats_summary = {}
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
-        # Get standings
-        cursor.execute("""
-            SELECT t.Ad AS Takim_Ad, 
-            (SELECT SUM(CASE 
-                WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
-                     (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 3 
-                WHEN m.Ev_Sahibi_Skor = m.Deplasman_Skor THEN 1 
-                ELSE 0 
-            END) FROM Maclar m WHERE m.Ev_Sahibi_Takim_ID = t.Takim_ID OR m.Deplasman_Takim_ID = t.Takim_ID) AS Puan
-            FROM Takimlar t ORDER BY Puan DESC;
-        """)
+        # 1. Puan Durumu Query
+        cursor.execute('''
+            SELECT t.Ad, 
+                   SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID=t.Takim_ID AND m.Ev_Sahibi_Skor>m.Deplasman_Skor) OR 
+                                 (m.Deplasman_Takim_ID=t.Takim_ID AND m.Deplasman_Skor>m.Ev_Sahibi_Skor) THEN 3
+                            WHEN m.Ev_Sahibi_Skor=m.Deplasman_Skor THEN 1 ELSE 0 END) as Puan,
+                   SUM(CASE WHEN m.Ev_Sahibi_Takim_ID=t.Takim_ID THEN m.Ev_Sahibi_Skor ELSE m.Deplasman_Skor END) - 
+                   SUM(CASE WHEN m.Ev_Sahibi_Takim_ID=t.Takim_ID THEN m.Deplasman_Skor ELSE m.Ev_Sahibi_Skor END) as Averaj
+            FROM Takimlar t
+            LEFT JOIN Maclar m ON (t.Takim_ID = m.Ev_Sahibi_Takim_ID OR t.Takim_ID = m.Deplasman_Takim_ID)
+            GROUP BY t.Takim_ID
+            ORDER BY Puan DESC, Averaj DESC
+            LIMIT 5
+        ''')
+        queries['ai_standings'] = get_statement(cursor)
         standings = cursor.fetchall()
-        stats_summary['standings'] = standings
         
-        # Get scorers
-        cursor.execute("""
-            SELECT o.Ad, o.Soyad, t.Ad AS Takim_Ad, COUNT(mo.Olay_ID) AS Gol_Sayisi
+        # 2. Golcüler
+        cursor.execute('''
+            SELECT o.Ad, o.Soyad, t.Ad as Takim, COUNT(mo.Olay_ID) as Gol
             FROM Oyuncular o
-            JOIN Mac_Olaylari mo ON o.Oyuncu_ID = mo.Oyuncu_ID
             JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
+            JOIN Mac_Olaylari mo ON o.Oyuncu_ID = mo.Oyuncu_ID
             WHERE mo.Olay_Tipi = 'Gol'
-            GROUP BY o.Oyuncu_ID, o.Ad, o.Soyad, t.Ad
-            ORDER BY Gol_Sayisi DESC LIMIT 3;
-        """)
+            GROUP BY o.Oyuncu_ID
+            ORDER BY Gol DESC
+            LIMIT 3
+        ''')
+        queries['ai_scorers'] = get_statement(cursor)
         scorers = cursor.fetchall()
-        stats_summary['scorers'] = scorers
         
-        # Get transfers
-        cursor.execute("""
-            SELECT o.Ad, o.Soyad, t_yeni.Ad AS Yeni_Takim, tr.Bonservis_Bedeli 
+        # 3. Son 3 Transfer
+        cursor.execute('''
+            SELECT o.Ad, o.Soyad, t.Ad as Yeni_Takim, tr.Bonservis_Bedeli
             FROM Transferler tr
             JOIN Oyuncular o ON tr.Oyuncu_ID = o.Oyuncu_ID
-            JOIN Takimlar t_yeni ON tr.Yeni_Takim_ID = t_yeni.Takim_ID
-            ORDER BY tr.Bonservis_Bedeli DESC LIMIT 3;
-        """)
+            JOIN Takimlar t ON tr.Yeni_Takim_ID = t.Takim_ID
+            ORDER BY tr.Tarih DESC, tr.Transfer_ID DESC
+            LIMIT 3
+        ''')
+        queries['ai_transfers'] = get_statement(cursor)
         transfers = cursor.fetchall()
-        stats_summary['transfers'] = transfers
-
-        # Get managers win rate
-        cursor.execute("""
-            SELECT td.Ad, td.Soyad, t.Ad AS Takim_Ad,
-            ROUND(
-                (SUM(CASE 
-                    WHEN (m.Ev_Sahibi_Takim_ID = t.Takim_ID AND m.Ev_Sahibi_Skor > m.Deplasman_Skor) OR 
-                         (m.Deplasman_Takim_ID = t.Takim_ID AND m.Deplasman_Skor > m.Ev_Sahibi_Skor) THEN 1 
-                    ELSE 0 
-                END) / NULLIF(COUNT(m.Mac_ID), 0)) * 100, 2
-            ) AS Galibiyet_Yuzdesi
-            FROM Teknik_Direktorler td
-            JOIN Takimlar t ON td.Takim_ID = t.Takim_ID
-            LEFT JOIN Maclar m ON (m.Ev_Sahibi_Takim_ID = t.Takim_ID OR m.Deplasman_Takim_ID = t.Takim_ID)
-            AND (m.Ev_Sahibi_Skor IS NOT NULL AND m.Deplasman_Skor IS NOT NULL)
-            GROUP BY td.Direktor_ID, td.Ad, td.Soyad, t.Ad
-            ORDER BY Galibiyet_Yuzdesi DESC LIMIT 3;
-        """)
-        managers = cursor.fetchall()
-        stats_summary['managers'] = managers
         
-        cursor.execute("""
-            SELECT o.Ad, o.Soyad, t.Ad AS Takim_Ad, COUNT(mo.Olay_ID) AS Gol_Sayisi
-            FROM Mac_Olaylari mo
-            JOIN Oyuncular o ON mo.Oyuncu_ID = o.Oyuncu_ID
-            JOIN Maclar m ON mo.Mac_ID = m.Mac_ID
-            JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
-            WHERE mo.Olay_Tipi = 'Gol' AND m.Tarih_Saat >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-            GROUP BY o.Oyuncu_ID, m.Mac_ID, o.Ad, o.Soyad, t.Ad
-            HAVING Gol_Sayisi >= 3
-        """)
-        stats_summary['hat_tricks'] = cursor.fetchall()
-        
-        cursor.execute("""
-            SELECT o.Ad, o.Soyad, t.Ad AS Takim_Ad
-            FROM Mac_Olaylari mo
-            JOIN Oyuncular o ON mo.Oyuncu_ID = o.Oyuncu_ID
-            JOIN Maclar m ON mo.Mac_ID = m.Mac_ID
-            JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
-            WHERE mo.Olay_Tipi = 'Kirmizi_Kart' AND m.Tarih_Saat >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-        """)
-        stats_summary['red_cards'] = cursor.fetchall()
-        
-        cursor.execute("""
-            SELECT m.Mac_ID, t_ev.Ad AS Ev_Sahibi, t_dep.Ad AS Deplasman,
-                   SUM(CASE WHEN mo.Olay_Tipi IN ('Sari_Kart', 'Kirmizi_Kart') THEN 1 ELSE 0 END) AS Toplam_Kart
-            FROM Mac_Olaylari mo
-            JOIN Maclar m ON mo.Mac_ID = m.Mac_ID
-            JOIN Takimlar t_ev ON m.Ev_Sahibi_Takim_ID = t_ev.Takim_ID
-            JOIN Takimlar t_dep ON m.Deplasman_Takim_ID = t_dep.Takim_ID
-            WHERE m.Tarih_Saat >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-            GROUP BY m.Mac_ID, t_ev.Ad, t_dep.Ad
-            ORDER BY Toplam_Kart DESC
-            LIMIT 1
-        """)
-        stats_summary['agresif_mac'] = cursor.fetchone()
-
-        cursor.close()
-    except Error as e:
-        print(f"Error gathering stats for AI: {e}")
-    finally:
-        if conn and conn.is_connected():
-            conn.close()
-
-    # Format data as text context
-    context = "LIG PUAN DURUMU:\n"
-    for idx, team in enumerate(stats_summary.get('standings', [])):
-        puan = team.get('Puan') or 0
-        context += f"{idx+1}. {team['Takim_Ad']}: {int(puan)} Puan\n"
-        
-    context += "\nGOL KRALLIGI (ILK 3):\n"
-    for scorer in stats_summary.get('scorers', []):
-        context += f"- {scorer['Ad']} {scorer['Soyad']} ({scorer['Takim_Ad']}): {scorer['Gol_Sayisi']} Gol\n"
-        
-    context += "\nEN PAHALI TRANSFERLER:\n"
-    for tr in stats_summary.get('transfers', []):
-        context += f"- {tr['Ad']} {tr['Soyad']} -> {tr['Yeni_Takim']}: {float(tr['Bonservis_Bedeli']):,.2f} EUR\n"
-        
-    context += "\nTEKNIK DIREKTOR GALIBIYET YUZDELERI (ILK 3):\n"
-    for mgr in stats_summary.get('managers', []):
-        pct = mgr.get('Galibiyet_Yuzdesi')
-        pct_str = f"{pct}%" if pct is not None else "0.00%"
-        context += f"- {mgr['Ad']} {mgr['Soyad']} ({mgr['Takim_Ad']}): {pct_str} galibiyet orani\n"
-
-    context += "\nHAFTANIN ÖNE ÇIKAN SIRA DIŞI OLAYLARI (Hat-trickler ve Kartlar):\n"
-    if stats_summary.get('hat_tricks'):
-        for ht in stats_summary['hat_tricks']:
-            context += f"- HAT-TRICK KAHRAMANI: {ht['Ad']} {ht['Soyad']} ({ht['Takim_Ad']}) tek macta {ht['Gol_Sayisi']} gol atti!\n"
-    else:
-        context += "- Bu hafta hat-trick yapan oyuncu olmadi.\n"
-        
-    if stats_summary.get('red_cards'):
-        for rc in stats_summary['red_cards']:
-            context += f"- KIRMIZI KART GOREN OYUNCU: {rc['Ad']} {rc['Soyad']} ({rc['Takim_Ad']}) takimini yalniz birakti.\n"
-    else:
-        context += "- Bu hafta kirmizi kart cikan oyuncu olmadi.\n"
-        
-    agresif = stats_summary.get('agresif_mac')
-    if agresif:
-        context += f"- HAFTANIN EN GERGIN MACI: {agresif['Ev_Sahibi']} vs {agresif['Deplasman']} (Toplam {int(agresif['Toplam_Kart'])} sari/kirmizi kart cikti!)\n"
-
-    # 2. Call Gemini API
-    api_key = os.getenv('GEMINI_API_KEY', '').strip()
-    
-    prompt = f"""
-    Sen profesyonel bir Türk futbol analistisin. Sana verilen asagidaki ilişkisel veritabanı istatistiklerini incele ve bu haftanin lig durumunu, taktiksel basarisini, finansal harcamalarini ve teknik direktörlerin performansini yorumlayan taraftarlarin ve medyanin ilgisini cekecek bir rapor hazirla.
-    
-    Lütfen yanıtını UZUN PARAGRAFLAR YERİNE; kısa vurucu cümleler, emojiler, maddeler (bullet points) ve okuması keyifli alt başlıklar halinde tasarla. Kesinlikle sıkıcı blok metinler yazma. Sosyal medyada viral olacak tarzda, çok enerjik ve şık bir format kullan.
-    
-    Raporuna mutlaka ilgi çekici bir baslik ekle. Raporun icerisinde puan durumuna, gol kralligindaki isimlere, en pahali transfere ve en basarili teknik direktöre spesifik atiflarda bulun. Ayrica, sana verilen HAFTANIN ÖNE ÇIKAN SIRA DIŞI OLAYLARINI (Hat-trick yapan kahramanları, kırmızı kart görerek takımını yakan oyuncuları veya haftanın en gergin, en agresif maçını) da derinlemesine incele. Raporunda bu isimlere ve olaylara coşkulu, samimi, taraftarların ve medyanın ilgisini çekecek şekilde spesifik atıflarda bulun.
-    
-    Veritabanı İstatistikleri:
-    {context}
-    """
-    
-    if api_key:
-        try:
-            genai.configure(api_key=api_key)
-            # Use gemini-1.5-flash as the fallback/active model
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            response = model.generate_content(prompt)
-            markdown_text = response.text
-            html_text = markdown.markdown(markdown_text)
-            return jsonify({
-                "success": True,
-                "analysis": html_text,
-                "is_live_ai": True
-            })
-        except Exception as e:
-            print(f"Gemini API Error, falling back to simulated analysis. Error: {e}")
+        # Bağlam (Context) Hazırlığı
+        context = "PUAN DURUMU (İlk 5):\\n"
+        for i, s in enumerate(standings, 1):
+            context += f"{i}. {s['Ad']} - {s['Puan']} Puan (Averaj: {s['Averaj']})\\n"
             
-    # Mock / Fallback Analysis Generator if key is missing or failed
-    lider = stats_summary.get('standings', [{}])[0].get('Takim_Ad', 'Bilinmeyen Takım')
-    lider_puan = stats_summary.get('standings', [{}])[0].get('Puan', 0)
-    top_scorer = stats_summary.get('scorers', [{}])
-    scorer_name = f"{top_scorer[0]['Ad']} {top_scorer[0]['Soyad']}" if top_scorer else "Bilinmeyen Oyuncu"
-    scorer_goals = top_scorer[0]['Gol_Sayisi'] if top_scorer else 0
-    top_trans = stats_summary.get('transfers', [{}])
-    trans_name = f"{top_trans[0]['Ad']} {top_trans[0]['Soyad']}" if top_trans else "Bilinmeyen Oyuncu"
-    trans_team = top_trans[0]['Yeni_Takim'] if top_trans else "Bilinmeyen Takım"
-    trans_fee = float(top_trans[0]['Bonservis_Bedeli']) / 1000000.0 if top_trans else 0.0
-    
-    top_mgr = stats_summary.get('managers', [{}])
-    mgr_name = f"{top_mgr[0]['Ad']} {top_mgr[0]['Soyad']}" if top_mgr else "Bilinmeyen Hoca"
-    mgr_team = top_mgr[0]['Takim_Ad'] if top_mgr else "Bilinmeyen Takım"
-    mgr_pct = top_mgr[0]['Galibiyet_Yuzdesi'] if top_mgr else 0.0
-    
-    ht_list = stats_summary.get('hat_tricks', [])
-    ht_text = f"**{ht_list[0]['Ad']} {ht_list[0]['Soyad']}** ({ht_list[0]['Takim_Ad']}) muazzam bir hat-trick ile fileleri tam {ht_list[0]['Gol_Sayisi']} kez havalandırarak şov yaparken," if ht_list else "gol krallığı yarışında kıyasıya bir mücadele yaşanırken,"
-    
-    rc_list = stats_summary.get('red_cards', [])
-    rc_text = f"**{rc_list[0]['Ad']} {rc_list[0]['Soyad']}** ({rc_list[0]['Takim_Ad']}) gördüğü kırmızı kartla takımını sahada adeta ateşe attı." if rc_list else "takımlar bu hafta disiplinli oyunlarıyla dikkat çekti."
-    
-    agresif = stats_summary.get('agresif_mac')
-    agresif_text = f"Haftanın en agresif ve tansiyonu yüksek maçı ise **{agresif['Ev_Sahibi']} - {agresif['Deplasman']}** mücadelesiydi; hakem cebinden toplam {int(agresif['Toplam_Kart'])} kez kart çıkararak oyunu zor kontrol edebildi!" if agresif else "Hafta boyunca hakemler nispeten sakin maçlar yönetti."
+        context += "\nEN GOLCÜ OYUNCULAR:\n"
+        for i, g in enumerate(scorers, 1):
+            context += f"- {g['Ad']} {g['Soyad']} ({g['Takim']}): {g['Gol']} Gol\n"
+            
+        context += "\nSON 3 TRANSFER:\n"
+        for tr in transfers:
+            context += f"- {tr['Ad']} {tr['Soyad']} -> {tr['Yeni_Takim']} ({float(tr['Bonservis_Bedeli']):,.0f} EUR)\n"
+            
+        # Force disable API to use mock data as requested by user
+        api_key = ""
+        
+        prompt = f'''Sen sistem veritabanına bağlı canlı bir yapay zeka futbol analistisin. Sana sağlanan güncel lig puan durumunu, golcüleri ve transferleri incele. Futbolseverlerin ve scoutların ilgisini çekecek, akıcı, taktiksel derinliği olan, esprili ve samimi bir Türkçe haftalık lig özeti raporu yaz. Markdown formatında başlıklar kullan.
 
-    mock_html = f"""
-    <div class="space-y-6">
-        <div class="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-2xl p-6 text-center">
-            <h3 class="text-2xl font-black text-white tracking-tight mb-2">⚽ Haftanın Panoraması</h3>
-            <p class="text-indigo-300 text-sm font-medium">Antigravity AI Tarafından Hazırlanan Yapay Zeka Özeti</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 hover:bg-slate-800/60 transition">
-                <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">👑</div>
-                    <h4 class="text-white font-bold">Liderlik Koltuğu</h4>
+Canlı Veritabanı Verileri:
+{context}
+'''
+        html_text = ""
+        is_live = False
+        gemini_err = None
+        
+        if api_key:
+            try:
+                genai.configure(api_key=api_key)
+                model = genai.GenerativeModel("gemini-3.5-flash")
+                response = model.generate_content(prompt)
+                html_text = markdown.markdown(response.text)
+                is_live = True
+            except Exception as e:
+                gemini_err = str(e)
+                print(f"Gemini Error: {e}")
+                
+        if not is_live:
+            # Fallback
+            lider = standings[0]['Ad'] if standings else "Bilinmeyen Takım"
+            lider_puan = standings[0]['Puan'] if standings else 0
+            
+            html_text = f"""
+            <div class="space-y-6">
+                <!-- Lider -->
+                <div class="bg-gradient-to-r from-amber-500/10 to-transparent border-l-4 border-amber-500 p-4 rounded-r-xl">
+                    <h3 class="text-amber-400 font-bold text-lg mb-1 flex items-center">
+                        <span class="text-2xl mr-2">🏆</span> Haftanın Lideri: {lider}
+                    </h3>
+                    <p class="text-slate-300 text-sm">
+                        <strong class="text-white">{lider}</strong>, topladığı <strong class="text-white text-lg">{int(lider_puan)}</strong> puanla zirvede adeta şov yapıyor! Rakiplerin analiz duvarlarını paramparça ettiler. Taktiksel dehaları sahada parlıyor.
+                    </p>
                 </div>
-                <p class="text-sm text-slate-300 leading-relaxed">
-                    Ligde kıran kırana geçen haftaların ardından <strong class="text-emerald-400">{lider}</strong>, topladığı <strong class="text-white">{int(lider_puan)} puanla</strong> zirvedeki yerini perçinledi. Rakiplerin analiz duvarlarını paramparça ediyorlar!
-                </p>
-            </div>
 
-            <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 hover:bg-slate-800/60 transition">
-                <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400">🔥</div>
-                    <h4 class="text-white font-bold">Sıcak Gelişmeler</h4>
+                <!-- Golcüler -->
+                <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
+                    <h3 class="text-emerald-400 font-bold text-base mb-3 flex items-center">
+                        <span class="text-xl mr-2">⚽</span> Gol Krallığı Yarışı
+                    </h3>
+                    <div class="space-y-2">
+            """
+            for i, g in enumerate(scorers):
+                medal = "🥇" if i == 0 else ("🥈" if i == 1 else "🥉")
+                html_text += f"""
+                        <div class="flex items-center justify-between p-2 hover:bg-zinc-800/50 rounded-lg transition">
+                            <div class="flex items-center space-x-3">
+                                <span>{medal}</span>
+                                <span class="text-slate-200 font-medium">{g['Ad']} {g['Soyad']}</span>
+                            </div>
+                            <div class="bg-emerald-500/10 text-emerald-400 font-bold px-3 py-1 rounded-lg text-sm">
+                                {g['Gol']} Gol
+                            </div>
+                        </div>
+                """
+            html_text += """
+                    </div>
                 </div>
-                <p class="text-sm text-slate-300 leading-relaxed">
-                    Sahada olağanüstü anlar yaşandı! {ht_text} Öte yandan {rc_text}
-                </p>
+
+                <!-- Transferler -->
+                <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
+                    <h3 class="text-indigo-400 font-bold text-base mb-3 flex items-center">
+                        <span class="text-xl mr-2">💸</span> Transfer Borsası
+                    </h3>
+                    <div class="space-y-2">
+            """
+            for tr in transfers:
+                feeStr = "Bedelsiz" if float(tr['Bonservis_Bedeli']) == 0 else f"{float(tr['Bonservis_Bedeli']):,.0f} EUR"
+                html_text += f"""
+                        <div class="flex flex-col p-2 hover:bg-zinc-800/50 rounded-lg transition border-l-2 border-indigo-500/30 pl-3">
+                            <div class="text-slate-200 font-semibold text-sm">{tr['Ad']} {tr['Soyad']}</div>
+                            <div class="flex items-center text-xs text-slate-400 mt-1">
+                                <span class="bg-zinc-800 px-2 py-0.5 rounded text-slate-300">Yeni Takım: {tr['Yeni_Takim']}</span>
+                                <span class="ml-auto font-medium text-amber-300">{feeStr}</span>
+                            </div>
+                        </div>
+                """
+            html_text += """
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5">
-            <div class="flex items-center space-x-3 mb-4">
-                <div class="w-8 h-8 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400">⚡</div>
-                <h4 class="text-white font-bold">Tansiyon ve Transfer</h4>
-            </div>
-            <ul class="space-y-3">
-                <li class="flex items-start space-x-2 text-sm text-slate-300">
-                    <span class="text-rose-400 mt-0.5">▪</span>
-                    <span>{agresif_text}</span>
-                </li>
-                <li class="flex items-start space-x-2 text-sm text-slate-300">
-                    <span class="text-indigo-400 mt-0.5">▪</span>
-                    <span>Finansal cephede <strong class="text-white">{trans_name}</strong> transferinin <strong class="text-indigo-400">{trans_fee:.1f} Milyon EUR</strong> bedeliyle <strong class="text-white">{trans_team}</strong> kadrosuna katılması haftaya damga vurdu.</span>
-                </li>
-                <li class="flex items-start space-x-2 text-sm text-slate-300">
-                    <span class="text-orange-400 mt-0.5">▪</span>
-                    <span>Taktik dehaların savaşında <strong class="text-white">{mgr_team}</strong> teknik patronu <strong class="text-orange-400">{mgr_name}</strong>, <strong class="text-white">%{mgr_pct}</strong> galibiyet oranıyla ligin en efektif menajeri konumunda şov yapıyor!</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-    """
-    
-    return jsonify({
-        "success": True,
-        "analysis": mock_html,
-        "is_live_ai": False,
-        "notice": "Gemini API anahtarı ayarlanmadığı veya hata verdiği için simüle analiz üretildi."
-    })
-
-# ---- SCOUTING ENDPOINTS ----
-
-@app.route('/api/scouting/players')
-def scouting_players():
-    if not db_connected:
-        return jsonify({"success": False, "error": "DB bağlantısı yok."}), 500
-    conn = None
-    try:
-        conn = get_mysql_connection(use_db=True)
-        cursor = conn.cursor(dictionary=True)
-        query = """
-        SELECT o.Oyuncu_ID, o.Ad, o.Soyad,
-               TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) AS Yas,
-               o.Uyruk, o.Mevki, t.Ad AS Takim_Ad, t.Takim_ID,
-               COALESCE((SELECT tr.Bonservis_Bedeli FROM Transferler tr
-                         WHERE tr.Oyuncu_ID = o.Oyuncu_ID
-                         ORDER BY tr.Tarih DESC, tr.Transfer_ID DESC LIMIT 1), 0.00) AS Son_Bonservis,
-               SUM(CASE WHEN mo.Olay_Tipi = 'Gol' THEN 1 ELSE 0 END) AS Toplam_Gol,
-               SUM(CASE WHEN mo.Olay_Tipi = 'Asist' THEN 1 ELSE 0 END) AS Toplam_Asist,
-               SUM(CASE WHEN mo.Olay_Tipi = 'Sari_Kart' THEN 1 ELSE 0 END) AS Toplam_Sari_Kart,
-               SUM(CASE WHEN mo.Olay_Tipi = 'Kirmizi_Kart' THEN 1 ELSE 0 END) AS Toplam_Kirmizi_Kart,
-               (SUM(CASE WHEN mo.Olay_Tipi = 'Sari_Kart' THEN 1 ELSE 0 END) + 
-                (SUM(CASE WHEN mo.Olay_Tipi = 'Kirmizi_Kart' THEN 1 ELSE 0 END) * 2)) / 
-                NULLIF((SELECT COUNT(*) FROM Maclar m WHERE m.Ev_Sahibi_Takim_ID = t.Takim_ID OR m.Deplasman_Takim_ID = t.Takim_ID), 0) AS Kart_Orani
-        FROM Oyuncular o 
-        LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
-        LEFT JOIN Mac_Olaylari mo ON o.Oyuncu_ID = mo.Oyuncu_ID
-        WHERE 1=1"""
-        params = []
-        mevki = request.args.get('mevki')
-        if mevki and mevki != 'Tumu':
-            query += " AND o.Mevki=%s"
-            params.append(mevki)
-        uyruk = request.args.get('uyruk')
-        if uyruk:
-            query += " AND o.Uyruk LIKE %s"
-            params.append(f"%{uyruk}%")
-        max_yas = request.args.get('max_yas')
-        if max_yas:
-            query += " AND TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) <= %s"
-            params.append(int(max_yas))
-        min_yas = request.args.get('min_yas')
-        if min_yas:
-            query += " AND TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) >= %s"
-            params.append(int(min_yas))
-        takim_id = request.args.get('takim_id')
-        if takim_id and takim_id != 'Tumu':
-            query += " AND o.Takim_ID = %s"
-            params.append(int(takim_id))
-        max_bonservis = request.args.get('max_bonservis')
-        if max_bonservis:
-            query += """ AND COALESCE((SELECT tr.Bonservis_Bedeli FROM Transferler tr
-                         WHERE tr.Oyuncu_ID=o.Oyuncu_ID ORDER BY tr.Tarih DESC LIMIT 1),0) <= %s"""
-            params.append(float(max_bonservis))
+            """
             
-        query += " GROUP BY o.Oyuncu_ID, o.Ad, o.Soyad, Yas, o.Uyruk, o.Mevki, t.Ad, t.Takim_ID, Son_Bonservis HAVING 1=1"
+        # Save to history
+        import datetime
+        now_str = datetime.datetime.now().strftime("%d %b %Y, %H:%M")
         
-        min_gol = request.args.get('min_gol')
-        if min_gol:
-            query += " AND Toplam_Gol >= %s"
-            params.append(int(min_gol))
+        record = {
+            "date": now_str,
+            "content": html_text
+        }
+        
+        ai_analysis_history.insert(0, record)
+        if len(ai_analysis_history) > 3:
+            ai_analysis_history.pop() # Keep only last 3
             
-        min_asist = request.args.get('min_asist')
-        if min_asist:
-            query += " AND Toplam_Asist >= %s"
-            params.append(int(min_asist))
+        return jsonify({
+            "success": True,
+            "analysis": html_text,
+            "history": ai_analysis_history,
+            "is_live_ai": is_live,
+            "gemini_err": gemini_err,
+            "queries": queries
+        })
             
-        max_kart_orani = request.args.get('max_kart_orani')
-        if max_kart_orani:
-            query += " AND Kart_Orani <= %s"
-            params.append(float(max_kart_orani))
-            
-        sort_by = request.args.get('sort_by')
-        if sort_by == 'gol':
-            query += " ORDER BY Toplam_Gol DESC, Son_Bonservis DESC"
-        elif sort_by == 'asist':
-            query += " ORDER BY Toplam_Asist DESC, Son_Bonservis DESC"
-        elif sort_by == 'yas_asc':
-            query += " ORDER BY Yas ASC, Son_Bonservis DESC"
-        elif sort_by == 'yas_desc':
-            query += " ORDER BY Yas DESC, Son_Bonservis DESC"
-        elif sort_by == 'bonservis_asc':
-            query += " ORDER BY Son_Bonservis ASC, Toplam_Gol DESC"
-        elif sort_by == 'bonservis_desc':
-            query += " ORDER BY Son_Bonservis DESC, Toplam_Gol DESC"
-        else:
-            query += " ORDER BY Son_Bonservis DESC, Toplam_Gol DESC, o.Soyad ASC"
-            
-        cursor.execute(query, tuple(params))
-        return jsonify({"success": True, "players": cursor.fetchall()})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
+
+
 
 
 @app.route('/api/scouting/managers')
@@ -1195,7 +1095,8 @@ def scouting_managers():
         HAVING (Galibiyet_Yuzdesi >= %s OR %s = 0) AND Toplam_Mac >= %s
         ORDER BY Galibiyet_Yuzdesi DESC""",
         (float(request.args.get('min_win_rate', 0)), float(request.args.get('min_win_rate', 0)), int(request.args.get('min_mac', 0))))
-        return jsonify({"success": True, "managers": cursor.fetchall()})
+        queries = {'scout_managers': get_statement(cursor)}
+        return jsonify({"success": True, "managers": cursor.fetchall(), "queries": queries})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
@@ -1210,6 +1111,7 @@ def player_detail(player_id):
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         # Mükemmel JOIN yapısı: Oyuncu bilgileri ve Mac Olaylari toplamları
         cursor.execute("""
@@ -1226,6 +1128,7 @@ def player_detail(player_id):
         WHERE o.Oyuncu_ID=%s
         GROUP BY o.Oyuncu_ID, o.Ad, o.Soyad, o.Dogum_Tarihi, Yas, o.Uyruk, o.Mevki, t.Ad
         """, (player_id,))
+        queries['player_stats'] = get_statement(cursor)
         player = cursor.fetchone()
         
         if not player:
@@ -1246,6 +1149,7 @@ def player_detail(player_id):
         LEFT JOIN Takimlar t_e ON tr.Eski_Takim_ID=t_e.Takim_ID
         LEFT JOIN Takimlar t_y ON tr.Yeni_Takim_ID=t_y.Takim_ID
         WHERE tr.Oyuncu_ID=%s ORDER BY tr.Tarih ASC""", (player_id,))
+        queries['player_transfers'] = get_statement(cursor)
         transfers_asc = cursor.fetchall()
         
         total_investment = 0.0
@@ -1313,6 +1217,7 @@ def player_detail(player_id):
         GROUP BY sezon, mac_id, m.Tarih_Saat, rakip, skor
         ORDER BY m.Tarih_Saat DESC
         """, (player_id,))
+        queries['player_history'] = get_statement(cursor)
         raw_history = cursor.fetchall()
         
         performance_history = []
@@ -1358,7 +1263,8 @@ def player_detail(player_id):
             "financial_analysis": financial_analysis,
             "discipline_analysis": discipline_analysis,
             "match_history": performance_history,
-            "performance_history": performance_history
+            "performance_history": performance_history,
+            "queries": queries
         })
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -1387,6 +1293,7 @@ def compare_players():
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         placeholders = ', '.join(['%s'] * len(player_ids))
         
@@ -1421,6 +1328,7 @@ def compare_players():
         """
         
         cursor.execute(query, tuple(player_ids))
+        queries['compare_players'] = get_statement(cursor)
         compared_players = cursor.fetchall()
         
         # Replace None with 0.0 for mac_basina metrics if applicable
@@ -1430,7 +1338,8 @@ def compare_players():
         
         return jsonify({
             "success": True,
-            "compared_players": compared_players
+            "compared_players": compared_players,
+            "queries": queries
         })
         
     except Error as e:
@@ -1447,6 +1356,7 @@ def team_detail(team_id):
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         # A) Takım Künyesi ve Teknik Kadro Sorgusu
         cursor.execute("""
@@ -1458,6 +1368,7 @@ def team_detail(team_id):
         LEFT JOIN Stadyumlar s ON s.Stadyum_ID = t.Stadyum_ID
         WHERE t.Takim_ID = %s
         """, (team_id,))
+        queries['team_info'] = get_statement(cursor)
         team_info = cursor.fetchone()
         
         if not team_info:
@@ -1471,6 +1382,7 @@ def team_detail(team_id):
         WHERE Takim_ID = %s 
         ORDER BY Mevki, Soyad
         """, (team_id,))
+        queries['team_squad'] = get_statement(cursor)
         squad = cursor.fetchall()
         
         # C) Sezonluk Takım Performans İstatistikleri Sorgusu
@@ -1492,6 +1404,7 @@ def team_detail(team_id):
         WHERE t.Takim_ID = %s
         GROUP BY t.Takim_ID
         """, (team_id,))
+        queries['team_stats'] = get_statement(cursor)
         stats = cursor.fetchone()
         
         # Format the missing values to 0 if no matches played
@@ -1511,7 +1424,8 @@ def team_detail(team_id):
             "success": True, 
             "team_info": team_info, 
             "stats": stats, 
-            "squad": squad
+            "squad": squad,
+            "queries": queries
         })
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -1527,10 +1441,10 @@ def global_search():
     if len(q) < 2:
         return jsonify({"success": True, "players": [], "managers": [], "teams": []})
         
-    conn = None
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         search_pattern = f"%{q}%"
         
@@ -1539,13 +1453,15 @@ def global_search():
             FROM Oyuncular 
             WHERE CONCAT(Ad, ' ', Soyad) LIKE %s LIMIT 5
         """, (search_pattern,))
+        queries['search_players'] = get_statement(cursor)
         players = cursor.fetchall()
         
         cursor.execute("""
-            SELECT Direktor_ID as id, Ad as ad, Soyad as soyad, 'manager' as type 
+            SELECT Direktor_ID as id, Ad as ad, Soyad as soyad, Takim_ID as team_id, 'manager' as type 
             FROM Teknik_Direktorler 
             WHERE CONCAT(Ad, ' ', Soyad) LIKE %s LIMIT 3
         """, (search_pattern,))
+        queries['search_managers'] = get_statement(cursor)
         managers = cursor.fetchall()
         
         cursor.execute("""
@@ -1553,13 +1469,15 @@ def global_search():
             FROM Takimlar 
             WHERE Ad LIKE %s LIMIT 3
         """, (search_pattern,))
+        queries['search_teams'] = get_statement(cursor)
         teams = cursor.fetchall()
         
         return jsonify({
             "success": True,
             "players": players,
             "managers": managers,
-            "teams": teams
+            "teams": teams,
+            "queries": queries
         })
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
@@ -1582,10 +1500,10 @@ def compare_managers():
     if len(m_ids) < 2 or len(m_ids) > 3:
         return jsonify({"success": False, "error": "2 veya 3 direktör seçilmeli."}), 400
         
-    conn = None
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         placeholders = ', '.join(['%s'] * len(m_ids))
         cursor.execute(f"""
@@ -1609,11 +1527,12 @@ def compare_managers():
         GROUP BY td.Direktor_ID, td.Ad, td.Soyad, t.Ad
         """, tuple(m_ids))
         
+        queries['compare_managers'] = get_statement(cursor)
         results = cursor.fetchall()
         for r in results:
             if r['galibiyet_yuzdesi'] is None: r['galibiyet_yuzdesi'] = 0.0
             
-        return jsonify({"success": True, "compared_managers": results})
+        return jsonify({"success": True, "compared_managers": results, "queries": queries})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
@@ -1635,10 +1554,10 @@ def compare_teams():
     if len(t_ids) < 2 or len(t_ids) > 3:
         return jsonify({"success": False, "error": "2 veya 3 takım seçilmeli."}), 400
         
-    conn = None
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         placeholders = ', '.join(['%s'] * len(t_ids))
         cursor.execute(f"""
@@ -1658,13 +1577,14 @@ def compare_teams():
         GROUP BY t.Takim_ID, t.Ad, t.Kurulus_Yili, t.Sehir
         """, tuple(t_ids))
         
+        queries['compare_teams'] = get_statement(cursor)
         results = cursor.fetchall()
         for r in results:
             if r['atilan_gol'] is None: r['atilan_gol'] = 0
             if r['yenilen_gol'] is None: r['yenilen_gol'] = 0
             r['averaj'] = int(r['atilan_gol']) - int(r['yenilen_gol'])
             
-        return jsonify({"success": True, "compared_teams": results})
+        return jsonify({"success": True, "compared_teams": results, "queries": queries})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
@@ -1686,6 +1606,7 @@ def scouting_leaderboard():
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         zaman = request.args.get('zaman')
         zaman_condition = ""
@@ -1742,6 +1663,7 @@ def scouting_leaderboard():
             query += " ORDER BY gol DESC, asist DESC LIMIT 10"
             
         cursor.execute(query, tuple(params))
+        queries['scouting_leaderboard'] = get_statement(cursor)
         results = cursor.fetchall()
         
         leaderboard = []
@@ -1757,11 +1679,117 @@ def scouting_leaderboard():
             
             leaderboard.append(row)
             
-        return jsonify({"success": True, "leaderboard": leaderboard})
+        return jsonify({"success": True, "leaderboard": leaderboard, "queries": queries})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
+
+@app.route('/api/scouting/players')
+def scouting_players_advanced():
+    if not db_connected:
+        return jsonify({"success": False, "error": "DB bağlantısı yok."}), 500
+        
+    conn = None
+    try:
+        conn = get_mysql_connection(use_db=True)
+        cursor = conn.cursor(dictionary=True)
+        queries = {}
+        
+        query = """
+        SELECT o.Oyuncu_ID as Oyuncu_ID, o.Ad as Ad, o.Soyad as Soyad, o.Mevki as Mevki, o.Uyruk as Uyruk,
+               TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) as Yas,
+               t.Ad as Takim_Ad,
+               (SELECT Bonservis_Bedeli FROM Transferler tr WHERE tr.Oyuncu_ID = o.Oyuncu_ID AND tr.Para_Birimi='EUR' ORDER BY Tarih DESC LIMIT 1) as Son_Bonservis,
+               SUM(CASE WHEN mo.Olay_Tipi = 'Gol' THEN 1 ELSE 0 END) as Gol,
+               SUM(CASE WHEN mo.Olay_Tipi = 'Asist' THEN 1 ELSE 0 END) as Asist,
+               SUM(CASE WHEN mo.Olay_Tipi = 'Sari_Kart' THEN 1 ELSE 0 END) as Toplam_Sari_Kart,
+               SUM(CASE WHEN mo.Olay_Tipi = 'Kirmizi_Kart' THEN 1 ELSE 0 END) as Toplam_Kirmizi_Kart
+        FROM Oyuncular o
+        LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
+        LEFT JOIN Mac_Olaylari mo ON o.Oyuncu_ID = mo.Oyuncu_ID
+        WHERE 1=1
+        """
+        params = []
+        
+        mevki = request.args.get('mevki')
+        if mevki and mevki != 'Tumu':
+            query += " AND o.Mevki = %s"
+            params.append(mevki)
+            
+        takim_id = request.args.get('takim_id')
+        if takim_id and takim_id != 'Tumu':
+            query += " AND o.Takim_ID = %s"
+            params.append(int(takim_id))
+            
+        uyruk = request.args.get('uyruk')
+        if uyruk:
+            query += " AND o.Uyruk LIKE %s"
+            params.append(f"%{uyruk}%")
+            
+        min_yas = request.args.get('min_yas')
+        if min_yas:
+            query += " AND TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) >= %s"
+            params.append(int(min_yas))
+            
+        max_yas = request.args.get('max_yas')
+        if max_yas:
+            query += " AND TIMESTAMPDIFF(YEAR, o.Dogum_Tarihi, CURDATE()) <= %s"
+            params.append(int(max_yas))
+            
+        query += " GROUP BY o.Oyuncu_ID, o.Ad, o.Soyad, o.Mevki, o.Uyruk, o.Dogum_Tarihi, t.Ad"
+        
+        having_clauses = []
+        
+        min_gol = request.args.get('min_gol')
+        if min_gol:
+            having_clauses.append("Gol >= %s")
+            params.append(int(min_gol))
+            
+        min_asist = request.args.get('min_asist')
+        if min_asist:
+            having_clauses.append("Asist >= %s")
+            params.append(int(min_asist))
+            
+        max_kart = request.args.get('max_kart_orani')
+        if max_kart:
+            having_clauses.append("(Toplam_Sari_Kart + Toplam_Kirmizi_Kart) <= %s")
+            params.append(int(max_kart))
+            
+        max_bonservis = request.args.get('max_bonservis')
+        if max_bonservis:
+            having_clauses.append("(Son_Bonservis IS NULL OR Son_Bonservis <= %s)")
+            params.append(float(max_bonservis))
+            
+        if having_clauses:
+            query += " HAVING " + " AND ".join(having_clauses)
+            
+        query += " ORDER BY Gol DESC, Asist DESC LIMIT 50"
+        
+        cursor.execute(query, tuple(params))
+        queries['scouting_advanced'] = get_statement(cursor)
+        players = cursor.fetchall()
+        
+        for p in players:
+            if p['Gol'] is None: p['Gol'] = 0
+            if p['Asist'] is None: p['Asist'] = 0
+            if p['Toplam_Sari_Kart'] is None: p['Toplam_Sari_Kart'] = 0
+            if p['Toplam_Kirmizi_Kart'] is None: p['Toplam_Kirmizi_Kart'] = 0
+            if p['Son_Bonservis'] is None: p['Son_Bonservis'] = 0
+            
+            p['Gol'] = int(p['Gol'])
+            p['Asist'] = int(p['Asist'])
+            p['Toplam_Sari_Kart'] = int(p['Toplam_Sari_Kart'])
+            p['Toplam_Kirmizi_Kart'] = int(p['Toplam_Kirmizi_Kart'])
+            p['Son_Bonservis'] = float(p['Son_Bonservis'])
+            
+        return jsonify({"success": True, "players": players, "queries": queries})
+    except Error as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            conn.close()
+
 
 @app.route('/api/match/detail/<int:match_id>')
 def match_detail(match_id):
@@ -1772,6 +1800,7 @@ def match_detail(match_id):
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         # 1. Maç Genel Bilgileri Sorgusu (Sorgu A)
         query_info = """
@@ -1785,6 +1814,7 @@ def match_detail(match_id):
         WHERE m.Mac_ID = %s
         """
         cursor.execute(query_info, (match_id,))
+        queries['match_info'] = get_statement(cursor)
         match_info = cursor.fetchone()
         
         if not match_info:
@@ -1803,6 +1833,7 @@ def match_detail(match_id):
         ORDER BY mo.Dakika ASC
         """
         cursor.execute(query_events, (match_id,))
+        queries['match_events'] = get_statement(cursor)
         events_raw = cursor.fetchall()
         
         timeline = []
@@ -1817,7 +1848,8 @@ def match_detail(match_id):
         return jsonify({
             "success": True,
             "match_info": match_info,
-            "timeline": timeline
+            "timeline": timeline,
+            "queries": queries
         })
         
     except Error as e:
@@ -1838,6 +1870,7 @@ def match_archive():
     try:
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
+        queries = {}
         
         if baslangic and bitis:
             date_filter = "DATE(m.Tarih_Saat) BETWEEN %s AND %s"
@@ -1858,6 +1891,7 @@ def match_archive():
         """
         
         cursor.execute(query, params)
+        queries['match_archive'] = get_statement(cursor)
         raw_matches = cursor.fetchall()
         
         archived_matches = []
@@ -1876,7 +1910,7 @@ def match_archive():
                 "skor_gosterim": skor_gosterim
             })
             
-        return jsonify({"success": True, "archived_matches": archived_matches})
+        return jsonify({"success": True, "archived_matches": archived_matches, "queries": queries})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
@@ -2004,6 +2038,8 @@ def admin_get_players():
             LEFT JOIN Takimlar t ON o.Takim_ID = t.Takim_ID
             ORDER BY o.Ad ASC, o.Soyad ASC
         """)
+        queries = {'crud_players_query': get_statement(cursor)}
+
         players = cursor.fetchall()
         
         # Format date for json
@@ -2011,7 +2047,7 @@ def admin_get_players():
             if p['Dogum_Tarihi']:
                 p['Dogum_Tarihi'] = p['Dogum_Tarihi'].strftime('%Y-%m-%d')
 
-        return jsonify({"success": True, "players": players})
+        return jsonify({"success": True, "players": players, "queries": queries})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
@@ -2043,8 +2079,8 @@ def admin_add_player():
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (ad, soyad, mevki, uyruk, dogum_tarihi, takim_id if takim_id else None))
         conn.commit()
-        
-        return jsonify({"success": True})
+        queries = {'crud_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
@@ -2062,8 +2098,8 @@ def admin_delete_player(player_id):
         # Dependent data in Mac_Olaylari and Transferler will be deleted automatically due to ON DELETE CASCADE
         cursor.execute("DELETE FROM Oyuncular WHERE Oyuncu_ID = %s", (player_id,))
         conn.commit()
-        
-        return jsonify({"success": True})
+        queries = {'crud_delete_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e:
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
@@ -2084,7 +2120,9 @@ def admin_get_teams():
             LEFT JOIN Stadyumlar s ON t.Stadyum_ID = s.Stadyum_ID
             ORDER BY t.Ad ASC
         """)
-        return jsonify({"success": True, "teams": cursor.fetchall()})
+        queries = {'crud_teams_query': get_statement(cursor)}
+
+        return jsonify({"success": True, "teams": cursor.fetchall(), "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2106,7 +2144,8 @@ def admin_add_team():
         cursor.execute("INSERT INTO Takimlar (Ad, Kurulus_Yili, Sehir, Stadyum_ID) VALUES (%s, %s, %s, %s)",
                        (ad, yil, sehir, stadyum_id if stadyum_id else None))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2120,7 +2159,8 @@ def admin_delete_team(team_id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Takimlar WHERE Takim_ID = %s", (team_id,))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_delete_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2139,7 +2179,9 @@ def admin_get_managers():
             LEFT JOIN Takimlar t ON td.Takim_ID = t.Takim_ID
             ORDER BY td.Ad ASC, td.Soyad ASC
         """)
-        return jsonify({"success": True, "managers": cursor.fetchall()})
+        queries = {'crud_managers_query': get_statement(cursor)}
+
+        return jsonify({"success": True, "managers": cursor.fetchall(), "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2160,7 +2202,8 @@ def admin_add_manager():
         cursor.execute("INSERT INTO Teknik_Direktorler (Ad, Soyad, Takim_ID) VALUES (%s, %s, %s)",
                        (ad, soyad, takim_id if takim_id else None))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2174,7 +2217,8 @@ def admin_delete_manager(manager_id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Teknik_Direktorler WHERE Direktor_ID = %s", (manager_id,))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_delete_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2188,7 +2232,9 @@ def admin_get_stadiums():
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT Stadyum_ID, Ad, Kapasite, Sehir FROM Stadyumlar ORDER BY Ad ASC")
-        return jsonify({"success": True, "stadiums": cursor.fetchall()})
+        queries = {'crud_stadiums_query': get_statement(cursor)}
+
+        return jsonify({"success": True, "stadiums": cursor.fetchall(), "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2208,7 +2254,8 @@ def admin_add_stadium():
         cursor = conn.cursor()
         cursor.execute("INSERT INTO Stadyumlar (Ad, Kapasite, Sehir) VALUES (%s, %s, %s)", (ad, kapasite, sehir))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2222,7 +2269,8 @@ def admin_delete_stadium(stadium_id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Stadyumlar WHERE Stadyum_ID = %s", (stadium_id,))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_delete_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2254,6 +2302,8 @@ def admin_get_matches():
             ORDER BY M.Tarih_Saat DESC
             LIMIT 50
         """)
+        queries = {'crud_matches_query': get_statement(cursor)}
+
         
         matches = []
         for row in cursor.fetchall():
@@ -2271,7 +2321,7 @@ def admin_get_matches():
                 "dep_skor": row["Deplasman_Skor"]
             })
             
-        return jsonify({"success": True, "matches": matches})
+        return jsonify({"success": True, "matches": matches, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2302,8 +2352,8 @@ def admin_add_match():
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (ev, dep, tarih, stadyum if stadyum else None, ev_skor if ev_skor != '' else None, dep_skor if dep_skor != '' else None))
         conn.commit()
-        
-        return jsonify({"success": True, "match_id": cursor.lastrowid})
+        queries = {'crud_action': get_statement(cursor)}
+        return jsonify({"success": True, "match_id": cursor.lastrowid, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2317,7 +2367,8 @@ def admin_delete_match(match_id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Maclar WHERE Mac_ID = %s", (match_id,))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_delete_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2348,6 +2399,8 @@ def admin_get_transfers():
             ORDER BY TR.Tarih DESC, TR.Transfer_ID DESC
             LIMIT 50
         """)
+        queries = {'crud_transfers_query': get_statement(cursor)}
+
         
         transfers = []
         for row in cursor.fetchall():
@@ -2361,7 +2414,7 @@ def admin_get_transfers():
                 "Para_Birimi": row["Para_Birimi"]
             })
             
-        return jsonify({"success": True, "transfers": transfers})
+        return jsonify({"success": True, "transfers": transfers, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2397,7 +2450,8 @@ def admin_add_transfer():
         """, (yeni_takim if yeni_takim else None, oyuncu_id))
         
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: 
         if conn: conn.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
@@ -2413,7 +2467,8 @@ def admin_delete_transfer(transfer_id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Transferler WHERE Transfer_ID = %s", (transfer_id,))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_delete_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2483,7 +2538,8 @@ def admin_add_match_event():
         """, (mac_id, oyuncu_id, olay_tipi, dakika))
         
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2497,7 +2553,8 @@ def admin_delete_match_event(event_id):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM Mac_Olaylari WHERE Olay_ID = %s", (event_id,))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_delete_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2525,7 +2582,8 @@ def admin_update_player(player_id):
             WHERE Oyuncu_ID=%s
         """, (ad, soyad, mevki, uyruk, dogum, takim if takim else None, player_id))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_update_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2549,7 +2607,8 @@ def admin_update_team(team_id):
             WHERE Takim_ID=%s
         """, (ad, yil, sehir, stadyum if stadyum else None, team_id))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_update_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2569,7 +2628,8 @@ def admin_update_manager(manager_id):
         cursor.execute("UPDATE Teknik_Direktorler SET Ad=%s, Soyad=%s, Takim_ID=%s WHERE Direktor_ID=%s",
                        (ad, soyad, takim if takim else None, manager_id))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_update_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2589,7 +2649,8 @@ def admin_update_stadium(stadium_id):
         cursor.execute("UPDATE Stadyumlar SET Ad=%s, Kapasite=%s, Sehir=%s WHERE Stadyum_ID=%s",
                        (ad, kapasite, sehir, stadium_id))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_update_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()
@@ -2608,7 +2669,8 @@ def admin_update_match(match_id):
         cursor.execute("UPDATE Maclar SET Ev_Sahibi_Skor=%s, Deplasman_Skor=%s WHERE Mac_ID=%s",
                        (ev, dep, match_id))
         conn.commit()
-        return jsonify({"success": True})
+        queries = {'crud_update_action': get_statement(cursor)}
+        return jsonify({"success": True, "queries": queries})
     except Error as e: return jsonify({"success": False, "error": str(e)}), 500
     finally:
         if conn and conn.is_connected(): conn.close()

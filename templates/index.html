@@ -139,68 +139,44 @@
                 </p>
             </div>
             
-            <!-- Quick Simulator Controls -->
-            <div class="flex flex-wrap gap-3 z-10 shrink-0">
-                <button onclick="simulateMatch()" class="bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-medium text-xs shadow-lg hover:shadow-indigo-500/20 transition flex items-center space-x-1.5 border border-indigo-500/20">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Rastgele Maç Oynat</span>
-                </button>
-                <button onclick="simulateTransfer()" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-white px-4 py-2.5 rounded-xl font-medium text-xs border border-slate-700 transition flex items-center space-x-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Transfer Simüle Et</span>
-                </button>
-            </div>
+            <!-- Simulator controls moved to yonetim -->
             
             <!-- Abstract background shape -->
             <div class="absolute right-0 bottom-0 top-0 w-1/3 bg-gradient-to-l from-indigo-500/10 to-transparent pointer-events-none rounded-r-2xl"></div>
         </div>
 
         <!-- Tab Controls -->
-        <div class="flex border-b border-slate-800 mb-8 space-x-6 overflow-x-auto pb-px">
-            <button onclick="switchTab('tab-standings')" id="btn-tab-standings" class="tab-btn pb-4 text-sm font-semibold border-b-2 border-indigo-500 text-indigo-400 transition outline-none">
-                🏆 Puan Durumu ve Gol Krallığı
+                <div class="flex border-b border-slate-800 mb-8 space-x-6 overflow-x-auto pb-px" style="touch-action: pan-x">
+            <button onclick="switchTab('tab-lig-durumu')" id="btn-tab-lig-durumu" class="tab-btn pb-4 text-sm font-semibold border-b-2 border-indigo-500 text-indigo-400 transition outline-none whitespace-nowrap">
+                🏆 Lig Durumu
             </button>
-            <button onclick="switchTab('tab-leaderboard')" id="btn-tab-leaderboard" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
-                ⭐ Liderlik
+            <button onclick="switchTab('tab-maclar')" id="btn-tab-maclar" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none whitespace-nowrap">
+                📅 Maçlar
             </button>
-            <button onclick="switchTab('tab-matches')" id="btn-tab-matches" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
-                📅 Fikstür ve Canlı Skor
+            <button onclick="switchTab('tab-scout')" id="btn-tab-scout" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none flex items-center space-x-1.5 whitespace-nowrap">
+                <span>🔍 Scout</span>
             </button>
-            <button onclick="switchTab('tab-scouting')" id="btn-tab-scouting" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none flex items-center space-x-1.5">
-                <span>🔍 Scout Keşif Paneli</span>
+            <button onclick="switchTab('tab-transfer')" id="btn-tab-transfer" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none whitespace-nowrap">
+                💸 Transfer
             </button>
-            <button onclick="switchTab('tab-transfers')" id="btn-tab-transfers" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
-                💸 Transfer Pazarı Analizi
+            <button onclick="switchTab('tab-yonetim')" id="btn-tab-yonetim" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none whitespace-nowrap">
+                🛠️ Yönetim Paneli
             </button>
-            <button onclick="switchTab('tab-managers')" id="btn-tab-managers" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
-                👔 Teknik Direktörler
-            </button>
-            <button onclick="switchTab('tab-ai')" id="btn-tab-ai" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none flex items-center space-x-1.5">
+            <button onclick="switchTab('tab-ai-analiz')" id="btn-tab-ai-analiz" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none flex items-center space-x-1.5 whitespace-nowrap">
                 <span class="h-2 w-2 bg-indigo-500 rounded-full animate-ping"></span>
-                <span>🤖 Gemini 3.5 AI Analyst</span>
-            </button>
-            <button onclick="switchTab('tab-admin')" id="btn-tab-admin" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
-                ⚙️ Veritabanı Yönetimi
-            </button>
-            <button onclick="switchTab('tab-crud')" id="btn-tab-crud" class="tab-btn pb-4 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-white transition outline-none">
-                🛠️ Hoca İnceleme & Yönetim Paneli
+                <span>🤖 AI Analiz</span>
             </button>
         </div>
 
         <!-- TAB CONTENT 1: Standings and Scorers -->
-        <div id="tab-standings" class="tab-content space-y-8">
+        <div id="tab-lig-durumu" class="tab-content space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <!-- Standing Table -->
                 <div class="lg:col-span-2 rounded-2xl glass p-6 overflow-hidden">
                     <h3 class="text-xl font-bold title-font mb-4 text-white flex justify-between items-center">
                         <span class="flex items-center space-x-2"><span>⚽ Dinamik Lig Puan Durumu</span></span>
-                        <button onclick="showSQL('standings_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                        <button onclick="showLiveSQL('standings')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
                         </button>
                     </h3>
@@ -240,7 +216,7 @@
                     <div class="rounded-2xl glass p-6">
                         <h3 class="text-lg font-bold title-font mb-4 text-white flex justify-between items-center">
                             <span class="flex items-center space-x-2"><span>👑 Gol Krallığı</span></span>
-                            <button onclick="showSQL('scorers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                            <button onclick="showLiveSQL('scorers')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
                             </button>
                         </h3>
@@ -263,7 +239,7 @@
                     <!-- Assists Card -->
                     <div class="rounded-2xl glass p-6">
                         <h3 class="text-lg font-bold title-font mb-4 text-white flex items-center space-x-2">
-                            <span>🎯 Asist Krallığı</span>
+                            <span class="flex items-center"><span>🎯 Asist Krallığı</span><button onclick="showLiveSQL('assists')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Göster"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><span class="ml-1 font-semibold">SQL</span></button></span>
                         </h3>
                         <div class="overflow-hidden">
                             <table class="w-full text-left text-xs">
@@ -286,11 +262,19 @@
         </div>
 
         <!-- TAB: Matches / Fikstür -->
-        <div id="tab-matches" class="tab-content hidden space-y-8">
-            <div class="rounded-2xl glass p-6 border border-rose-500/10">
+        <div id="tab-maclar" class="tab-content hidden space-y-8">
+            <div class="rounded-2xl glass p-6 border border-rose-500/10 relative z-50">
                 <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
-                    <h3 class="text-xl font-bold title-font text-white">📅 Fikstür ve Canlı Skorlar</h3>
-                    <button onclick="simulateMatch()" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-xs shadow-lg transition">Maç Simüle Et</button>
+                    <h3 class="text-xl font-bold title-font text-white">📅 Fikstür ve Canlı Skorlar<button onclick="showLiveSQL('all_matches')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Göster"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><span class="ml-1 font-semibold">SQL</span></button></h3>
+                    <div class="flex items-center space-x-2">
+                          <button onclick="simulateMatch()" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-xs shadow-lg transition">Maç Simüle Et</button>
+                          <div class="group relative flex items-center justify-center w-6 h-6 rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-indigo-500 cursor-help transition">
+                              <span class="font-bold text-xs">!</span>
+                              <div class="absolute right-0 top-8 w-64 p-3 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 text-xs text-slate-300 font-normal text-left">
+                                  💡 Demo ve Sunum Amaçlıdır — Veritabanındaki takımlar arasında rastgele skorlu maçlar simüle ederek Puan Durumu, Form Grafiği ve Oyuncu Olayları (Gol/Asist/Kart) tablolarını dinamik olarak besler.
+                              </div>
+                          </div>
+                      </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="recent-matches-grid">
                     <!-- Loaded dynamically -->
@@ -301,7 +285,7 @@
             <div class="rounded-2xl glass p-6 border border-indigo-500/10 mt-8">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 border-b border-slate-800 pb-4">
                     <h3 class="text-xl font-bold title-font text-white flex items-center space-x-2">
-                        <span>🕰️ Geçmiş Maç Arşivi</span>
+                        <span class="flex items-center"><span>🕰️ Geçmiş Maç Arşivi</span><button onclick="showLiveSQL('match_archive')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Göster"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><span class="ml-1 font-semibold">SQL</span></button></span>
                     </h3>
                     <form onsubmit="searchMatchArchive(event)" class="flex flex-wrap items-center gap-2">
                         <input type="date" id="archive-start" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-3 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm">
@@ -331,67 +315,8 @@
             </div>
         </div>
 
-        <!-- TAB: Leaderboard -->
-        <div id="tab-leaderboard" class="tab-content hidden space-y-8">
-            <div class="rounded-2xl glass p-6 border border-emerald-500/10 space-y-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-800 pb-4">
-                    <h3 class="text-xl font-bold title-font text-white flex items-center space-x-2">
-                        <span>⭐ Mevkisel Liderlik Tablosu</span>
-                    </h3>
-                    <div class="flex flex-wrap gap-3">
-                        <select id="lb-mevki" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm">
-                            <option value="FV">FV - Forvet</option>
-                            <option value="OS">OS - Orta Saha</option>
-                            <option value="DF">DF - Defans</option>
-                            <option value="KL">KL - Kaleci</option>
-                        </select>
-                        <select id="lb-kriter" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-emerald-500 shadow-sm">
-                            <option value="Gol">En Çok Gol</option>
-                            <option value="Asist">En Çok Asist</option>
-                            <option value="Temiz_Saha">Temiz Saha (Clean Sheet)</option>
-                        </select>
-                        <select id="lb-zaman" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-rose-500 shadow-sm">
-                            <option value="">Tüm Zamanlar</option>
-                            <option value="7">Son 1 Hafta (7 Gün)</option>
-                            <option value="15">Son 15 Gün</option>
-                            <option value="30">Son 1 Ay (30 Gün)</option>
-                        </select>
-                        <select id="lb-takim" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm">
-                            <option value="Tumu">Tüm Takımlar</option>
-                        </select>
-                        <select id="lb-uyruk" onchange="loadLeaderboard()" class="bg-slate-900 border border-slate-800 text-xs text-slate-300 px-4 py-2.5 rounded-xl focus:outline-none focus:border-indigo-500 shadow-sm w-36">
-                            <option value="">Uyruk: Tümü</option><option value="Türkiye">Türkiye</option><option value="Almanya">Almanya</option><option value="Arjantin">Arjantin</option><option value="Belçika">Belçika</option><option value="Brezilya">Brezilya</option><option value="Fransa">Fransa</option><option value="Hollanda">Hollanda</option><option value="İngiltere">İngiltere</option><option value="İspanya">İspanya</option><option value="İtalya">İtalya</option><option value="Portekiz">Portekiz</option><option value="Uruguay">Uruguay</option><option value="Diğer">Diğer</option>
-                        </select>
-                        <div class="flex space-x-1 items-center bg-slate-900 border border-slate-800 rounded-xl px-2">
-                            <input type="number" id="lb-min-yas" onchange="loadLeaderboard()" placeholder="Min Yaş" class="bg-transparent text-xs text-slate-300 w-16 px-2 py-2.5 focus:outline-none focus:text-white text-center">
-                            <span class="text-slate-600">-</span>
-                            <input type="number" id="lb-max-yas" onchange="loadLeaderboard()" placeholder="Maks" class="bg-transparent text-xs text-slate-300 w-16 px-2 py-2.5 focus:outline-none focus:text-white text-center">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-800 text-slate-500 text-xs uppercase tracking-wider">
-                                <th class="py-3 px-4 w-12 text-center">Sıra</th>
-                                <th class="py-3 px-4">Oyuncu</th>
-                                <th class="py-3 px-4">Takım</th>
-                                <th class="py-3 px-4 text-center">Uyruk</th>
-                                <th class="py-3 px-4 text-center">Mevki</th>
-                                <th class="py-3 px-4 text-right text-indigo-400" id="lb-score-col">Skor</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboard-tbody" class="divide-y divide-slate-800/50">
-                            <!-- JS ile dolacak -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
         <!-- TAB: Scout Keşif Paneli -->
-        <div id="tab-scouting" class="tab-content hidden space-y-8">
+        <div id="tab-scout" class="tab-content hidden space-y-8">
 
           <!-- Alt sekmeler -->
           <div class="flex space-x-3 mb-4">
@@ -403,7 +328,7 @@
           <div id="scout-panel-oyuncu" class="rounded-2xl glass p-6 border border-indigo-500/10 space-y-6">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold title-font text-white">🔍 Oyuncu Keşfi &amp; Filtreleme</h3>
-                <button onclick="showSQL('scout_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                <button onclick="showLiveSQL('scout_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
                 </button>
             </div>
@@ -481,7 +406,7 @@
 
           <!-- Teknik Direktör Formu -->
           <div id="scout-panel-direktor" class="hidden rounded-2xl glass p-6 border border-indigo-500/10 space-y-6">
-            <h3 class="text-lg font-bold title-font text-white">👔 Teknik Direktör Keşfi</h3>
+            <h3 class="text-lg font-bold title-font text-white"><div class="flex items-center">👔 Teknik Direktör Keşfi<button onclick="showLiveSQL('scout_managers')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Göster"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><span class="ml-1 font-semibold">SQL</span></button></div></h3>
             <form onsubmit="searchScoutManagers(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
               <div>
                 <label class="block text-xxs font-semibold uppercase tracking-wider text-slate-400 mb-1">Min. Toplam Maç</label>
@@ -520,12 +445,34 @@
 
 
         <!-- TAB CONTENT 2: Transfers -->
-        <div id="tab-transfers" class="tab-content hidden space-y-8">
+        <div id="tab-transfer" class="tab-content hidden space-y-8">
+            <div class="rounded-2xl glass p-6 border border-rose-500/10 relative z-50">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold title-font text-white flex items-center gap-2">
+                        <span>💸 Transfer Pazarı ve Simülasyon</span>
+                    </h3>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="simulateTransfer()" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg transition">Transfer Simüle Et</button>
+                        <div class="group relative flex items-center justify-center w-6 h-6 rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-indigo-500 cursor-help transition">
+                            <span class="font-bold text-xs">!</span>
+                            <div class="absolute right-0 top-8 w-64 p-3 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 text-xs text-slate-300 font-normal text-left leading-relaxed">
+                                💡 Finansal Test Amaçlıdır — Rastgele takımlar arasında bonservisli veya bedelsiz transferler üreterek piyasa değeri trend grafiklerini ve transfer akış panosunu canlı olarak günceller.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Financial Summary Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="transfer-financial-summary">
+                <!-- Injected via JS -->
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <!-- Bonservis Harcama Grafigi -->
                 <div class="lg:col-span-2 rounded-2xl glass p-6">
-                    <h3 class="text-xl font-bold title-font mb-4 text-white">📊 Takım Bonservis Harcama Hacimleri (EUR)</h3>
+                    <h3 class="text-xl font-bold title-font mb-4 text-white"><div class="flex items-center">📊 Takım Bonservis Harcama Hacimleri (EUR)<button onclick="showLiveSQL('transfers_chart')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Göster"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><span class="ml-1 font-semibold">SQL</span></button></div></h3>
                     <div class="relative h-80">
                         <canvas id="transfers-chart"></canvas>
                     </div>
@@ -533,40 +480,36 @@
 
                 <!-- Recent Deals -->
                 <div class="rounded-2xl glass p-6">
-                    <h3 class="text-lg font-bold title-font mb-4 text-white flex justify-between items-center">
-                        <span class="flex items-center space-x-2"><span>🔄 Son Transfer Hareketleri</span></span>
-                        <button onclick="showSQL('transfer_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
-                        </button>
-                    </h3>
+                    <div class="flex flex-wrap justify-between items-center gap-3 mb-4 border-b border-slate-800 pb-4">
+                        <h3 class="text-base font-bold title-font text-white flex items-center gap-2">
+                            <span>🔄 Son Transferler</span>
+                            <button onclick="showLiveSQL('transfer_query')" class="shrink-0 text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-1.5 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                            </button>
+                        </h3>
+                    </div>
                     <div class="space-y-4 max-h-[22rem] overflow-y-auto pr-2" id="recent-transfers-list">
                         <!-- Loaded dynamically -->
                     </div>
                 </div>
 
             </div>
-        </div>
-
-        <!-- TAB CONTENT 3: Managers -->
-        <div id="tab-managers" class="tab-content hidden space-y-8">
-            <div class="rounded-2xl glass p-6">
-                <h3 class="text-xl font-bold title-font mb-4 text-white flex justify-between items-center">
-                    <span class="flex items-center space-x-2"><span>👔 Teknik Direktör Galibiyet Oranı & Başarı Analizi</span></span>
-                    <button onclick="showSQL('managers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
-                    </button>
-                </h3>
-                <p class="text-sm text-slate-400 mb-6">
-                    Managers, Teams ve Matches tablolarını <code>JOIN</code> ile birleştirerek hocaların takım başındaki galibiyet yüzdelerini dinamik olarak hesaplar (Bkz. Aşama 1 - Analitik Sorgu 5).
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="managers-grid">
-                    <!-- Loaded dynamically -->
-                </div>
-            </div>
+              <!-- Top 5 Expensive Transfers -->
+              <div class="mt-8 rounded-2xl glass p-6 border border-emerald-500/10">
+                  <h3 class="text-xl font-bold title-font mb-6 text-white flex items-center space-x-2">
+                      <span>💎 Ligin En Pahalı İmzaları</span>
+                      <button onclick="showLiveSQL('top_transfers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                      </button>
+                  </h3>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="top-transfers-grid">
+                      <!-- Injected via JS -->
+                  </div>
+              </div>
         </div>
 
         <!-- TAB CONTENT 4: AI Coach Analyst -->
-        <div id="tab-ai" class="tab-content hidden space-y-8">
+        <div id="tab-ai-analiz" class="tab-content hidden space-y-8">
             <div class="rounded-2xl glass p-8 neon-glow-indigo border border-indigo-500/20 relative overflow-hidden">
                 
                 <!-- Background visual design element -->
@@ -582,7 +525,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-extrabold title-font text-white">Gemini 3.5 AI Analyst Paneli</h3>
+                            <h3 class="text-2xl font-extrabold title-font text-white"><div class="flex items-center">Gemini 3.5 AI Analyst Paneli<button onclick="showLiveSQL('ai_standings')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Göster"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg><span class="ml-1 font-semibold">SQL</span></button></div></h3>
                             <p class="text-xs text-indigo-300 mt-1">İlişkisel SQL verilerini okuyarak doğal dilde Türkçe analitik rapor hazırlar.</p>
                         </div>
                     </div>
@@ -618,6 +561,20 @@
                             <div class="h-3 w-3 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                             <div class="h-3 w-3 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
                         </div>
+                <!-- Geçmiş Analiz Arşivi -->
+                <div class="mt-8 pt-6 border-t border-slate-800">
+                    <h4 class="text-white font-bold mb-4 flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Geçmiş Analiz Arşivi</span>
+                    </h4>
+                    <div id="ai-history-list" class="flex flex-col space-y-2">
+                        <!-- History items injected via JS -->
+                        <div class="text-sm text-slate-500 italic">Henüz geçmiş analiz bulunmuyor.</div>
+                    </div>
+                </div>
+
                         <p class="text-xs text-indigo-400 animate-pulse font-medium">Gemini 3.5 SQL veritabanı şemalarını ve istatistiklerini inceliyor, rapor derleniyor...</p>
                     </div>
                     
@@ -629,53 +586,20 @@
             </div>
         </div>
 
-        <!-- TAB CONTENT 5: Admin Panel -->
-        <div id="tab-admin" class="tab-content hidden space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
-                <!-- DB Operations -->
-                <div class="rounded-2xl glass p-6">
-                    <h3 class="text-lg font-bold title-font mb-4 text-white">⚙️ Veritabanı Bakım ve Sıfırlama İşlemleri</h3>
-                    <p class="text-xs text-slate-400 mb-6 leading-relaxed">
-                        Veritabanını sıfırlamak, tüm tabloları <code>schema.sql</code> üzerindeki yapılandırmaya göre yeniden oluşturur ve lige 6 adet takımın başlangıç kadrolarını, stadyumlarını ve örnek oynanmış maç verilerini (Seeding) otomatik yükler.
-                    </p>
-                    
-                    <div class="space-y-4">
-                        <button onclick="resetDatabase()" class="w-full bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-medium py-3 rounded-xl text-xs shadow-lg hover:shadow-rose-500/10 transition flex items-center justify-center space-x-2 border border-rose-500/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            <span>Veritabanını Sıfırla ve Yeniden Kur</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Info Card -->
-                <div class="rounded-2xl glass p-6">
-                    <h3 class="text-lg font-bold title-font mb-4 text-white">📋 İlişkisel Şema Tasarım Kuralları</h3>
-                    <ul class="text-xs text-slate-400 space-y-3 list-disc pl-4 leading-relaxed">
-                        <li><strong>Teknik Direktörler (1:1):</strong> <code>UNIQUE(Takim_ID)</code> kısıtı ile bir takımın sadece tek bir hoca çalıştırabilmesi sağlanmıştır.</li>
-                        <li><strong>Transfer İlişkileri (Çift Yönlü FK):</strong> Transfer tablosu, oyuncunun geldiği takımı (<code>Eski_Takim_ID</code>) ve gittiği takımı (<code>Yeni_Takim_ID</code>) ayrı ayrı referans alarak ilişkisel bütünlüğü korur.</li>
-                        <li><strong>Bilgi Bütünlüğü (Cascades):</strong> Oyuncu silindiğinde maç olayları ve transfer kayıtları <code>ON DELETE CASCADE</code> ile otomatik silinir; bir takım silindiğinde ise aktif oyuncularının takım bağlantısı <code>ON DELETE SET NULL</code> ile boşa düşer.</li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-
-    </main>
+        </main>
 
         <!-- TAB CONTENT 6: Hoca İnceleme & Yönetim Paneli (CRUD) -->
-        <div id="tab-crud" class="tab-content hidden space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-12">
+        <div id="tab-yonetim" class="tab-content hidden space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-12">
+            
             <div class="rounded-2xl glass p-6 border border-indigo-500/10 space-y-6">
                 <h3 class="text-xl font-bold title-font text-white flex items-center space-x-2">
-                    <span>🛠️ Hoca İnceleme & Yönetim Paneli (Kapsamlı CRUD)</span>
+                    <span>🛠️ Yönetim Paneli (Kapsamlı CRUD)</span>
                 </h3>
                 
                 <div class="flex space-x-3 border-b border-slate-800 pb-4 overflow-x-auto" style="touch-action: pan-x">
                     <button onclick="switchCrudTab('crud-players')" id="btn-crud-players" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-indigo-600 text-white rounded-lg transition">👤 Oyuncular</button>
                     <button onclick="switchCrudTab('crud-teams')" id="btn-crud-teams" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">🛡️ Takımlar</button>
-                    <button onclick="switchCrudTab('crud-managers')" id="btn-crud-managers" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">👔 Teknik Direktörler</button>
+                    <button onclick="switchCrudTab('crud-managers')" id="btn-crud-managers" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">👔 Menajerler</button>
                     <button onclick="switchCrudTab('crud-stadiums')" id="btn-crud-stadiums" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">🏟️ Stadyumlar</button>
                     <button onclick="switchCrudTab('crud-matches')" id="btn-crud-matches" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">⚽ Maçlar</button>
                     <button onclick="switchCrudTab('crud-transfers')" id="btn-crud-transfers" class="crud-tab-btn shrink-0 text-xs font-bold px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition">💸 Transferler</button>
@@ -685,7 +609,7 @@
                 <!-- PLAYERS CRUD -->
                 <div id="crud-players" class="crud-panel space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Oyuncu Ekle</span><button onclick="showSQL('crud_add_player_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Oyuncu Ekle</span><button onclick="showLiveSQL('crud_add_player_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-player-form" onsubmit="addPlayer(event)" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label>
@@ -730,7 +654,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Oyuncular</span><button onclick="showSQL('crud_players_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Oyuncular</span><button onclick="showLiveSQL('crud_players_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminPlayers()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -756,7 +680,7 @@
                 <!-- TEAMS CRUD -->
                 <div id="crud-teams" class="crud-panel hidden space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Takım Ekle</span><button onclick="showSQL('crud_add_team_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Takım Ekle</span><button onclick="showLiveSQL('crud_add_team_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-team-form" onsubmit="addTeam(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım Adı</label>
@@ -786,7 +710,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Takımlar</span><button onclick="showSQL('crud_teams_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Takımlar</span><button onclick="showLiveSQL('crud_teams_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminTeams()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -809,10 +733,11 @@
                 </div>
 
                 <!-- MANAGERS CRUD -->
+                                <!-- MANAGERS CRUD -->
                 <div id="crud-managers" class="crud-panel hidden space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Teknik Direktör Ekle</span><button onclick="showSQL('crud_add_manager_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
-                        <form id="add-manager-form" onsubmit="addManager(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Teknik Direktör Ekle</span><button onclick="showLiveSQL('crud_add_manager_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <form id="add-manager-form" onsubmit="addManager(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label>
                                 <input type="text" id="crud-manager-ad" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
@@ -822,32 +747,30 @@
                                 <input type="text" id="crud-manager-soyad" required class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
                             </div>
                             <div>
-                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım (Opsiyonel)</label>
+                                <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım</label>
                                 <select id="crud-manager-takim" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
-                                    <option value="">Serbest / Takımsız</option>
+                                    <option value="">Serbest</option>
+                                    <!-- Takımlar buraya JS ile yüklenebilir -->
                                 </select>
                             </div>
-                            <div class="md:col-span-3 flex justify-end mt-2">
-                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-xl font-semibold text-xs shadow-lg transition">
-                                    + Direktörü Ekle
-                                </button>
+                            <div>
+                                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg text-xs transition shadow-lg shadow-indigo-500/20">Kaydet</button>
                             </div>
                         </form>
                     </div>
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Teknik Direktörler</span><button onclick="showSQL('crud_managers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
-                            <button onclick="loadAdminManagers()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Direktörler</span><button onclick="showLiveSQL('crud_managers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         </div>
-                        <div class="overflow-x-auto max-h-96 custom-scrollbar">
-                            <table class="w-full text-left text-sm border-collapse">
-                                <thead class="sticky top-0 bg-slate-900 z-10">
-                                    <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase">
-                                        <th class="py-3 px-4">ID</th>
-                                        <th class="py-3 px-4">Ad Soyad</th>
-                                        <th class="py-3 px-4">Görev Yaptığı Takım</th>
-                                        <th class="py-3 px-4 text-right">İşlem</th>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse" id="crud-managers-table">
+                                <thead>
+                                    <tr class="border-b border-slate-800">
+                                        <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">ID</th>
+                                        <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Ad Soyad</th>
+                                        <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Takım</th>
+                                        <th class="py-3 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">İşlem</th>
                                     </tr>
                                 </thead>
                                 <tbody id="crud-managers-tbody" class="divide-y divide-slate-800/50">
@@ -857,10 +780,10 @@
                     </div>
                 </div>
 
-                <!-- STADIUMS CRUD -->
+<!-- STADIUMS CRUD -->
                 <div id="crud-stadiums" class="crud-panel hidden space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Stadyum Ekle</span><button onclick="showSQL('crud_add_stadium_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Stadyum Ekle</span><button onclick="showLiveSQL('crud_add_stadium_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-stadium-form" onsubmit="addStadium(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Stadyum Adı</label>
@@ -884,7 +807,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Stadyumlar</span><button onclick="showSQL('crud_stadiums_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Tüm Stadyumlar</span><button onclick="showLiveSQL('crud_stadiums_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminStadiums()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -908,7 +831,7 @@
                 <!-- MATCHES CRUD -->
                 <div id="crud-matches" class="crud-panel hidden space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Maç Ekle</span><button onclick="showSQL('crud_add_match_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Maç Ekle</span><button onclick="showLiveSQL('crud_add_match_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-match-form" onsubmit="addMatch(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ev Sahibi Takım</label>
@@ -950,7 +873,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Son 50 Maç</span><button onclick="showSQL('crud_matches_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Son 50 Maç</span><button onclick="showLiveSQL('crud_matches_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminMatches()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -976,7 +899,7 @@
                 <!-- TRANSFERS CRUD -->
                 <div id="crud-transfers" class="crud-panel hidden space-y-6">
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Transfer Ekle</span><button onclick="showSQL('crud_add_transfer_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <h4 class="text-lg font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Transfer Ekle</span><button onclick="showLiveSQL('crud_add_transfer_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-transfer-form" onsubmit="addTransfer(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                             <div>
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Oyuncu</label>
@@ -1022,7 +945,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Son 50 Transfer</span><button onclick="showSQL('crud_transfers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Sistemdeki Son 50 Transfer</span><button onclick="showLiveSQL('crud_transfers_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="loadAdminTransfers()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -1056,7 +979,7 @@
                             </select>
                         </div>
                         
-                        <h4 class="text-md font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Olay Ekle</span><button onclick="showSQL('crud_add_match_event_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                        <h4 class="text-md font-semibold text-white mb-4 flex items-center justify-between"><span>Yeni Olay Ekle</span><button onclick="showLiveSQL('crud_add_match_event_query')" type="button" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                         <form id="add-match-event-form" onsubmit="addMatchEvent(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                             <div class="md:col-span-2">
                                 <label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Oyuncu (Sadece Maçtaki Takımlar)</label>
@@ -1089,7 +1012,7 @@
 
                     <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Bu Maça Ait Olaylar</span><button onclick="showSQL('crud_match_events_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
+                            <h4 class="text-lg font-semibold text-white flex items-center space-x-2"><span>Bu Maça Ait Olaylar</span><button onclick="showLiveSQL('crud_match_events_query')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center" title="Arka plan SQL sorgusunu gör"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button></h4>
                             <button onclick="onMatchEventSelect()" class="text-indigo-400 hover:text-white text-xs underline">Listeyi Yenile</button>
                         </div>
                         <div class="overflow-x-auto max-h-96 custom-scrollbar">
@@ -1114,7 +1037,7 @@
         </div>
 
     <!-- SQL Gösterici Modal (EKSİK 7) -->
-    <div id="sql-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div id="sql-modal" class="fixed inset-0 z-[200] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="closeSQL()"></div>
         <div class="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl mx-4 shadow-2xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 border-b border-slate-800 bg-slate-900/50 rounded-t-2xl">
@@ -1156,6 +1079,8 @@
 
     <!-- Script Operations -->
     <script>
+        window.liveQueries = {};
+        window.sqlQueries = window.sqlQueries || {};
         let transfersChartInstance = null;
 
         // Auto load on init
@@ -1179,8 +1104,8 @@
                 activeBtn.classList.add('border-indigo-500', 'text-indigo-400');
             }
             
-            if (tabId === 'tab-leaderboard') loadLeaderboard();
-            if (tabId === 'tab-crud') loadAdminPlayers();
+            if (tabId === 'tab-lig-durumu') loadLeaderboard();
+            if (tabId === 'tab-yonetim') loadAdminPlayers();
             if (tabId === 'tab-scouting') {
                 document.getElementById('scout-mevki').value = '';
                 document.getElementById('scout-yas').value = '';
@@ -1195,6 +1120,7 @@
                 const response = await fetch('/api/stats');
                 const data = await response.json();
                 
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (data.success) {
                     renderStandings(data.standings);
                     renderScorers(data.weekly_scorers);
@@ -1203,6 +1129,8 @@
                     renderManagers(data.managers);
                     renderTransfersList(data.recent_transfers);
                     renderTransfersChart(data.transfers_chart);
+                    if(data.financial_summary) renderFinancialSummary(data.financial_summary);
+                    if(data.top_transfers) renderTopTransfers(data.top_transfers);
                     
                     document.getElementById('db-status-badge').className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
                     document.getElementById('db-status-badge').innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>MySQL Connected`;
@@ -1220,6 +1148,7 @@
         // Render Standings HTML Table
         function renderStandings(standings) {
             const tbody = document.getElementById('standings-table-body');
+            if(!tbody) return;
             tbody.innerHTML = '';
             
             if (standings.length === 0) {
@@ -1419,6 +1348,7 @@
         // Render Managers
         function renderManagers(managers) {
             const grid = document.getElementById('managers-grid');
+            if (!grid) return;
             grid.innerHTML = '';
             
             if (managers.length === 0) {
@@ -1450,6 +1380,83 @@
         }
 
         // Render Transfers List
+        
+        function renderFinancialSummary(data) {
+            const container = document.getElementById('transfer-financial-summary');
+            if(!container) return;
+            
+            container.innerHTML = `
+                <div class="glass p-6 rounded-2xl border border-indigo-500/20 text-center relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 text-indigo-500/10 group-hover:text-indigo-500/20 transition duration-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div class="relative z-10">
+                        <p class="text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2">Lig Toplam Harcaması</p>
+                        <p class="text-3xl font-black text-white title-font">€${(data.total_volume).toLocaleString('tr-TR')}</p>
+                    </div>
+                </div>
+                
+                <div class="glass p-6 rounded-2xl border border-rose-500/20 text-center relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 text-rose-500/10 group-hover:text-rose-500/20 transition duration-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                    </div>
+                    <div class="relative z-10">
+                        <p class="text-rose-400 font-bold text-xs uppercase tracking-wider mb-2">Yılın Harcama Şampiyonu</p>
+                        <p class="text-2xl font-bold text-white title-font truncate">${data.top_spender_name}</p>
+                        <p class="text-sm font-semibold text-slate-300 mt-1">€${(data.top_spender_amount).toLocaleString('tr-TR')}</p>
+                    </div>
+                </div>
+                
+                <div class="glass p-6 rounded-2xl border border-emerald-500/20 text-center relative overflow-hidden group">
+                    <div class="absolute -right-6 -top-6 text-emerald-500/10 group-hover:text-emerald-500/20 transition duration-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    </div>
+                    <div class="relative z-10">
+                        <p class="text-emerald-400 font-bold text-xs uppercase tracking-wider mb-2">Bedelsiz İmzalar</p>
+                        <p class="text-3xl font-black text-white title-font">${data.free_transfers}</p>
+                        <p class="text-xs text-slate-400 mt-1">Adet transfer</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTopTransfers(transfers) {
+            const container = document.getElementById('top-transfers-grid');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            if(transfers.length === 0) {
+                container.innerHTML = '<p class="text-slate-500 text-sm col-span-5 text-center py-4">Veri bulunamadı.</p>';
+                return;
+            }
+            
+            transfers.forEach((t, i) => {
+                const isTop = i === 0;
+                let bgClass = isTop ? 'bg-gradient-to-br from-indigo-900/50 to-slate-900/50 border-indigo-500/40 shadow-lg shadow-indigo-500/10' : 'bg-slate-900/50 border-slate-800';
+                
+                let html = `
+                    <div class="p-4 rounded-xl border ${bgClass} flex flex-col justify-between group hover:border-indigo-500/30 transition">
+                        <div>
+                            <div class="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-400 mb-3 group-hover:scale-110 transition shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <h4 class="text-sm font-bold text-white truncate" title="${t.Ad} ${t.Soyad}">${t.Ad} <br/> <span class="text-slate-300">${t.Soyad}</span></h4>
+                            <div class="mt-2 text-xs text-slate-500 space-y-1">
+                                <p class="truncate"><span class="text-rose-400/80 line-through">↓ ${t.Eski_Takim}</span></p>
+                                <p class="truncate"><span class="text-emerald-400">↑ ${t.Yeni_Takim}</span></p>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-800/50">
+                            <p class="text-lg font-black ${isTop ? 'text-indigo-400' : 'text-white'} truncate">€${t.Bonservis_Bedeli.toLocaleString('tr-TR')}</p>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
         function renderTransfersList(transfers) {
             const div = document.getElementById('recent-transfers-list');
             div.innerHTML = '';
@@ -1492,6 +1499,7 @@
         // Render Chart.js
         function renderTransfersChart(data) {
             const ctx = document.getElementById('transfers-chart').getContext('2d');
+            if(!ctx) return;
             
             // Extract labels and values
             const labels = data.map(item => item.Takim_Ad);
@@ -1564,6 +1572,7 @@
                 const response = await fetch('/api/simulate-match', { method: 'POST' });
                 const data = await response.json();
                 
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (data.success) {
                     const m = data.match;
                     const matchText = `${m.home} ${m.home_score} - ${m.away_score} ${m.away}`;
@@ -1590,6 +1599,7 @@
                 const response = await fetch('/api/simulate-transfer', { method: 'POST' });
                 const data = await response.json();
                 
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (data.success) {
                     const t = data.transfer;
                     const feeStr = t.fee === 0 
@@ -1621,6 +1631,7 @@
                 const response = await fetch('/api/reset-db', { method: 'POST' });
                 const data = await response.json();
                 
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (data.success) {
                     showToast('Başarılı', data.message, 'success');
                     fetchStats();
@@ -1635,39 +1646,82 @@
 
         // Fetch AI Analysis
         async function fetchAIAnalysis() {
-            document.getElementById('ai-placeholder').classList.add('hidden');
-            document.getElementById('ai-rendered-content').classList.add('hidden');
-            document.getElementById('ai-loading').classList.remove('hidden');
+            const placeholder = document.getElementById('ai-placeholder');
+            const loader = document.getElementById('ai-loading');
+            const contentBox = document.getElementById('ai-rendered-content');
+            const statusInd = document.getElementById('ai-status-indicator');
+            const historyList = document.getElementById('ai-history-list');
+            
+            if(placeholder) placeholder.classList.add('hidden');
+            contentBox.innerHTML = '';
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            
+            // Loading text animation update
+            const loadText = loader.querySelector('p');
+            if (loadText) loadText.innerHTML = "Yapay Zeka Lig Verilerini Analiz Ediyor...";
+            
+            statusInd.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-amber-400 mr-2 animate-ping"></span> Gemini Üretiyor...';
+            statusInd.classList.replace('bg-indigo-500/10', 'bg-amber-500/10');
+            statusInd.classList.replace('text-indigo-400', 'text-amber-400');
+            statusInd.classList.replace('border-indigo-500/20', 'border-amber-500/20');
             
             try {
-                const response = await fetch('/api/ai-analysis');
-                const data = await response.json();
+                const res = await fetch('/api/ai-analysis');
+                const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 
-                document.getElementById('ai-loading').classList.add('hidden');
+                loader.classList.remove('flex');
+                loader.classList.add('hidden');
                 
-                if (data.success) {
-                    const contentDiv = document.getElementById('ai-rendered-content');
-                    contentDiv.innerHTML = data.analysis;
-                    contentDiv.classList.remove('hidden');
+                if(data.success) {
+                    contentBox.innerHTML = data.analysis;
+                    contentBox.classList.remove('hidden');
                     
-                    const badge = document.getElementById('ai-status-indicator');
-                    if (data.is_live_ai) {
-                        badge.className = "inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-                        badge.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-2 animate-ping"></span>Live AI (Gemini 3.5)`;
+                    if(data.is_live_ai) {
+                        statusInd.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-2"></span> Canlı AI Yanıtı (Gemini 1.5)';
+                        statusInd.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 transition-all';
                     } else {
-                        badge.className = "inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
-                        badge.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-amber-400 mr-2"></span>Simulated AI (Local Fallback)`;
-                        showToast('Bilgi', 'Gemini API anahtarı boş olduğundan yerel akıllı analiz üretildi.', 'info');
+                        statusInd.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-slate-400 mr-2"></span> Çevrimdışı Analiz (Simüle)';
+                        statusInd.className = 'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-400 border border-slate-700 transition-all';
                     }
+                    
+                    // Render History
+                    if (data.history && data.history.length > 0) {
+                        window.aiHistoryData = data.history;
+                        if(historyList) {
+                            historyList.innerHTML = '';
+                            data.history.forEach((item, index) => {
+                                historyList.innerHTML += `
+                                    <button onclick="loadHistoryItem(${index})" class="w-full text-left px-4 py-3 rounded-xl bg-slate-800/40 border border-slate-700/50 hover:bg-slate-800/80 transition flex justify-between items-center group">
+                                        <span class="text-sm text-slate-300 font-medium group-hover:text-indigo-300 transition">📅 ${item.date} Analizi</span>
+                                        <span class="text-xs text-indigo-400/50 group-hover:text-indigo-400 transition">Görüntüle →</span>
+                                    </button>
+                                `;
+                            });
+                        }
+                    }
+                    
                 } else {
-                    showToast('Yapay Zeka Hatası', data.error, 'error');
-                    document.getElementById('ai-placeholder').classList.remove('hidden');
+                    contentBox.innerHTML = `<div class="text-rose-400 p-4 bg-rose-500/10 rounded-xl border border-rose-500/20">${data.error || 'API Hatası oluştu.'}</div>`;
                 }
-            } catch (err) {
-                console.error(err);
-                document.getElementById('ai-loading').classList.add('hidden');
-                document.getElementById('ai-placeholder').classList.remove('hidden');
-                showToast('Hata', 'Yapay zeka servisiyle bağlantı kurulamadı.', 'error');
+            } catch(e) {
+                loader.classList.remove('flex');
+                loader.classList.add('hidden');
+                contentBox.innerHTML = `<div class="text-rose-400 p-4 bg-rose-500/10 rounded-xl border border-rose-500/20">Bağlantı hatası: ${e.message}</div>`;
+            }
+        }
+        
+        function loadHistoryItem(index) {
+            if (window.aiHistoryData && window.aiHistoryData[index]) {
+                const contentBox = document.getElementById('ai-rendered-content');
+                const placeholder = document.getElementById('ai-placeholder');
+                
+                if(placeholder) placeholder.classList.add('hidden');
+                contentBox.innerHTML = window.aiHistoryData[index].content;
+                
+                // Scroll to top of box smoothly
+                document.getElementById('ai-report-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
 
@@ -1752,6 +1806,7 @@
                 const response = await fetch(url);
                 const data = await response.json();
 
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (data.success) {
                     tbody.innerHTML = '';
                     if (data.players.length === 0) {
@@ -1841,6 +1896,7 @@
             try {
                 const res = await fetch(url);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 tbody.innerHTML = '';
                 if (!data.success || !data.players.length) {
                     tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-slate-500">Sonuç bulunamadı.</td></tr>';
@@ -1891,6 +1947,7 @@
             try {
                 const res = await fetch(url);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 
                 if (!data.success || !data.leaderboard.length) {
                     tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-slate-500">Bu kriterlere uygun oyuncu bulunamadı.</td></tr>';
@@ -2004,6 +2061,7 @@
             try {
                 const res = await fetch(`/api/scouting/managers?min_win_rate=${wr}&min_mac=${mc}`);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 
                 if (!data.success || !data.managers.length) {
                     tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-500">Sonuç bulunamadı.</td></tr>';
@@ -2103,6 +2161,7 @@
             try {
                 const res = await fetch(`/api/scouting/player-detail/${id}`);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (!data.success) return;
                 const p = data.player, s = data.stats, tr = data.transfers;
                 const fin = data.financial_analysis;
@@ -2358,6 +2417,7 @@
             try {
                 const res = await fetch(`/api/scouting/team-detail/${id}`);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (!data.success) return;
                 
                 const t = data.team_info || data.team;
@@ -2463,11 +2523,13 @@
             const content = document.getElementById('match-modal-content');
             
             content.innerHTML = '<div class="flex justify-center p-8"><span class="w-8 h-8 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></span></div>';
+            generateUpdatePreviewSQL();
             modal.classList.remove('hidden');
             
             try {
                 const res = await fetch(`/api/match/detail/${matchId}`);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 
                 if(!data.success) {
                     content.innerHTML = `<div class="p-6 text-center text-rose-400 font-medium">${data.error}</div>`;
@@ -2650,6 +2712,7 @@
             try {
                 const res = await fetch(endpoint);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (!data.success) {
                     showToast('Hata', data.error, 'error');
                     return;
@@ -2722,6 +2785,7 @@
                     </div>
                 </div>
             `;
+            generateUpdatePreviewSQL();
             modal.classList.remove('hidden');
         }
 
@@ -2779,6 +2843,7 @@
                     </div>
                 </div>
             `;
+            generateUpdatePreviewSQL();
             modal.classList.remove('hidden');
         }
 
@@ -2836,6 +2901,7 @@
                     </div>
                 </div>
             `;
+            generateUpdatePreviewSQL();
             modal.classList.remove('hidden');
         }
 
@@ -2857,6 +2923,7 @@
                 try {
                     const res = await fetch('/api/scouting/players/search?q=' + encodeURIComponent(q));
                     const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                     
                     if (!data.success) return;
                     
@@ -2909,6 +2976,7 @@
             try {
                 const res = await fetch(`/api/stadium/detail/${stadiumId}`);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (!data.success) return;
                 
                 const s = data.stadium_info;
@@ -2972,6 +3040,7 @@
             try {
                 const res = await fetch(`/api/match/archive?baslangic_tarihi=${start}&bitis_tarihi=${end}`);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 
                 if(!data.success) {
                     tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-rose-400 font-semibold">Hata: ${data.error}</td></tr>`;
@@ -3010,24 +3079,16 @@
                         <td class="py-3 px-4 text-center">
                             <div class="flex justify-center space-x-2">
                                 <button onclick="event.stopPropagation();openMatchModal(${m.mac_id})" class="text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-indigo-400 px-3 py-1.5 rounded hover:bg-indigo-600 hover:text-white transition">İncele</button>
-                                <button onclick="event.stopPropagation();openUpdateModal('match', ${m.mac_id})" class="text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-amber-500 px-3 py-1.5 rounded hover:bg-amber-600 hover:text-white transition">Düzenle</button>
                             </div>
                         </td>
                     `;
                     tbody.appendChild(row);
                 });
-                
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-rose-400 font-semibold">Sunucu bağlantı hatası.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-rose-500">Bağlantı hatası.</td></tr>`;
             }
         }
-        
-        // Auto-load on init
-        setTimeout(() => {
-            loadMatchArchive();
-        }, 1000);
 
-        // --- ADMIN CRUD JS ---
         async function loadAdminPlayers() {
             const tbody = document.getElementById('crud-players-tbody');
             if(!tbody) return;
@@ -3035,33 +3096,30 @@
             try {
                 const res = await fetch('/api/admin/players');
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
+                
                 if(data.success) {
-                    if(data.players.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Sistemde kayıtlı oyuncu yok.</td></tr>';
-                        return;
-                    }
+                    if(data.players.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Kayıtlı oyuncu yok.</td></tr>'; return; }
                     if(!window.adminData) window.adminData = {};
                     window.adminData.players = data.players;
-                    
                     tbody.innerHTML = '';
                     data.players.forEach(p => {
                         const tr = document.createElement('tr');
-                        tr.className = 'border-b border-slate-800/50 hover:bg-slate-900/40 transition-colors';
+                        tr.className = "hover:bg-slate-900/30 transition-colors border-b border-slate-800/40";
                         tr.innerHTML = `
-                            <td class="py-3 px-4 text-xs font-mono text-slate-500">#${p.Oyuncu_ID}</td>
+                            <td class="py-3 px-4 text-indigo-400 font-mono text-xs">#${p.Oyuncu_ID}</td>
                             <td class="py-3 px-4 font-semibold text-slate-200">${p.Ad} ${p.Soyad}</td>
-                            <td class="py-3 px-4 text-xs text-indigo-400 font-bold">${p.Mevki}</td>
-                            <td class="py-3 px-4 text-xs">${p.Uyruk}</td>
-                            <td class="py-3 px-4 text-xs text-slate-400">${p.Dogum_Tarihi || '-'}</td>
-                            <td class="py-3 px-4 text-xs">${p.Takim_Ad || '<span class="text-slate-500">Serbest</span>'}</td>
+                            <td class="py-3 px-4 text-emerald-400 font-semibold">${p.Mevki}</td>
+                            <td class="py-3 px-4 text-slate-400 text-xs">${p.Uyruk}</td>
+                            <td class="py-3 px-4 text-slate-400 text-xs">${p.Dogum_Tarihi || '-'}</td>
+                            <td class="py-3 px-4 font-semibold text-amber-500/90">${p.Takim_Ad || 'Serbest'}</td>
                             <td class="py-3 px-4 text-right">
                                 <div class="flex justify-end space-x-2">
-                                    <button onclick="openUpdateModal('player', ${p.Oyuncu_ID})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1">
-                                        <span>Düzenle</span>
-                                    </button>
+                                    <button onclick="openUpdateModal('player', ${p.Oyuncu_ID})" class="text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-amber-500 px-3 py-1.5 rounded hover:bg-amber-600 hover:text-white transition">Düzenle</button>
                                     <button onclick="deletePlayer(${p.Oyuncu_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1">
                                         <span>Sil</span>
                                     </button>
+                                    <button onclick="event.stopPropagation();showLiveSQL('crud_delete_action', 'DELETE FROM Oyuncular WHERE Oyuncu_ID = ${p.Oyuncu_ID};')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1.5 rounded transition shadow-sm border border-indigo-500/30 text-xs font-semibold flex items-center justify-center" title="İşlem SQL'i"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button>
                                 </div>
                             </td>
                         `;
@@ -3071,7 +3129,7 @@
                     tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-rose-500">Hata: ${data.error}</td></tr>`;
                 }
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-rose-500">Bağlantı hatası.</td></tr>`;
+                tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-rose-500">Bağlantı hatası.</td></tr>';
             }
         }
 
@@ -3092,6 +3150,7 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     showToast('Başarılı', 'Oyuncu başarıyla eklendi.', 'success');
                     document.getElementById('add-player-form').reset();
@@ -3109,6 +3168,7 @@
             try {
                 const res = await fetch('/api/admin/players/delete/' + id, { method: 'DELETE' });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     showToast('Başarılı', 'Oyuncu sistemden silindi.', 'success');
                     loadAdminPlayers();
@@ -3158,6 +3218,7 @@
                 }
                 const res = await fetch('/api/admin/teams');
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     if(data.teams.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-500">Kayıtlı takım yok.</td></tr>'; return; }
                     if(!window.adminData) window.adminData = {};
@@ -3176,6 +3237,7 @@
                                 <div class="flex justify-end space-x-2">
                                     <button onclick="openUpdateModal('team', ${t.Takim_ID})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Düzenle</span></button>
                                     <button onclick="deleteTeam(${t.Takim_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                    <button onclick="event.stopPropagation();showLiveSQL('crud_delete_action', 'DELETE FROM Takimlar WHERE Takim_ID = ${t.Takim_ID};')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1.5 rounded transition shadow-sm border border-indigo-500/30 text-xs font-semibold flex items-center justify-center" title="İşlem SQL'i"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button>
                                 </div>
                             </td>
                         `;
@@ -3195,6 +3257,7 @@
             try {
                 const res = await fetch('/api/admin/teams/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { showToast('Başarılı', 'Takım eklendi.', 'success'); document.getElementById('add-team-form').reset(); loadAdminTeams(); }
                 else { showToast('Hata', data.error, 'error'); }
             } catch (err) {}
@@ -3204,6 +3267,7 @@
             try {
                 const res = await fetch('/api/admin/teams/delete/' + id, { method: 'DELETE' });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { showToast('Başarılı', 'Takım silindi.', 'success'); loadAdminTeams(); }
                 else { showToast('Hata', data.error, 'error'); }
             } catch (err) {}
@@ -3217,6 +3281,7 @@
             try {
                 const res = await fetch('/api/admin/managers');
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     if(data.managers.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-slate-500">Kayıtlı direktör yok.</td></tr>'; return; }
                     if(!window.adminData) window.adminData = {};
@@ -3233,6 +3298,7 @@
                                 <div class="flex justify-end space-x-2">
                                     <button onclick="openUpdateModal('manager', ${m.Direktor_ID})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Düzenle</span></button>
                                     <button onclick="deleteManager(${m.Direktor_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                    <button onclick="event.stopPropagation();showLiveSQL('crud_delete_action', 'DELETE FROM Teknik_Direktorler WHERE Direktor_ID = ${m.Direktor_ID};')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1.5 rounded transition shadow-sm border border-indigo-500/30 text-xs font-semibold flex items-center justify-center" title="İşlem SQL'i"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button>
                                 </div>
                             </td>
                         `;
@@ -3260,6 +3326,7 @@
             try {
                 const res = await fetch('/api/admin/managers/delete/' + id, { method: 'DELETE' });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); loadAdminManagers(); }
                 else { showToast('Hata', data.error, 'error'); }
             } catch (err) {}
@@ -3273,6 +3340,7 @@
             try {
                 const res = await fetch('/api/admin/stadiums');
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     if(data.stadiums.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Kayıtlı stadyum yok.</td></tr>'; return; }
                     if(!window.adminData) window.adminData = {};
@@ -3290,6 +3358,7 @@
                                 <div class="flex justify-end space-x-2">
                                     <button onclick="openUpdateModal('stadium', ${s.Stadyum_ID})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Düzenle</span></button>
                                     <button onclick="deleteStadium(${s.Stadyum_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                    <button onclick="event.stopPropagation();showLiveSQL('crud_delete_action', 'DELETE FROM Stadyumlar WHERE Stadyum_ID = ${s.Stadyum_ID};')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1.5 rounded transition shadow-sm border border-indigo-500/30 text-xs font-semibold flex items-center justify-center" title="İşlem SQL'i"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button>
                                 </div>
                             </td>
                         `;
@@ -3304,6 +3373,7 @@
             try {
                 const res = await fetch('/api/admin/stadiums/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { showToast('Başarılı', 'Stadyum eklendi.', 'success'); document.getElementById('add-stadium-form').reset(); loadAdminStadiums(); }
                 else { showToast('Hata', data.error, 'error'); }
             } catch (err) {}
@@ -3313,6 +3383,7 @@
             try {
                 const res = await fetch('/api/admin/stadiums/delete/' + id, { method: 'DELETE' });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); loadAdminStadiums(); }
                 else { showToast('Hata', data.error, 'error'); }
             } catch (err) {}
@@ -3366,6 +3437,7 @@
                 
                 const res = await fetch('/api/admin/matches');
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     if(data.matches.length === 0) { 
                         tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Kayıtlı maç yok.</td></tr>'; 
@@ -3396,6 +3468,7 @@
                                 <div class="flex justify-end space-x-2">
                                     <button onclick="openUpdateModal('match', ${m.mac_id})" class="text-amber-500 hover:text-white bg-amber-500/10 hover:bg-amber-600 px-3 py-1.5 rounded transition shadow-sm border border-amber-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Düzenle</span></button>
                                     <button onclick="deleteMatch(${m.mac_id})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                    <button onclick="event.stopPropagation();showLiveSQL('crud_delete_action', 'DELETE FROM Maclar WHERE Mac_ID = ${m.mac_id};')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1.5 rounded transition shadow-sm border border-indigo-500/30 text-xs font-semibold flex items-center justify-center" title="İşlem SQL'i"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button>
                                 </div>
                             </td>
                         `;
@@ -3427,6 +3500,7 @@
             try {
                 const res = await fetch('/api/admin/matches/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { 
                     showToast('Başarılı', 'Maç başarıyla eklendi.', 'success'); 
                     document.getElementById('add-match-form').reset(); 
@@ -3441,6 +3515,7 @@
             try {
                 const res = await fetch('/api/admin/matches/delete/' + id, { method: 'DELETE' });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); loadAdminMatches(); }
                 else { showToast('Hata', data.error, 'error'); }
             } catch (err) {}
@@ -3494,6 +3569,7 @@
                 
                 const res = await fetch('/api/admin/transfers');
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     if(data.transfers.length === 0) { 
                         tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-500">Kayıtlı transfer yok.</td></tr>'; 
@@ -3514,7 +3590,10 @@
                             <td class="py-3 px-4 text-xs text-slate-300">${t.Tarih}</td>
                             <td class="py-3 px-4 text-xs font-mono text-slate-200">${bedel}</td>
                             <td class="py-3 px-4 text-right">
-                                <button onclick="deleteTransfer(${t.Transfer_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 float-right"><span>Sil</span></button>
+                                <div class="flex justify-end space-x-2">
+                                    <button onclick="deleteTransfer(${t.Transfer_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                    <button onclick="event.stopPropagation();showLiveSQL('crud_delete_action', 'DELETE FROM Transferler WHERE Transfer_ID = ${t.Transfer_ID};')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1.5 rounded transition shadow-sm border border-indigo-500/30 text-xs font-semibold flex items-center justify-center" title="İşlem SQL'i"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button>
+                                </div>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -3541,6 +3620,7 @@
             try {
                 const res = await fetch('/api/admin/transfers/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { 
                     showToast('Başarılı', 'Transfer başarıyla gerçekleştirildi. Oyuncunun takımı da güncellendi.', 'success'); 
                     document.getElementById('add-transfer-form').reset();
@@ -3556,6 +3636,7 @@
             try {
                 const res = await fetch('/api/admin/transfers/delete/' + id, { method: 'DELETE' });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); loadAdminTransfers(); }
                 else { showToast('Hata', data.error, 'error'); }
             } catch (err) {}
@@ -3629,6 +3710,7 @@
             try {
                 const res = await fetch('/api/admin/match-events?mac_id=' + macId);
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     if(data.events.length === 0) { 
                         tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-500">Bu maçta henüz kayıtlı olay yok.</td></tr>'; 
@@ -3651,7 +3733,10 @@
                             <td class="py-3 px-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${badgeClass}">${e.Olay_Tipi.replace('_', ' ')}</span></td>
                             <td class="py-3 px-4 text-xs font-bold text-slate-300">${e.Dakika}'</td>
                             <td class="py-3 px-4 text-right">
-                                <button onclick="deleteMatchEvent(${e.Olay_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1 float-right"><span>Sil</span></button>
+                                <div class="flex justify-end space-x-2">
+                                    <button onclick="deleteMatchEvent(${e.Olay_ID})" class="text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-600 px-3 py-1.5 rounded transition shadow-sm border border-rose-500/20 text-xs font-semibold flex items-center justify-center space-x-1"><span>Sil</span></button>
+                                    <button onclick="event.stopPropagation();showLiveSQL('crud_delete_action', 'DELETE FROM Mac_Olaylari WHERE Olay_ID = ${e.Olay_ID};')" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1.5 rounded transition shadow-sm border border-indigo-500/30 text-xs font-semibold flex items-center justify-center" title="İşlem SQL'i"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg></button>
+                                </div>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -3675,6 +3760,7 @@
             try {
                 const res = await fetch('/api/admin/match-events/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { 
                     showToast('Başarılı', 'Maç olayı başarıyla eklendi.', 'success'); 
                     document.getElementById('crud-me-tip').value = '';
@@ -3690,6 +3776,7 @@
             try {
                 const res = await fetch('/api/admin/match-events/delete/' + id, { method: 'DELETE' });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) { showToast('Başarılı', 'Silindi.', 'success'); onMatchEventSelect(); }
                 else { showToast('Hata', data.error, 'error'); }
             } catch (err) {}
@@ -3723,8 +3810,14 @@
         <div class="relative bg-slate-950 border border-amber-500/20 shadow-2xl shadow-amber-500/10 rounded-2xl w-full max-w-lg p-6 z-10">
             <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
                 <h3 id="update-modal-title" class="text-xl font-black text-white flex items-center space-x-2">
-                    <span class="text-amber-400">✏️</span>
-                    <span>Veri Güncelle</span>
+                    <span id="update-modal-title-text" class="flex items-center space-x-2">
+                        <span class="text-amber-400">✏️</span>
+                        <span>Veri Güncelle</span>
+                    </span>
+                    <button type="button" onclick="toggleUpdateSqlPreview()" class="text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 px-2 py-1 rounded transition border border-indigo-500/30 flex items-center h-7 text-xs ml-3" title="Canlı SQL Sorgusu Göster">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                        <span class="ml-1 font-semibold">SQL</span>
+                    </button>
                 </h3>
                 <button type="button" onclick="closeUpdateModal()" class="text-slate-400 hover:text-rose-400 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -3734,6 +3827,14 @@
                 <div id="update-modal-fields" class="grid gap-4"></div>
                 <input type="hidden" id="update-type" value="">
                 <input type="hidden" id="update-id" value="">
+                
+                <!-- LIVE SQL PREVIEW -->
+                <div id="update-sql-preview" class="w-full">
+                    <div id="update-sql-body" class="hidden">
+                        <pre id="update-sql-code" class="whitespace-pre-wrap break-words text-xs text-slate-300 bg-black/30 rounded-lg p-3 border border-indigo-500/30 font-mono max-h-40 overflow-y-auto shadow-inner">-- Değer değiştirin...</pre>
+                    </div>
+                </div>
+
                 <div class="flex justify-end pt-4 border-t border-slate-800 space-x-3">
                     <button type="button" onclick="closeUpdateModal()" class="px-5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">İptal</button>
                     <button type="submit" class="px-5 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
@@ -3745,9 +3846,60 @@
     </div>
 
     <script>
+        function toggleUpdateSqlPreview() {
+            const rawSql = generateUpdatePreviewSQL();
+            if(rawSql) showLiveSQL('custom', rawSql);
+        }
+
+        function generateUpdatePreviewSQL() {
+            const type = document.getElementById('update-type').value;
+            const id = document.getElementById('update-id').value;
+            if (!type || !id) return '';
+            
+            let table = '', setArr = [];
+            const getVal = (elId) => { const el = document.getElementById(elId); return el ? el.value.trim() : ''; };
+            const formatVal = (v) => v === '' ? 'NULL' : (!isNaN(v) && v.indexOf('-') === -1 ? v : `'${v}'`);
+            
+            if (type === 'player') {
+                table = 'Oyuncular';
+                setArr.push(`Ad = ${formatVal(getVal('upd-ad'))}`);
+                setArr.push(`Soyad = ${formatVal(getVal('upd-soyad'))}`);
+                setArr.push(`Mevki = ${formatVal(getVal('upd-mevki'))}`);
+                setArr.push(`Uyruk = ${formatVal(getVal('upd-uyruk'))}`);
+                setArr.push(`Dogum_Tarihi = ${formatVal(getVal('upd-dogum'))}`);
+                setArr.push(`Takim_ID = ${formatVal(getVal('upd-takim'))}`);
+            } else if (type === 'team') {
+                table = 'Takimlar';
+                setArr.push(`Ad = ${formatVal(getVal('upd-ad'))}`);
+                setArr.push(`Kurulus_Yili = ${formatVal(getVal('upd-yil'))}`);
+                setArr.push(`Sehir = ${formatVal(getVal('upd-sehir'))}`);
+                setArr.push(`Stadyum_ID = ${formatVal(getVal('upd-stadyum'))}`);
+            } else if (type === 'manager') {
+                table = 'Teknik_Direktorler';
+                setArr.push(`Ad = ${formatVal(getVal('upd-ad'))}`);
+                setArr.push(`Soyad = ${formatVal(getVal('upd-soyad'))}`);
+                setArr.push(`Takim_ID = ${formatVal(getVal('upd-takim'))}`);
+            } else if (type === 'stadium') {
+                table = 'Stadyumlar';
+                setArr.push(`Ad = ${formatVal(getVal('upd-ad'))}`);
+                setArr.push(`Kapasite = ${formatVal(getVal('upd-kapasite'))}`);
+                setArr.push(`Sehir = ${formatVal(getVal('upd-sehir'))}`);
+            } else if (type === 'match') {
+                table = 'Maclar';
+                setArr.push(`Ev_Sahibi_Skor = ${formatVal(getVal('upd-ev-skor'))}`);
+                setArr.push(`Deplasman_Skor = ${formatVal(getVal('upd-dep-skor'))}`);
+            }
+            
+            let rawSql = `UPDATE ${table} SET ${setArr.join(', ')} WHERE ${type === 'player' ? 'Oyuncu_ID' : type === 'team' ? 'Takim_ID' : type === 'manager' ? 'Direktor_ID' : type === 'stadium' ? 'Stadyum_ID' : 'Mac_ID'} = ${id};`;
+            
+            const codeEl = document.getElementById('update-sql-code');
+            if (codeEl) codeEl.innerHTML = highlightSQL(rawSql);
+            return rawSql;
+        }
+
         function openUpdateModal(type, id) {
             const modal = document.getElementById('update-modal');
-            const title = document.getElementById('update-modal-title');
+            const title = document.getElementById('update-modal-title-text');
             const fields = document.getElementById('update-modal-fields');
             document.getElementById('update-type').value = type;
             document.getElementById('update-id').value = id;
@@ -3759,8 +3911,11 @@
                 const p = window.adminData.players.find(x => x.Oyuncu_ID === id);
                 if(!p) return;
                 
-                // clone takim options
-                const takimOptions = document.getElementById('crud-takim').innerHTML;
+                // dynamically generate takim options
+                let takimOptions = '<option value="">Serbest</option>';
+                if(window.adminData && window.adminData.teams) {
+                    window.adminData.teams.forEach(t => takimOptions += `<option value="${t.Takim_ID}">${t.Ad}</option>`);
+                }
                 
                 html = `
                     <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label><input type="text" id="upd-ad" required value="${p.Ad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
@@ -3774,6 +3929,13 @@
                     <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım</label><select id="upd-takim" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white">${takimOptions}</select></div>
                 `;
                 fields.innerHTML = html;
+            
+            // Wire up live SQL updating
+            const inputs = fields.querySelectorAll('input, select');
+            inputs.forEach(inp => {
+                inp.addEventListener('input', generateUpdatePreviewSQL);
+                inp.addEventListener('change', generateUpdatePreviewSQL);
+            });
                 if(p.Takim_ID) document.getElementById('upd-takim').value = p.Takim_ID;
                 if(p.Uyruk) document.getElementById('upd-uyruk').value = p.Uyruk;
             } 
@@ -3789,19 +3951,36 @@
                     <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Stadyum</label><select id="upd-stadyum" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white">${stadiumOptions}</select></div>
                 `;
                 fields.innerHTML = html;
+            
+            // Wire up live SQL updating
+            const inputs = fields.querySelectorAll('input, select');
+            inputs.forEach(inp => {
+                inp.addEventListener('input', generateUpdatePreviewSQL);
+                inp.addEventListener('change', generateUpdatePreviewSQL);
+            });
                 if(t.Stadyum_ID) document.getElementById('upd-stadyum').value = t.Stadyum_ID;
             }
             else if(type === 'manager') {
                 title.innerHTML = '<span class="text-amber-400">✏️</span><span>Teknik Direktör Düzenle</span>';
                 const m = window.adminData.managers.find(x => x.Direktor_ID === id);
                 if(!m) return;
-                const takimOptions = document.getElementById('crud-manager-takim').innerHTML;
+                let takimOptions = '<option value="">Serbest</option>';
+                if(window.adminData && window.adminData.teams) {
+                    window.adminData.teams.forEach(t => takimOptions += `<option value="${t.Takim_ID}">${t.Ad}</option>`);
+                }
                 html = `
                     <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Ad</label><input type="text" id="upd-ad" required value="${m.Ad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
                     <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Soyad</label><input type="text" id="upd-soyad" required value="${m.Soyad}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
                     <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Takım</label><select id="upd-takim" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white">${takimOptions}</select></div>
                 `;
                 fields.innerHTML = html;
+            
+            // Wire up live SQL updating
+            const inputs = fields.querySelectorAll('input, select');
+            inputs.forEach(inp => {
+                inp.addEventListener('input', generateUpdatePreviewSQL);
+                inp.addEventListener('change', generateUpdatePreviewSQL);
+            });
                 if(m.Takim_ID) document.getElementById('upd-takim').value = m.Takim_ID;
             }
             else if(type === 'stadium') {
@@ -3814,6 +3993,13 @@
                     <div><label class="block text-xxs font-semibold uppercase text-slate-400 mb-1">Şehir</label><input type="text" id="upd-sehir" required value="${s.Sehir}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-lg px-3 py-2 text-xs text-white"></div>
                 `;
                 fields.innerHTML = html;
+            
+            // Wire up live SQL updating
+            const inputs = fields.querySelectorAll('input, select');
+            inputs.forEach(inp => {
+                inp.addEventListener('input', generateUpdatePreviewSQL);
+                inp.addEventListener('change', generateUpdatePreviewSQL);
+            });
             }
             else if(type === 'match') {
                 title.innerHTML = '<span class="text-amber-400">✏️</span><span>Maç Skoru Düzenle</span>';
@@ -3836,8 +4022,16 @@
                     </div>
                 `;
                 fields.innerHTML = html;
+            
+            // Wire up live SQL updating
+            const inputs = fields.querySelectorAll('input, select');
+            inputs.forEach(inp => {
+                inp.addEventListener('input', generateUpdatePreviewSQL);
+                inp.addEventListener('change', generateUpdatePreviewSQL);
+            });
             }
             
+            generateUpdatePreviewSQL();
             modal.classList.remove('hidden');
         }
 
@@ -3899,6 +4093,7 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
+                if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if(data.success) {
                     showToast('Başarılı', 'Kayıt güncellendi.', 'success');
                     closeUpdateModal();
@@ -3918,7 +4113,7 @@
             }
         }
         // --- SQL GÖSTERİCİ (EKSİK 7) ---
-        const sqlQueries = {
+        window.sqlQueries = {
             'standings_query': `-- Puan Durumu (Takımlar & Maçlar Tablosu JOIN & CASE)
 SELECT 
     t.Takim_ID as id, 
@@ -4139,9 +4334,62 @@ VALUES (%s, %s, %s, %s);`
             return '<pre class="whitespace-pre-wrap break-words border-l-2 border-indigo-500/50 pl-4 py-2 my-2 text-slate-300">' + highlighted + '</pre>';
         }
 
-        function showSQL(queryKey) {
-            let rawSql = sqlQueries[queryKey];
-            if(!rawSql) return;
+        function showLiveSQL(queryKey, customSql = null) {
+            let rawSql = window.liveQueries[queryKey] || window.sqlQueries[queryKey];
+            
+            if (customSql) {
+                rawSql = customSql;
+            } else if (queryKey === 'crud_update_action') {
+                const type = document.getElementById('update-type').value;
+                const id = document.getElementById('update-id').value;
+                if (!type || !id) {
+                    rawSql = "-- Güncellenecek veri seçilmedi.";
+                } else {
+                    let table = '', setArr = [];
+                    const getVal = (elId) => { const el = document.getElementById(elId); return el ? el.value.trim() : ''; };
+                    const formatVal = (v) => v === '' ? 'NULL' : (!isNaN(v) && v.indexOf('-') === -1 ? v : `'${v}'`);
+                    
+                    if (type === 'player') {
+                        table = 'Oyuncular';
+                        setArr.push(`Ad = ${formatVal(getVal('upd-ad'))}`);
+                        setArr.push(`Soyad = ${formatVal(getVal('upd-soyad'))}`);
+                        setArr.push(`Mevki = ${formatVal(getVal('upd-mevki'))}`);
+                        setArr.push(`Uyruk = ${formatVal(getVal('upd-uyruk'))}`);
+                        setArr.push(`Dogum_Tarihi = ${formatVal(getVal('upd-dogum'))}`);
+                        setArr.push(`Takim_ID = ${formatVal(getVal('upd-takim'))}`);
+                        rawSql = `UPDATE ${table} SET ${setArr.join(', ')} WHERE Oyuncu_ID = ${id};`;
+                    } else if (type === 'team') {
+                        table = 'Takimlar';
+                        setArr.push(`Ad = ${formatVal(getVal('upd-ad'))}`);
+                        setArr.push(`Kurulus_Yili = ${formatVal(getVal('upd-yil'))}`);
+                        setArr.push(`Sehir = ${formatVal(getVal('upd-sehir'))}`);
+                        setArr.push(`Stadyum_ID = ${formatVal(getVal('upd-stadyum'))}`);
+                        rawSql = `UPDATE ${table} SET ${setArr.join(', ')} WHERE Takim_ID = ${id};`;
+                    } else if (type === 'manager') {
+                        table = 'Teknik_Direktorler';
+                        setArr.push(`Ad = ${formatVal(getVal('upd-ad'))}`);
+                        setArr.push(`Soyad = ${formatVal(getVal('upd-soyad'))}`);
+                        setArr.push(`Takim_ID = ${formatVal(getVal('upd-takim'))}`);
+                        rawSql = `UPDATE ${table} SET ${setArr.join(', ')} WHERE Direktor_ID = ${id};`;
+                    } else if (type === 'stadium') {
+                        table = 'Stadyumlar';
+                        setArr.push(`Ad = ${formatVal(getVal('upd-ad'))}`);
+                        setArr.push(`Kapasite = ${formatVal(getVal('upd-kapasite'))}`);
+                        setArr.push(`Sehir = ${formatVal(getVal('upd-sehir'))}`);
+                        rawSql = `UPDATE ${table} SET ${setArr.join(', ')} WHERE Stadyum_ID = ${id};`;
+                    } else if (type === 'match') {
+                        table = 'Maclar';
+                        setArr.push(`Ev_Sahibi_Skor = ${formatVal(getVal('upd-ev-skor'))}`);
+                        setArr.push(`Deplasman_Skor = ${formatVal(getVal('upd-dep-skor'))}`);
+                        rawSql = `UPDATE ${table} SET ${setArr.join(', ')} WHERE Mac_ID = ${id};`;
+                    }
+                }
+            } else if (queryKey === 'crud_delete_action') {
+                rawSql = `-- Henüz bir Silme işlemi yapmadınız.
+-- Sil butonlarına basarken oluşan dinamik SQL burada gösterilecektir.`;
+            } else if (!rawSql) {
+                rawSql = "-- SQL Sorgusu henüz yakalanamadı veya arka planda çalışmadı.";
+            }
             
             // Dinamik değer değiştirme (INSERT/UPDATE formları için)
             if (queryValueMappers[queryKey]) {
@@ -4172,6 +4420,7 @@ VALUES (%s, %s, %s, %s);`
             copyBtn.classList.add('text-slate-300', 'border-slate-700');
             
             const modal = document.getElementById('sql-modal');
+            generateUpdatePreviewSQL();
             modal.classList.remove('hidden');
             setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
         }
