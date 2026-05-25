@@ -948,8 +948,8 @@ def get_ai_analysis():
         for tr in transfers:
             context += f"- {tr['Ad']} {tr['Soyad']} -> {tr['Yeni_Takim']} ({float(tr['Bonservis_Bedeli']):,.0f} EUR)\n"
             
-        # Force disable API to use mock data as requested by user
-        api_key = ""
+        # AI configuration using DeepSeek
+        api_key = "sk-2174435bc38e48898342e420258e5d23"
         
         prompt = f'''Sen sistem veritabanına bağlı canlı bir yapay zeka futbol analistisin. Sana sağlanan güncel lig puan durumunu, golcüleri ve transferleri incele. Futbolseverlerin ve scoutların ilgisini çekecek, akıcı, taktiksel derinliği olan, esprili ve samimi bir Türkçe haftalık lig özeti raporu yaz. Markdown formatında başlıklar kullan.
 
@@ -962,14 +962,32 @@ Canlı Veritabanı Verileri:
         
         if api_key:
             try:
-                genai.configure(api_key=api_key)
-                model = genai.GenerativeModel("gemini-3.5-flash")
-                response = model.generate_content(prompt)
-                html_text = markdown.markdown(response.text)
-                is_live = True
+                import json
+                import urllib.request
+                req = urllib.request.Request(
+                    'https://api.deepseek.com/chat/completions',
+                    data=json.dumps({
+                        "model": "deepseek-chat",
+                        "messages": [
+                            {"role": "system", "content": "Sen usta bir futbol analistisin. Yanıtlarını sadece markdown formatında Türkçe olarak ver."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        "temperature": 0.7
+                    }).encode('utf-8'),
+                    headers={
+                        'Authorization': f'Bearer {api_key}',
+                        'Content-Type': 'application/json'
+                    }
+                )
+                with urllib.request.urlopen(req) as response:
+                    res_body = response.read().decode('utf-8')
+                    res_json = json.loads(res_body)
+                    ai_reply = res_json['choices'][0]['message']['content']
+                    html_text = markdown.markdown(ai_reply)
+                    is_live = True
             except Exception as e:
                 gemini_err = str(e)
-                print(f"Gemini Error: {e}")
+                print(f"DeepSeek Error: {e}")
                 
         if not is_live:
             # Fallback
