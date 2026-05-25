@@ -951,7 +951,12 @@ def get_ai_analysis():
         # AI configuration using DeepSeek
         api_key = "sk-2174435bc38e48898342e420258e5d23"
         
-        prompt = f'''Sen sistem veritabanına bağlı canlı bir yapay zeka futbol analistisin. Sana sağlanan güncel lig puan durumunu, golcüleri ve transferleri incele. Futbolseverlerin ve scoutların ilgisini çekecek, akıcı, taktiksel derinliği olan, esprili ve samimi bir Türkçe haftalık lig özeti raporu yaz. Markdown formatında başlıklar kullan.
+        prompt = f'''Sen sistem veritabanına bağlı canlı bir yapay zeka futbol analistisin. Sana sağlanan güncel lig puan durumunu, golcüleri ve transferleri incele. 
+Raporunu şu kurallara göre yaz:
+1. Yarı profesyonel scout jargonu (Box-to-box, Inverted Winger, Gegenpressing vb.), yarı esprili ve samimi bir dil kullan.
+2. Sadece düz metin yazma; bol bol Emoji, Markdown Tabloları (örn. performans karşılaştırmaları), Kalın/İtalik vurgular ve Alıntı blokları (>) kullanarak göze hitap eden, dergi tarzı görsel bir tasarım oluştur.
+3. Verileri ilgi çekici kılmak için metin tabanlı küçük bar grafikleri (örn: 🟩🟩🟩🟩⬛⬛) veya skor tabloları kullan.
+4. Taktiksel derinliği ve oyuncu potansiyel analizlerini mutlaka ekle.
 
 Canlı Veritabanı Verileri:
 {context}
@@ -969,10 +974,10 @@ Canlı Veritabanı Verileri:
                     data=json.dumps({
                         "model": "deepseek-chat",
                         "messages": [
-                            {"role": "system", "content": "Sen usta bir futbol analistisin. Yanıtlarını sadece markdown formatında Türkçe olarak ver."},
+                            {"role": "system", "content": "Sen usta, esprili ve görsel sunuma (tablolar, ascii grafikler, emojiler) çok önem veren bir futbol analisti & scout şefisin. Yanıtlarını zengin markdown formatında Türkçe olarak ver."},
                             {"role": "user", "content": prompt}
                         ],
-                        "temperature": 0.7
+                        "temperature": 0.85
                     }).encode('utf-8'),
                     headers={
                         'Authorization': f'Bearer {api_key}',
