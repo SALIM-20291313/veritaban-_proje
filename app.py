@@ -1592,7 +1592,11 @@ def compare_teams():
                COUNT(m.Mac_ID) AS oynanan_mac,
                SUM(CASE WHEN (m.Ev_Sahibi_Takim_ID=t.Takim_ID AND m.Ev_Sahibi_Skor>m.Deplasman_Skor) OR 
                              (m.Deplasman_Takim_ID=t.Takim_ID AND m.Deplasman_Skor>m.Ev_Sahibi_Skor) THEN 3
-                        WHEN m.Ev_Sahibi_Skor=m.Deplasman_Skor THEN 1 ELSE 0 END) AS puan
+                        WHEN m.Ev_Sahibi_Skor=m.Deplasman_Skor THEN 1 ELSE 0 END) AS puan,
+               (SELECT COUNT(*) FROM Oyuncular WHERE Takim_ID=t.Takim_ID) AS oyuncu_sayisi,
+               (SELECT AVG(TIMESTAMPDIFF(YEAR, Dogum_Tarihi, CURDATE())) FROM Oyuncular WHERE Takim_ID=t.Takim_ID) AS yas_ortalamasi,
+               (SELECT COUNT(*) FROM Mac_Olaylari mo JOIN Oyuncular o ON mo.Oyuncu_ID=o.Oyuncu_ID WHERE o.Takim_ID=t.Takim_ID AND mo.Olay_Tipi='Sari_Kart') AS sari_kart,
+               (SELECT COUNT(*) FROM Mac_Olaylari mo JOIN Oyuncular o ON mo.Oyuncu_ID=o.Oyuncu_ID WHERE o.Takim_ID=t.Takim_ID AND mo.Olay_Tipi='Kirmizi_Kart') AS kirmizi_kart
         FROM Takimlar t
         LEFT JOIN Maclar m ON (m.Ev_Sahibi_Takim_ID=t.Takim_ID OR m.Deplasman_Takim_ID=t.Takim_ID) 
         AND m.Ev_Sahibi_Skor IS NOT NULL
