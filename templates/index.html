@@ -1123,6 +1123,7 @@
                 
                 if (data.queries) Object.assign(window.liveQueries, data.queries);
                 if (data.success) {
+                    window.currentStandings = data.standings;
                     renderStandings(data.standings);
                     renderScorers(data.weekly_scorers);
                     renderAssists(data.assists);
