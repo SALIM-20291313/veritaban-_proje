@@ -2947,47 +2947,55 @@
             
             searchTimeout = setTimeout(async () => {
                 try {
-                    const res = await fetch('/api/scouting/players/search?q=' + encodeURIComponent(q));
+                    const res = await fetch('/api/search?q=' + encodeURIComponent(q));
                     const data = await res.json();
-                if (data.queries) Object.assign(window.liveQueries, data.queries);
+                    if (data.queries) Object.assign(window.liveQueries, data.queries);
                     
                     if (!data.success) return;
                     
-                    if (data.search_results.length === 0) {
-                        content.innerHTML = '<div class="p-4 text-center text-slate-500 text-sm">Oyuncu bulunamadı.</div>';
-                        dd.classList.remove('hidden');
-                        return;
+                    let html = '';
+                    
+                    if (data.teams && data.teams.length > 0) {
+                        html += '<div class="text-xxs font-bold uppercase tracking-wider text-emerald-400 px-3 py-2 bg-slate-800/50">Takımlar</div>';
+                        data.teams.forEach(t => {
+                            html += `
+                            <div onclick="openTeamModal(${t.id}); document.getElementById('search-results-dropdown').classList.add('hidden')" class="px-3 py-3 hover:bg-slate-800 cursor-pointer flex items-center group border-b border-slate-800/30 transition">
+                                <div class="w-8 h-8 rounded bg-gradient-to-br from-emerald-500/20 to-slate-800 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold mr-3 shrink-0">${t.ad[0]}</div>
+                                <div class="font-bold text-slate-200 group-hover:text-emerald-300 transition">${t.ad}</div>
+                            </div>`;
+                        });
                     }
                     
-                    let html = '<div class="text-xxs font-bold uppercase tracking-wider text-indigo-400 px-3 py-2 bg-slate-800/50">Hızlı Oyuncu Arama</div>';
-                    data.search_results.forEach(p => {
-                        html += `
-                        <div onclick="openPlayerModal(${p.oyuncu_id}); document.getElementById('search-results-dropdown').classList.add('hidden')" class="px-3 py-3 hover:bg-slate-800 cursor-pointer flex items-center justify-between group border-b border-slate-800/30 transition">
-                            <div class="flex items-center space-x-3.5">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/20 to-slate-800 border border-indigo-500/30 text-indigo-400 flex flex-col items-center justify-center font-bold shrink-0">
-                                    <span class="text-xs leading-none">${p.mevki}</span>
-                                </div>
+                    if (data.managers && data.managers.length > 0) {
+                        html += '<div class="text-xxs font-bold uppercase tracking-wider text-orange-400 px-3 py-2 bg-slate-800/50">Teknik Direktörler</div>';
+                        data.managers.forEach(m => {
+                            html += `
+                            <div class="px-3 py-3 hover:bg-slate-800 flex items-center group border-b border-slate-800/30 transition">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500/20 to-slate-800 border border-orange-500/30 text-orange-400 flex items-center justify-center font-bold mr-3 shrink-0">${m.ad[0]}</div>
                                 <div>
-                                    <h4 class="text-sm font-bold text-slate-200 group-hover:text-indigo-300 transition">${p.ad_soyad}</h4>
-                                    <p class="text-[10px] text-slate-400 mt-0.5"><span class="text-slate-300">${p.takim}</span> • ${p.uyruk}</p>
+                                    <div class="font-bold text-slate-200">${m.ad} ${m.soyad}</div>
                                 </div>
-                            </div>
-                            <div class="flex items-center space-x-4 ml-4">
-                                <div class="text-center">
-                                    <div class="text-[9px] text-slate-500 uppercase tracking-widest mb-0.5">Gol</div>
-                                    <div class="font-black text-indigo-400 text-sm leading-none">${p.gol}</div>
+                            </div>`;
+                        });
+                    }
+                    
+                    if (data.players && data.players.length > 0) {
+                        html += '<div class="text-xxs font-bold uppercase tracking-wider text-indigo-400 px-3 py-2 bg-slate-800/50">Oyuncular</div>';
+                        data.players.forEach(p => {
+                            html += `
+                            <div onclick="openPlayerModal(${p.id}); document.getElementById('search-results-dropdown').classList.add('hidden')" class="px-3 py-3 hover:bg-slate-800 cursor-pointer flex items-center group border-b border-slate-800/30 transition">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500/20 to-slate-800 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-xs mr-3 shrink-0">${p.mevki}</div>
+                                <div>
+                                    <div class="font-bold text-slate-200 group-hover:text-indigo-300 transition">${p.ad} ${p.soyad}</div>
+                                    <div class="text-[10px] text-slate-400">${p.uyruk}</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-[9px] text-slate-500 uppercase tracking-widest mb-0.5">Asist</div>
-                                    <div class="font-black text-emerald-400 text-sm leading-none">${p.asist}</div>
-                                </div>
-                                <div class="text-center bg-slate-900/50 rounded px-2 py-1 border border-slate-700/50">
-                                    <div class="text-[9px] text-slate-500 uppercase tracking-widest mb-0.5">Maç</div>
-                                    <div class="font-bold text-slate-300 text-xs leading-none">${p.toplam_mac}</div>
-                                </div>
-                            </div>
-                        </div>`;
-                    });
+                            </div>`;
+                        });
+                    }
+                    
+                    if (html === '') {
+                        html = '<div class="p-4 text-center text-slate-500 text-sm">Sonuç bulunamadı.</div>';
+                    }
                     
                     content.innerHTML = html;
                     dd.classList.remove('hidden');
