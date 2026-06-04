@@ -1111,12 +1111,28 @@
                 activeBtn.classList.add('border-indigo-500', 'text-indigo-400');
             }
             
-            if (tabId === 'tab-lig-durumu') loadLeaderboard();
+            if (tabId === 'tab-lig-durumu') fetchStats();
             if (tabId === 'tab-yonetim') loadAdminPlayers();
-            if (tabId === 'tab-scouting') {
-                document.getElementById('scout-mevki').value = '';
-                document.getElementById('scout-yas').value = '';
-                document.getElementById('scout-uyruk').value = '';
+            if (tabId === 'tab-scout') {
+                const spMevki = document.getElementById('sp-mevki');
+                if (spMevki) spMevki.value = 'Tumu';
+                const spMinYas = document.getElementById('sp-min-yas');
+                if (spMinYas) spMinYas.value = '';
+                const spMaxYas = document.getElementById('sp-max-yas');
+                if (spMaxYas) spMaxYas.value = '35';
+                const spUyruk = document.getElementById('sp-uyruk');
+                if (spUyruk) spUyruk.value = '';
+                const spTakim = document.getElementById('sp-takim');
+                if (spTakim) spTakim.value = 'Tumu';
+                const spBonservis = document.getElementById('sp-bonservis');
+                if (spBonservis) spBonservis.value = '';
+                const spGol = document.getElementById('sp-gol');
+                if (spGol) spGol.value = '';
+                const spAsist = document.getElementById('sp-asist');
+                if (spAsist) spAsist.value = '';
+                const spKartOrani = document.getElementById('sp-kart-orani');
+                if (spKartOrani) spKartOrani.value = '';
+                
                 searchScoutPlayers(null);
             }
         }
