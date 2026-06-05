@@ -877,7 +877,7 @@ def reset_database():
     if success:
         seed_success = seed_database()
         if seed_success:
-            return jsonify({"success": True, "message": "Veritabani sifirlandi ve ornek veriler yuklendi.", "queries": queries, "queries": queries})
+            return jsonify({"success": True, "message": "Veritabani sifirlandi ve ornek veriler yuklendi."})
     return jsonify({"success": False, "error": "Sifirlama sirasinda hata olustu."}), 500
 
 @app.route('/api/ai-analysis')
@@ -2101,6 +2101,11 @@ def admin_add_player():
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
         
+        # Duplicate validation check
+        cursor.execute("SELECT Oyuncu_ID FROM Oyuncular WHERE Ad = %s AND Soyad = %s AND Dogum_Tarihi = %s", (ad, soyad, dogum_tarihi))
+        if cursor.fetchone():
+            return jsonify({"success": False, "error": f"{ad} {soyad} isimli oyuncu bu doğum tarihiyle zaten kayıtlı."}), 400
+            
         cursor.execute("""
             INSERT INTO Oyuncular (Ad, Soyad, Mevki, Uyruk, Dogum_Tarihi, Takim_ID) 
             VALUES (%s, %s, %s, %s, %s, %s)
@@ -2168,6 +2173,12 @@ def admin_add_team():
         
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
+        
+        # Duplicate validation check
+        cursor.execute("SELECT Takim_ID FROM Takimlar WHERE Ad = %s", (ad,))
+        if cursor.fetchone():
+            return jsonify({"success": False, "error": f"'{ad}' isimli takım zaten kayıtlı."}), 400
+            
         cursor.execute("INSERT INTO Takimlar (Ad, Kurulus_Yili, Sehir, Stadyum_ID) VALUES (%s, %s, %s, %s)",
                        (ad, yil, sehir, stadyum_id if stadyum_id else None))
         conn.commit()
@@ -2226,6 +2237,18 @@ def admin_add_manager():
         
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
+        
+        # Duplicate validation check (Ad & Soyad)
+        cursor.execute("SELECT Direktor_ID FROM Teknik_Direktorler WHERE Ad = %s AND Soyad = %s", (ad, soyad))
+        if cursor.fetchone():
+            return jsonify({"success": False, "error": f"{ad} {soyad} isimli teknik direktör zaten kayıtlı."}), 400
+            
+        # Unique team check (prevent duplicate managers on same team)
+        if takim_id:
+            cursor.execute("SELECT Direktor_ID FROM Teknik_Direktorler WHERE Takim_ID = %s", (takim_id,))
+            if cursor.fetchone():
+                return jsonify({"success": False, "error": "Seçilen takımın zaten aktif bir teknik direktörü var."}), 400
+                
         cursor.execute("INSERT INTO Teknik_Direktorler (Ad, Soyad, Takim_ID) VALUES (%s, %s, %s)",
                        (ad, soyad, takim_id if takim_id else None))
         conn.commit()
@@ -2279,6 +2302,12 @@ def admin_add_stadium():
         
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
+        
+        # Duplicate validation check
+        cursor.execute("SELECT Stadyum_ID FROM Stadyumlar WHERE Ad = %s", (ad,))
+        if cursor.fetchone():
+            return jsonify({"success": False, "error": f"'{ad}' isimli stadyum zaten kayıtlı."}), 400
+            
         cursor.execute("INSERT INTO Stadyumlar (Ad, Kapasite, Sehir) VALUES (%s, %s, %s)", (ad, kapasite, sehir))
         conn.commit()
         queries = {'crud_action': get_statement(cursor)}
@@ -2374,6 +2403,15 @@ def admin_add_match():
             
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
+        
+        # Duplicate validation check
+        cursor.execute("""
+            SELECT Mac_ID FROM Maclar 
+            WHERE Ev_Sahibi_Takim_ID = %s AND Deplasman_Takim_ID = %s AND Tarih_Saat = %s
+        """, (ev, dep, tarih))
+        if cursor.fetchone():
+            return jsonify({"success": False, "error": "Bu iki takım arasında bu tarih ve saatte zaten bir maç tanımlı."}), 400
+            
         cursor.execute("""
             INSERT INTO Maclar (Ev_Sahibi_Takim_ID, Deplasman_Takim_ID, Tarih_Saat, Stadyum_ID, Ev_Sahibi_Skor, Deplasman_Skor)
             VALUES (%s, %s, %s, %s, %s, %s)
@@ -2465,6 +2503,14 @@ def admin_add_transfer():
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
         
+        # Duplicate validation check
+        cursor.execute("""
+            SELECT Transfer_ID FROM Transferler 
+            WHERE Oyuncu_ID = %s AND Yeni_Takim_ID = %s AND Tarih = %s
+        """, (oyuncu_id, yeni_takim if yeni_takim else None, tarih))
+        if cursor.fetchone():
+            return jsonify({"success": False, "error": "Bu oyuncunun bu tarihte bu yeni takıma zaten bir transfer kaydı mevcut."}), 400
+            
         # 1. Insert Transfer
         cursor.execute("""
             INSERT INTO Transferler (Oyuncu_ID, Eski_Takim_ID, Yeni_Takim_ID, Tarih, Bonservis_Bedeli, Para_Birimi)
@@ -2559,6 +2605,15 @@ def admin_add_match_event():
             
         conn = get_mysql_connection(use_db=True)
         cursor = conn.cursor()
+        
+        # Duplicate validation check
+        cursor.execute("""
+            SELECT Olay_ID FROM Mac_Olaylari 
+            WHERE Mac_ID = %s AND Oyuncu_ID = %s AND Olay_Tipi = %s AND Dakika = %s
+        """, (mac_id, oyuncu_id, olay_tipi, dakika))
+        if cursor.fetchone():
+            return jsonify({"success": False, "error": "Bu oyuncu için bu dakikada aynı olay tipi zaten kayıtlı."}), 400
+            
         cursor.execute("""
             INSERT INTO Mac_Olaylari (Mac_ID, Oyuncu_ID, Olay_Tipi, Dakika)
             VALUES (%s, %s, %s, %s)

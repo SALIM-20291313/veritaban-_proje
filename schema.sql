@@ -6,7 +6,7 @@ USE futbol_ligi;
 -- 1. Stadyumlar (Stadiums)
 CREATE TABLE IF NOT EXISTS Stadyumlar (
     Stadyum_ID INT AUTO_INCREMENT,
-    Ad VARCHAR(100) NOT NULL,
+    Ad VARCHAR(100) NOT NULL UNIQUE,
     Kapasite INT NOT NULL,
     Sehir VARCHAR(80) NOT NULL,
     PRIMARY KEY (Stadyum_ID)
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS Stadyumlar (
 -- 2. Takımlar (Teams)
 CREATE TABLE IF NOT EXISTS Takimlar (
     Takim_ID INT AUTO_INCREMENT,
-    Ad VARCHAR(100) NOT NULL,
+    Ad VARCHAR(100) NOT NULL UNIQUE,
     Kurulus_Yili YEAR NOT NULL,
     Sehir VARCHAR(80) NOT NULL,
     Stadyum_ID INT NULL,
@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS Oyuncular (
     Mevki ENUM('KL', 'DF', 'OS', 'FV') NOT NULL,
     Takim_ID INT NULL,
     PRIMARY KEY (Oyuncu_ID),
-    FOREIGN KEY (Takim_ID) REFERENCES Takimlar(Takim_ID) ON DELETE SET NULL
+    FOREIGN KEY (Takim_ID) REFERENCES Takimlar(Takim_ID) ON DELETE SET NULL,
+    UNIQUE KEY uq_oyuncu (Ad, Soyad, Dogum_Tarihi)
 ) ENGINE=InnoDB;
 
 -- 4. Maçlar (Matches)
