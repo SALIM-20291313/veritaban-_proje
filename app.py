@@ -28,10 +28,14 @@ def get_db_config():
         'password': os.getenv('DB_PASSWORD', ''),
         'database': os.getenv('DB_NAME', 'futbol_ligi'),
         'charset': 'utf8mb4',
-        'use_pure': True,
-        'deepseek_key': os.getenv('DEEPSEEK_API_KEY', ''),
-        'rapid_key': os.getenv('RAPIDAPI_KEY', '')
+        'use_pure': True
     }
+
+def get_setup_config():
+    cfg = get_db_config()
+    cfg['deepseek_key'] = os.getenv('DEEPSEEK_API_KEY', '')
+    cfg['rapid_key'] = os.getenv('RAPIDAPI_KEY', '')
+    return cfg
 
 def get_statement(cursor):
     if not cursor or not cursor.statement:
@@ -230,12 +234,12 @@ def index():
     global db_connected, db_error_msg
     test_db_connection()
     if not db_connected:
-        return render_template('setup.html', error=db_error_msg, config=get_db_config())
+        return render_template('setup.html', error=db_error_msg, config=get_setup_config())
     return render_template('index.html')
 
 @app.route('/setup')
 def setup_page():
-    return render_template('setup.html', error=db_error_msg, config=get_db_config())
+    return render_template('setup.html', error=db_error_msg, config=get_setup_config())
 
 @app.route('/api/save-config', methods=['POST'])
 def save_config():
@@ -273,9 +277,9 @@ RAPIDAPI_KEY={rapid_key}
                 seed_database()
             return redirect(url_for('index'))
         else:
-            return render_template('setup.html', error=f"Baglanti Basarisiz: {db_error_msg}", config=get_db_config())
+            return render_template('setup.html', error=f"Baglanti Basarisiz: {db_error_msg}", config=get_setup_config())
     except Exception as e:
-        return render_template('setup.html', error=f"Dosya yazma hatasi: {e}", config=get_db_config())
+        return render_template('setup.html', error=f"Dosya yazma hatasi: {e}", config=get_setup_config())
 
 @app.route('/api/stats')
 def get_stats():
