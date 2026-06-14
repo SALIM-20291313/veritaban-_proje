@@ -28,7 +28,9 @@ def get_db_config():
         'password': os.getenv('DB_PASSWORD', ''),
         'database': os.getenv('DB_NAME', 'futbol_ligi'),
         'charset': 'utf8mb4',
-        'use_pure': True
+        'use_pure': True,
+        'deepseek_key': os.getenv('DEEPSEEK_API_KEY', ''),
+        'rapid_key': os.getenv('RAPIDAPI_KEY', '')
     }
 
 def get_statement(cursor):
@@ -245,7 +247,7 @@ def save_config():
     user = request.form.get('user', 'root')
     password = request.form.get('password', '')
     dbname = request.form.get('dbname', 'futbol_ligi')
-    gemini_key = request.form.get('gemini_key', '')
+    deepseek_key = request.form.get('deepseek_key', '')
     rapid_key = request.form.get('rapid_key', '')
 
     # Write back to .env
@@ -255,7 +257,7 @@ DB_PORT={port}
 DB_USER={user}
 DB_PASSWORD={password}
 DB_NAME={dbname}
-GEMINI_API_KEY={gemini_key}
+DEEPSEEK_API_KEY={deepseek_key}
 RAPIDAPI_KEY={rapid_key}
 """
         with open('.env', 'w', encoding='utf-8') as f:
@@ -949,7 +951,7 @@ def get_ai_analysis():
             context += f"- {tr['Ad']} {tr['Soyad']} -> {tr['Yeni_Takim']} ({float(tr['Bonservis_Bedeli']):,.0f} EUR)\n"
             
         # AI configuration using DeepSeek
-        api_key = "sk-2174435bc38e48898342e420258e5d23"
+        api_key = os.getenv('DEEPSEEK_API_KEY')
         
         prompt = f'''Sen sistem veritabanına bağlı canlı bir yapay zeka futbol analistisin. Sana sağlanan güncel lig puan durumunu, golcüleri ve transferleri incele. 
 Raporunu şu kurallara göre yaz:

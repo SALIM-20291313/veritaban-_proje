@@ -80,10 +80,19 @@
 
                 <div class="md:col-span-2">
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 flex items-center space-x-1.5">
+                        <span>DeepSeek Yapay Zeka API Anahtarı</span>
+                        <span class="text-xxs text-indigo-400 capitalize">(AI Analiz Raporu için)</span>
+                    </label>
+                    <input type="password" name="deepseek_key" placeholder="DeepSeek API Key girin (İsteğe Bağlı)" value="{{ config.deepseek_key }}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition">
+                    <p class="text-xxs text-slate-500 mt-1">Girilmezse, yerel çevrimdışı analiz motoru simüle edilmiş futbol analiz raporu üretir.</p>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 flex items-center space-x-1.5">
                         <span>RapidAPI API-Football Anahtarı</span>
                         <span class="text-xxs text-amber-400 capitalize">(Canlı Fikstür için)</span>
                     </label>
-                    <input type="password" name="rapid_key" placeholder="API-Football Key girin (İsteğe Bağlı)" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition">
+                    <input type="password" name="rapid_key" placeholder="API-Football Key girin (İsteğe Bağlı)" value="{{ config.rapid_key }}" class="w-full bg-zinc-900 border border-zinc-800 focus:border-indigo-500 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none transition">
                     <p class="text-xxs text-slate-500 mt-1">Girilmezse veya limit aşımında, yerel maç simülatörüyle tam veri akışı simüle edilir.</p>
                 </div>
             </div>
